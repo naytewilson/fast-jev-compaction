@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - north/anvil-sieve-semantic-retention-v0
+      - north/authority-preserving-semantic-fabric-v1
   pull_request:
     paths:
       - "src/**"
