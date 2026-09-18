@@ -1,0 +1,18 @@
+{
+  "schema": "anvil.axis-isolate-identity.v2",
+  "experimentKind": "first-slot-primary-axis-isolate",
+  "parentManifestDigest": "sha256:0439968e54d3df0634d03857a20c9c8d5761aea87cc1b7e5c12063ff6a36afdc",
+  "parentAnchorPlanFileDigest": "sha256:841272c93486b45b8c1e6ed0a4509ac55fe9420a80fa6b42621cf03b9db64a66",
+  "parentAnchorPlanDigest": "sha256:fe8384bc444636b1066ac992e12020f92ebb1c50e2f058858faac98030000f6e",
+  "parentReportDigest": "sha256:94eba118ab77fcf1e671ab153467fcdcf205ef641305769873c3b2121f31f018",
+  "parentReplayDigest": "sha256:686759c9744679a564542c2dc4027c70a11723150e492a9a2eedfbae13ce88d2",
+  "parentObservationsDigest": "sha256:571c4e1e41caa03b9ea46a13e2bcc346d44d2597e945a2d9f5c05db987ae4a3b",
+  "parentRawScoreLogDigest": "sha256:99a6deb6560f07b7e43b66ea62dfddc8497c8860bab35b1619e2380085a05670",
+  "providerProfileDigest": "sha256:b82d2238ecb515e32c6af83f7c09eaf6d9a05b0fe0de18917f48e29c2171c647",
+  "axisSpecDigest": "sha256:edce037c11caa8017e314e0ffac03f0ea4fcbc5518ed464ad51a5d3657b17a53",
+  "manifestDigest": "sha256:29dcf404cda87d334b26d2de4759b96017c17bcab7116ce54e0f68a69dd97792",
+  "rows": 16,
+  "probeLayout": "single-primary-axis-first-answer-slot",
+  "nonAuthoritative": true,
+  "promotionAuthority": "NONE"
+}

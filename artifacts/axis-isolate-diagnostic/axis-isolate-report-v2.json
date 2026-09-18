@@ -1,0 +1,186 @@
+{
+  "schema": "anvil.axis-isolate-report.v2",
+  "answerabilityFloor": 0.5,
+  "axes": {
+    "evidence_sufficient": {
+      "positiveCount": 2,
+      "negativeCount": 2,
+      "positiveProbabilities": [
+        0.8798336619471674,
+        0.8939764507567873
+      ],
+      "negativeProbabilities": [
+        0.8830751220750216,
+        0.9523410003024608
+      ],
+      "positiveMean": 0.8869050563519774,
+      "negativeMean": 0.9177080611887412,
+      "minPositiveMinusMaxNegative": -0.07250733835529344,
+      "meanPositiveMinusMeanNegative": -0.030803004836763792,
+      "pairwiseOrderingRate": 0.25,
+      "classification": "INVERTED",
+      "answerTokenMass": {
+        "values": [
+          0.18188894371842268,
+          0.12472522692739041,
+          0.21239428880469866,
+          0.2252582405213016
+        ],
+        "min": 0.12472522692739041,
+        "mean": 0.18606667499295335,
+        "max": 0.2252582405213016,
+        "allAboveFloor": false
+      },
+      "parentAnswerTokenMass": {
+        "values": [
+          0.9952013668274267,
+          0.9912417322276665,
+          0.9977233609787989,
+          0.9950151100858672
+        ],
+        "min": 0.9912417322276665,
+        "mean": 0.9947953925299398,
+        "max": 0.9977233609787989
+      },
+      "answerTokenMassGainMean": -0.8087287175369864
+    },
+    "still_needed": {
+      "positiveCount": 2,
+      "negativeCount": 2,
+      "positiveProbabilities": [
+        0.7627655202859093,
+        0.7826571190655216
+      ],
+      "negativeProbabilities": [
+        0.7631229739452157,
+        0.854096566355747
+      ],
+      "positiveMean": 0.7727113196757154,
+      "negativeMean": 0.8086097701504813,
+      "minPositiveMinusMaxNegative": -0.09133104606983777,
+      "meanPositiveMinusMeanNegative": -0.03589845047476592,
+      "pairwiseOrderingRate": 0.25,
+      "classification": "INVERTED",
+      "answerTokenMass": {
+        "values": [
+          0.05113782913842581,
+          0.10239350785287707,
+          0.14707588626743723,
+          0.3447704713954302
+        ],
+        "min": 0.05113782913842581,
+        "mean": 0.16134442366354257,
+        "max": 0.3447704713954302,
+        "allAboveFloor": false
+      },
+      "parentAnswerTokenMass": {
+        "values": [
+          0.2818551703441512,
+          0.2591689195297519,
+          0.2552226318728554,
+          0.15740774189077958
+        ],
+        "min": 0.15740774189077958,
+        "mean": 0.23841361590938454,
+        "max": 0.2818551703441512
+      },
+      "answerTokenMassGainMean": -0.07706919224584197
+    },
+    "full_content_needed": {
+      "positiveCount": 2,
+      "negativeCount": 2,
+      "positiveProbabilities": [
+        0.8940390615265486,
+        0.8897488084594678
+      ],
+      "negativeProbabilities": [
+        0.9085234083198155,
+        0.84950396807722
+      ],
+      "positiveMean": 0.8918939349930082,
+      "negativeMean": 0.8790136881985178,
+      "minPositiveMinusMaxNegative": -0.018774599860347685,
+      "meanPositiveMinusMeanNegative": 0.012880246794490402,
+      "pairwiseOrderingRate": 0.5,
+      "classification": "NON_DISCRIMINATING",
+      "answerTokenMass": {
+        "values": [
+          0.10737517086338846,
+          0.1606172414529925,
+          0.15348592619095935,
+          0.12164076812489015
+        ],
+        "min": 0.10737517086338846,
+        "mean": 0.1357797766580576,
+        "max": 0.1606172414529925,
+        "allAboveFloor": false
+      },
+      "parentAnswerTokenMass": {
+        "values": [
+          0.006414972941289171,
+          0.00661375237019402,
+          0.021861377606212866,
+          0.005955950495446631
+        ],
+        "min": 0.005955950495446631,
+        "mean": 0.010211513353285672,
+        "max": 0.021861377606212866
+      },
+      "answerTokenMassGainMean": 0.12556826330477192
+    },
+    "unresolved_evidence": {
+      "positiveCount": 2,
+      "negativeCount": 2,
+      "positiveProbabilities": [
+        0.743332804288857,
+        0.8145358877962467
+      ],
+      "negativeProbabilities": [
+        0.7717033304427522,
+        0.8349693203780517
+      ],
+      "positiveMean": 0.7789343460425519,
+      "negativeMean": 0.803336325410402,
+      "minPositiveMinusMaxNegative": -0.09163651608919476,
+      "meanPositiveMinusMeanNegative": -0.024401979367850157,
+      "pairwiseOrderingRate": 0.25,
+      "classification": "INVERTED",
+      "answerTokenMass": {
+        "values": [
+          0.15408139713199673,
+          0.20507977892055357,
+          0.14306383940993359,
+          0.1681316857105611
+        ],
+        "min": 0.14306383940993359,
+        "mean": 0.16758917529326126,
+        "max": 0.20507977892055357,
+        "allAboveFloor": false
+      },
+      "parentAnswerTokenMass": {
+        "values": [
+          0.0008705187098251684,
+          0.2056978540484805,
+          0.075766673003997,
+          0.09256726860190793
+        ],
+        "min": 0.0008705187098251684,
+        "mean": 0.09372557859105266,
+        "max": 0.2056978540484805
+      },
+      "answerTokenMassGainMean": 0.0738635967022086
+    }
+  },
+  "allRowsAnswerable": false,
+  "decision": "HARNESS_STILL_INVALID_LOW_ANSWER_MASS",
+  "nonAuthoritative": true,
+  "promotionAuthority": "NONE",
+  "providerProfileDigest": "sha256:b82d2238ecb515e32c6af83f7c09eaf6d9a05b0fe0de18917f48e29c2171c647",
+  "axisSpecDigest": "sha256:edce037c11caa8017e314e0ffac03f0ea4fcbc5518ed464ad51a5d3657b17a53",
+  "experimentKind": "first-slot-primary-axis-isolate",
+  "interpretation": [
+    "The first-slot isolate tests whether the prior multi-slot layout suppressed registered Yes/No answer-token mass at later probe positions.",
+    "Ordering is interpreted only when every isolated row meets the answerability floor.",
+    "This report does not change semantic wording, thresholds, recovery authority, or production policy."
+  ]
+}
