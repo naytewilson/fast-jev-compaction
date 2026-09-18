@@ -8,6 +8,7 @@ import {
   type ReplayRun,
   type ReplayTrace,
 } from './replay.js';
+import { createReplayReceipt, type ReplayReceipt } from './receipt.js';
 import { sha256Digest, type InMemoryCAS } from './recovery.js';
 import type {
   MappedDecisionRequest,
@@ -31,6 +32,10 @@ export interface ObservationPolicyThresholds {
 export type MappedObservationProvider = (
   request: MappedDecisionRequest,
 ) => Promise<unknown> | unknown;
+
+export type ObservationReplayRun = ReplayRun & {
+  receipts: ReplayReceipt[];
+};
 
 function buildRequest(trace: ReplayTrace, profiles: ObservationProfiles): MappedDecisionRequest {
   const candidate_views = [...trace.candidates]
@@ -79,32 +84,76 @@ function buildRequest(trace: ReplayTrace, profiles: ObservationProfiles): Mapped
   };
 }
 
+function candidateSetDigest(trace: ReplayTrace): string {
+  return sha256Digest(JSON.stringify(
+    trace.candidates.map((candidate) => ({
+      candidate_id: candidate.candidate_id,
+      source_digest: candidate.recovery.source_digest,
+      recovery_ref: candidate.recovery.recovery_ref,
+    })),
+  ));
+}
+
+function makeReceipt(
+  trace: ReplayTrace,
+  profiles: ObservationProfiles,
+  observationDigest: string,
+  dispositions: string[],
+): ReplayReceipt {
+  return createReplayReceipt({
+    receipt_schema: 'anvil.semantic-retention-replay-receipt.v0',
+    trace_id: trace.trace_id,
+    source_run_id: trace.source_run_id,
+    arm: 'D',
+    decision_contract_digest: profiles.decision_contract.digest,
+    execution_profile_digest: profiles.execution_profile.digest,
+    calibration_profile_digest: profiles.calibration_profile.digest,
+    policy_profile_digest: profiles.policy_profile.digest,
+    candidate_set_digest: candidateSetDigest(trace),
+    observation_set_digest: observationDigest,
+    dispositions,
+  });
+}
+
+function fallbackRun(
+  trace: ReplayTrace,
+  profiles: ObservationProfiles,
+  reason: string,
+): ObservationReplayRun {
+  const presentations = trace.candidates.map((candidate) =>
+    fullPresentation(candidate, 'PRISTINE_FALLBACK'));
+  return {
+    arm: 'D',
+    presentations,
+    receipts: [
+      makeReceipt(
+        trace,
+        profiles,
+        sha256Digest(`PRISTINE_FALLBACK:${reason}`),
+        presentations.map((presentation) => presentation.disposition),
+      ),
+    ],
+  };
+}
+
 export async function runObservationOnlyArm(
   trace: ReplayTrace,
   cas: InMemoryCAS,
   profiles: ObservationProfiles,
   thresholds: ObservationPolicyThresholds,
   provider: MappedObservationProvider,
-): Promise<ReplayRun> {
+): Promise<ObservationReplayRun> {
   const request = buildRequest(trace, profiles);
   const validation = validateMappedDecisionRequest(request);
   if (!validation.ok) {
-    return {
-      arm: 'D',
-      presentations: trace.candidates.map((candidate) =>
-        fullPresentation(candidate, 'PRISTINE_FALLBACK')),
-    };
+    return fallbackRun(trace, profiles, `request:${validation.code}`);
   }
 
   let raw: unknown;
   try {
     raw = await provider(request);
   } catch {
-    return {
-      arm: 'D',
-      presentations: trace.candidates.map((candidate) =>
-        fullPresentation(candidate, 'PRISTINE_FALLBACK')),
-    };
+    return fallbackRun(trace, profiles, 'provider_exception');
   }
 
   const reassembled = reassembleMappedObservations(
@@ -113,11 +162,7 @@ export async function runObservationOnlyArm(
     raw,
   );
   if (reassembled.kind === 'PRISTINE_FALLBACK') {
-    return {
-      arm: 'D',
-      presentations: trace.candidates.map((candidate) =>
-        fullPresentation(candidate, 'PRISTINE_FALLBACK')),
-    };
+    return fallbackRun(trace, profiles, `reassembly:${reassembled.code}`);
   }
 
   const byID = new Map(reassembled.observations.map((observation) => [observation.candidate_id, observation]));
@@ -148,7 +193,19 @@ export async function runObservationOnlyArm(
     };
   });
 
-  return { arm: 'D', presentations };
+  const observationDigest = sha256Digest(JSON.stringify(reassembled.observations));
+  return {
+    arm: 'D',
+    presentations,
+    receipts: [
+      makeReceipt(
+        trace,
+        profiles,
+        observationDigest,
+        presentations.map((presentation) => presentation.disposition),
+      ),
+    ],
+  };
 }
 
 export function observationSetDigest(response: MappedDecisionResponse): string {
