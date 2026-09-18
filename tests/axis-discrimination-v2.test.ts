@@ -49,6 +49,16 @@ describe('V2 axis-discrimination anchor corpus', () => {
       expect(trace.candidates[0].stdout).not.toContain(trace.candidates[0].candidate_id);
     }
 
+    const visibleUePositive = traces.find((trace) =>
+      trace.trace_id === 'axis-ue-pos-02');
+    expect(visibleUePositive).toBeDefined();
+    expect(
+      visibleUePositive!.candidates[0].stdout
+        .split('\n')
+        .slice(0, visibleUePositive!.candidates[0].head_lines)
+        .join('\n'),
+    ).toContain('verification mismatch');
+
     for (const axis of [
       'evidence_sufficient',
       'still_needed',
