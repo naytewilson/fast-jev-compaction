@@ -215,15 +215,19 @@ const ANCHORS: readonly AnchorSpec[] = Object.freeze([
   },
 ]);
 
-function anchorTrace(spec: AnchorSpec): ReplayTrace {
+function anchorTrace(spec: AnchorSpec, ordinal: number): ReplayTrace {
   const headLines = 4;
   const tailLines = 4;
   const lineCount = 32;
-  const marker = `ANCHOR_${spec.id.toUpperCase().replace(/-/g, '_')}`;
+  // Opaque identities prevent the evidence text from leaking the intended
+  // axis or target class into the model-visible prompt.
+  const nonce = String(ordinal).padStart(2, '0');
+  const marker = `ANCHOR_MARKER_${nonce}`;
   const lines = Array.from(
     { length: lineCount },
     (_, index) => `audit step=${String(index).padStart(2, '0')} status=ok artifact=item-${index % 7}`,
   );
+  lines[0] = `audit source_nonce=${nonce} status=ok artifact=anchor`;
   if (spec.placement === 'head') {
     lines[1] = `CRITICAL ${marker}`;
   } else if (spec.placement === 'middle') {
@@ -270,7 +274,7 @@ export function axisDiscriminationAnchorPlanV2(): readonly AxisDiscriminationAnc
 }
 
 export function axisDiscriminationCorpusV2(): readonly ReplayTrace[] {
-  return Object.freeze(ANCHORS.map(anchorTrace));
+  return Object.freeze(ANCHORS.map((spec, ordinal) => anchorTrace(spec, ordinal)));
 }
 
 export interface AxisDiscriminationCoverageV2 {
