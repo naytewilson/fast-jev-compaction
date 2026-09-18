@@ -44,6 +44,10 @@ describe('V2 axis-discrimination anchor corpus', () => {
     expect(anchors).toHaveLength(16);
     expect(new Set(traces.map((trace) => trace.trace_id)).size).toBe(16);
     expect(new Set(traces.map((trace) => trace.candidates[0].recovery.source_digest)).size).toBe(16);
+    for (const trace of traces) {
+      expect(trace.candidates[0].stdout).not.toContain(trace.trace_id);
+      expect(trace.candidates[0].stdout).not.toContain(trace.candidates[0].candidate_id);
+    }
 
     for (const axis of [
       'evidence_sufficient',
