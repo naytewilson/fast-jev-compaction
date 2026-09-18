@@ -39,6 +39,34 @@ export interface ProviderShadowReplayV2Input {
   thresholds: ObservationPolicyThresholdsV2;
 }
 
+
+export interface ProviderShadowCampaignV2Arm {
+  providerProfile: ProviderExecutionProfile;
+  observationProfiles: ObservationProfilesV2;
+  compiledProgramDigest: Digest256;
+  provider: SemanticObservationProviderV2;
+}
+
+export interface ProviderShadowCampaignV2Input {
+  traces: readonly ReplayTrace[];
+  labels: readonly SemanticCalibrationLabelV2[];
+  cas: InMemoryCAS;
+  thresholds: ObservationPolicyThresholdsV2;
+  arms: readonly ProviderShadowCampaignV2Arm[];
+}
+
+export interface ProviderShadowCampaignV2Failure {
+  providerId: string;
+  providerProfileDigest: Digest256;
+  code: 'shadow_replay_failed';
+}
+
+export interface ProviderShadowCampaignV2Result {
+  schema: 'anvil.provider-shadow-campaign.v2';
+  artifacts: readonly Readonly<ProviderShadowReplayArtifactV2>[];
+  failures: readonly Readonly<ProviderShadowCampaignV2Failure>[];
+}
+
 function requireDigest(value: string, field: string): void {
   if (!DIGEST.test(value)) {
     throw new TypeError(`${field} must be canonical sha256`);
@@ -414,4 +442,72 @@ export function verifyProviderShadowReplayArtifactV2(
   } catch {
     return false;
   }
+}
+
+
+export async function compileProviderShadowCampaignV2(
+  input: ProviderShadowCampaignV2Input,
+): Promise<Readonly<ProviderShadowCampaignV2Result>> {
+  const providerIds = new Set<string>();
+  const profileDigests = new Set<string>();
+
+  for (const arm of input.arms) {
+    if (!verifyProviderExecutionProfile(arm.providerProfile)) {
+      throw new TypeError(
+        'semantic v2 shadow campaign provider profile is not internally verifiable',
+      );
+    }
+    if (
+      arm.providerProfile.observationABIDigest !==
+      SEMANTIC_OBSERVATION_ABI_DIGEST_V2
+    ) {
+      throw new Error(
+        'semantic v2 shadow campaign provider profile Observation ABI mismatch',
+      );
+    }
+    if (providerIds.has(arm.providerProfile.providerId)) {
+      throw new Error(
+        `duplicate provider id ${arm.providerProfile.providerId}`,
+      );
+    }
+    if (profileDigests.has(arm.providerProfile.providerProfileDigest)) {
+      throw new Error(
+        `duplicate provider profile digest ${arm.providerProfile.providerProfileDigest}`,
+      );
+    }
+    providerIds.add(arm.providerProfile.providerId);
+    profileDigests.add(arm.providerProfile.providerProfileDigest);
+  }
+
+  const artifacts: Readonly<ProviderShadowReplayArtifactV2>[] = [];
+  const failures: Readonly<ProviderShadowCampaignV2Failure>[] = [];
+
+  for (const arm of input.arms) {
+    try {
+      artifacts.push(
+        await new ProviderShadowReplayCompilerV2().compile({
+          providerProfile: arm.providerProfile,
+          observationProfiles: arm.observationProfiles,
+          compiledProgramDigest: arm.compiledProgramDigest,
+          provider: arm.provider,
+          traces: input.traces,
+          labels: input.labels,
+          cas: input.cas,
+          thresholds: input.thresholds,
+        }),
+      );
+    } catch {
+      failures.push(Object.freeze({
+        providerId: arm.providerProfile.providerId,
+        providerProfileDigest: arm.providerProfile.providerProfileDigest,
+        code: 'shadow_replay_failed' as const,
+      }));
+    }
+  }
+
+  return Object.freeze({
+    schema: 'anvil.provider-shadow-campaign.v2' as const,
+    artifacts: Object.freeze(artifacts),
+    failures: Object.freeze(failures),
+  });
 }
