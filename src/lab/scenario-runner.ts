@@ -204,10 +204,16 @@ async function runEvidenceScenario(
   );
   const t1 = NOW();
   const triggered = semanticAuthorityFired(run);
+  // Conservative = the cycle resolved without semantic presentation
+  // authority: null observations, only FULL/PRISTINE_FALLBACK/ABSTAIN
+  // dispositions (ABSTAIN is a refusal to compact — grants no authority),
+  // or an explicit pristine-fallback receipt.
   const conservative =
     run.observations === null ||
     run.presentations.every((p) =>
-      p.disposition === 'FULL' || p.disposition === 'PRISTINE_FALLBACK',
+      p.disposition === 'FULL' ||
+      p.disposition === 'PRISTINE_FALLBACK' ||
+      p.disposition === 'ABSTAIN',
     ) ||
     run.receipts[0]?.pristine_fallback === true;
   return {
