@@ -368,7 +368,7 @@ function fallbackRun(
         observationDigest: sha256Digest(JSON.stringify({
           schema: 'anvil.semantic-fabric-v2-fallback-evidence.v0',
           reason,
-          mechanicalRecovery,
+          preflightMechanicalRecovery,
         })),
         dispositions,
         errorCode: reason,
@@ -390,7 +390,7 @@ export async function runObservationOnlyArmV2(
 ): Promise<ObservationReplayRunV2> {
   validateThresholds(thresholds);
 
-  const mechanicalRecovery = Object.freeze(
+  const preflightMechanicalRecovery = Object.freeze(
     trace.candidates.map((candidate) =>
       evaluateMechanicalRecovery(cas, candidate)),
   );
@@ -409,7 +409,7 @@ export async function runObservationOnlyArmV2(
       return fallbackRun(
         trace,
         profiles,
-        mechanicalRecovery,
+        preflightMechanicalRecovery,
         'hard_roots_exceed_budget',
         {
           providerMetadata,
@@ -503,6 +503,14 @@ export async function runObservationOnlyArmV2(
     ]),
   );
 
+  // Recovery authority is intentionally re-issued after the async provider
+  // boundary. Preflight evidence remains diagnostic-only for fallback paths.
+  const mechanicalRecovery = Object.freeze(
+    trace.candidates.map((candidate) =>
+      evaluateMechanicalRecovery(cas, candidate)),
+  );
+  const currentStoreSnapshotDigest = cas.snapshotDigest();
+
   const recoveryByID = new Map(
     mechanicalRecovery.map((evidence) => [
       evidence.candidate_id,
@@ -524,6 +532,7 @@ export async function runObservationOnlyArmV2(
         observation,
         recovery,
         thresholds,
+        currentStoreSnapshotDigest,
       });
     }),
   );

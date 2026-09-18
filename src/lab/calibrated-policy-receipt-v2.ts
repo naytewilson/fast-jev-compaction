@@ -54,6 +54,10 @@ const RECOVERY_CODES = new Set([
   'digest_mismatch',
   'byte_count_mismatch',
   'candidate_mismatch',
+  'unissued_recovery_evidence',
+  'recovery_identity_mismatch',
+  'invalid_recovery_evidence',
+  'stale_recovery_snapshot',
 ]);
 
 const RECEIPT_KEYS = [

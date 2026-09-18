@@ -181,6 +181,7 @@ function evaluateCalibratedPolicy(
   trace: ReplayTrace,
   observations: readonly SemanticCandidateObservationV2[],
   mechanicalRecovery: readonly MechanicalRecoveryEvidence[],
+  currentStoreSnapshotDigest: string,
   policyProfile: SemanticPolicyProfileV2,
 ): {
   decisions: readonly Readonly<SemanticPolicyDecisionV2>[];
@@ -213,6 +214,7 @@ function evaluateCalibratedPolicy(
       observation,
       thresholds: policyProfile.thresholds,
       recovery,
+      currentStoreSnapshotDigest,
     });
   });
 
@@ -269,6 +271,7 @@ export async function runCalibratedObservationReplayV2(
     input.trace,
     calibratedObservations,
     rawRun.mechanicalRecovery,
+    input.cas.snapshotDigest(),
     input.policyProfile,
   );
 

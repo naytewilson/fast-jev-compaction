@@ -5,7 +5,12 @@ import {
   type ReplayDisposition,
   type ReplayPresentation,
 } from './replay.js';
-import type { MechanicalRecoveryEvidence } from './mechanical-recovery.js';
+import {
+  verifyMechanicalRecoveryEvidence,
+  type MechanicalRecoveryAuthorityFailureCode,
+  type MechanicalRecoveryEvidence,
+  type MechanicalRecoveryStatus,
+} from './mechanical-recovery.js';
 import type { SemanticCandidateObservationV2 } from './semantic-contract-v2.js';
 import { sha256Digest } from './recovery.js';
 
@@ -40,6 +45,7 @@ export const SEMANTIC_POLICY_SPEC_V2 = Object.freeze({
   evidenceAuthority: 'first-gate' as const,
   unresolvedEvidenceAuthority: 'review-advisory-after-evidence-gate' as const,
   recoverabilityAuthority: 'mechanical-only' as const,
+  recoveryProof: 'issued-and-current-store-snapshot-bound' as const,
   dispositions: Object.freeze([
     'ABSTAIN',
     'FULL',
@@ -59,8 +65,8 @@ export interface SemanticPolicyDecisionV2 {
   semantic_authority_used: boolean;
   review_advisory: boolean;
   reason: SemanticPolicyReasonV2;
-  mechanical_recovery_status: MechanicalRecoveryEvidence['status'];
-  recovery_failure_code: MechanicalRecoveryEvidence['failure_code'];
+  mechanical_recovery_status: MechanicalRecoveryStatus;
+  recovery_failure_code: MechanicalRecoveryAuthorityFailureCode | null;
   mechanical_recovery_evidence_digest: string;
 }
 
@@ -74,9 +80,14 @@ export interface SemanticPolicyInputV2 {
   observation: SemanticCandidateObservationV2;
   thresholds: ObservationPolicyThresholdsV2;
   recovery: MechanicalRecoveryEvidence;
+  currentStoreSnapshotDigest: string;
 }
 
-const DIGEST = /^sha256:[0-9a-f]{64}$/;
+interface RecoveryAuthorityState {
+  status: MechanicalRecoveryStatus;
+  failureCode: MechanicalRecoveryAuthorityFailureCode | null;
+  evidenceDigest: string;
+}
 
 function probability(value: number, field: string): void {
   if (!Number.isFinite(value) || value < 0 || value > 1) {
@@ -93,41 +104,39 @@ export function validateObservationPolicyThresholdsV2(
   probability(thresholds.reviewFloor, 'reviewFloor');
 }
 
-function validateRecoveryBinding(
-  candidate: ReplayCandidate,
-  recovery: MechanicalRecoveryEvidence,
-): void {
-  if (
-    recovery.schema !== 'anvil.mechanical-recovery-evidence.v1' ||
-    recovery.candidate_id !== candidate.candidate_id ||
-    recovery.source_digest !== candidate.recovery.source_digest ||
-    recovery.recovery_ref !== candidate.recovery.recovery_ref
-  ) {
-    throw new Error('mechanical recovery evidence does not bind the policy candidate');
+function recoveryAuthority(
+  input: SemanticPolicyInputV2,
+): RecoveryAuthorityState {
+  const verification = verifyMechanicalRecoveryEvidence(
+    input.candidate,
+    input.recovery,
+    input.currentStoreSnapshotDigest,
+  );
+
+  if (!verification.ok) {
+    if (verification.code === 'recovery_identity_mismatch') {
+      throw new Error(verification.detail);
+    }
+    return {
+      status: 'UNAVAILABLE',
+      failureCode: verification.code,
+      evidenceDigest:
+        typeof (input.recovery as any)?.evidence_digest === 'string'
+          ? (input.recovery as any).evidence_digest
+          : sha256Digest('UNISSUED_RECOVERY_EVIDENCE'),
+    };
   }
-  if (
-    !DIGEST.test(recovery.cas_snapshot_digest) ||
-    !DIGEST.test(recovery.evidence_digest)
-  ) {
-    throw new TypeError('mechanical recovery evidence digests must be canonical sha256');
-  }
-  if (
-    recovery.status === 'VERIFIED' &&
-    recovery.failure_code !== null
-  ) {
-    throw new Error('verified mechanical recovery cannot carry a failure code');
-  }
-  if (
-    recovery.status === 'UNAVAILABLE' &&
-    recovery.failure_code === null
-  ) {
-    throw new Error('unavailable mechanical recovery requires a failure code');
-  }
+
+  return {
+    status: input.recovery.status,
+    failureCode: input.recovery.failure_code,
+    evidenceDigest: input.recovery.evidence_digest,
+  };
 }
 
 function decision(
   candidate: ReplayCandidate,
-  recovery: MechanicalRecoveryEvidence,
+  recovery: RecoveryAuthorityState,
   disposition: SemanticPolicyDecisionV2['disposition'],
   reason: SemanticPolicyReasonV2,
   semanticAuthorityUsed: boolean,
@@ -141,8 +150,8 @@ function decision(
     review_advisory: reviewAdvisory,
     reason,
     mechanical_recovery_status: recovery.status,
-    recovery_failure_code: recovery.failure_code,
-    mechanical_recovery_evidence_digest: recovery.evidence_digest,
+    recovery_failure_code: recovery.failureCode,
+    mechanical_recovery_evidence_digest: recovery.evidenceDigest,
   });
 }
 
@@ -164,11 +173,10 @@ export function decideSemanticPolicyV2(
   if (input.candidate.candidate_id !== input.observation.candidate_id) {
     throw new Error('candidate identity does not match semantic observation');
   }
-  validateRecoveryBinding(input.candidate, input.recovery);
 
   const candidate = input.candidate;
   const observation = input.observation;
-  const recovery = input.recovery;
+  const recovery = recoveryAuthority(input);
 
   if (
     observation.evidence_sufficient.noul <
