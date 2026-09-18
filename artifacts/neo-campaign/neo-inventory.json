@@ -1,0 +1,36 @@
+{
+  "schema": "anvil.neo-inventory.v1",
+  "machine": {
+    "host": "Naytes-MacBook-Neo.local",
+    "platform": "macOS",
+    "osVersion": "27.2",
+    "osBuild": "26B5086k",
+    "arch": "arm64",
+    "soc": "Apple A18 Pro",
+    "memoryBytes": 8589934592,
+    "xcodeVersion": "26.6",
+    "xcodeBuild": "17F113",
+    "swiftVersion": "6.3.3",
+    "swiftTarget": "arm64-apple-macosx28.0"
+  },
+  "packageDigest": "sha256:3c2879b715b6a6e16e3357dce0a29f7ecb59bb20c0685c9f3c99def822699079",
+  "packageComponentDigests": {
+    "final_head_s1_2p6b": "sha256:d716ee0fd6bbb38d2233edb0570eff035134d3bdb5ab98d7ae3034360a3ea233",
+    "segment_0_s1_ctx512_kvio": "sha256:c8a31ea925687fcd1f1de28c57c455c3ff548160b813b82d5224e6eb1b604eaf",
+    "segment_0_s16_ctx512_kvio_prefill": "sha256:72032a8ead1ab72393bd55e1bc29f69d14590b6d6b72efff7bec8fb62e2176f3",
+    "segment_1_s1_ctx512_kvio": "sha256:83431fd3cf9177603f4f04992422e1417a11653ea1199d7f72f3aee7586a8c32",
+    "segment_1_s16_ctx512_kvio_prefill": "sha256:7b24d39964f504c8d36244015f14b056532b6c81ea6371fcc538db05fd525671",
+    "segment_2_s1_ctx512_kvio": "sha256:ba32bab3bdfc9c68940ef6777debee726ecfe4287c0f2382a893461faa4be3de",
+    "segment_2_s16_ctx512_kvio_prefill": "sha256:a795160ad5daa45e6c851e11ded667ff8ff31b424d27c370661e23a1a7d8dcb8"
+  },
+  "tokenizerDigest": "sha256:695be7802a0e4b8a81048f0ff5ebb7fc811a0ba5a6be63dbb24deb5a81096f41",
+  "weightsDigest": "sha256:b5365ec220f6518fada497f7fb45631e6d7844114718a7ede1f5c897bf4db93c",
+  "quantization": "fp16",
+  "releaseId": "lfm25-2p6b-d1p1",
+  "backend": "coreml-auto",
+  "runtimeVersion": "CoreML/macOS-27.2-26B5086k",
+  "compilerDigest": "sha256:7b3f47be3da86847d02c1e312c202268717e950d8c92f0eb6c1c5706aa793050",
+  "contextWindow": 512,
+  "samplingDigest": "sha256:614aa2d35df975f5f30158203357915edf45836c7975964ab00ed1943df7843f",
+  "hardwareSemanticsClass": "a18pro-arm64"
+}

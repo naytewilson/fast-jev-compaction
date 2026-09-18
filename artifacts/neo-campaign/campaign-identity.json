@@ -1,0 +1,31 @@
+{
+  "decisionContract": {
+    "id": "anvil.context-retention.v1",
+    "version": "1.0.0",
+    "digest": "sha256:77c4bd370c065f806c3c44f63f6aee4c711bf35800dbb0c344b2894268d450b4"
+  },
+  "corpusDigest": "sha256:286475b9eb37315be9f6519c6a99952099c4af8f019f72d6cc42df36ba75ce2d",
+  "labelBindingDigest": "sha256:7f60ed5930d5f0dd2312a705aabf4a052d2b769fb30d73f1c5615f3af5b51a41",
+  "profiles": {
+    "decision_contract": {
+      "id": "anvil.context-retention.v1",
+      "version": "1.0.0",
+      "digest": "sha256:77c4bd370c065f806c3c44f63f6aee4c711bf35800dbb0c344b2894268d450b4"
+    },
+    "execution_profile": {
+      "id": "neo-lfm2.5-local",
+      "version": "1.0.0",
+      "digest": "sha256:2706c619fe73f0cf112473c6ee02e66c04e1c01c110b0c37b88d8eb509630c9f"
+    },
+    "calibration_profile": {
+      "id": "shadow",
+      "version": "1.0.0",
+      "digest": "sha256:f28c5d59eb1307e88ffc2943867931a33eaa9dbd2e246e40e60c1c12139bd960"
+    },
+    "policy_profile": {
+      "id": "shadow-policy",
+      "version": "1.0.0",
+      "digest": "sha256:ae1cd33015b06703de2302e02280e51085c5a1748a8404f5a51ff3f239891d36"
+    }
+  }
+}

@@ -2,6 +2,14 @@ import {
   verifyPromotedAuthorityCredential,
   type PromotedAuthorityCredential,
 } from './promotion-credential.js';
+import {
+  verifyPromotedAuthorityCredentialV3,
+  type PromotedAuthorityCredentialV3,
+} from './promotion-credential-v3.js';
+
+type AnyPromotedAuthorityCredential =
+  | PromotedAuthorityCredential
+  | PromotedAuthorityCredentialV3;
 
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
 const GRANT_TOKEN = Symbol('ANVIL.AuthorityRouteGrant.v2');
@@ -40,7 +48,7 @@ export class AuthorityRouteGrant {
   static fromCredential(
     token: symbol,
     routeId: string,
-    credential: PromotedAuthorityCredential,
+    credential: AnyPromotedAuthorityCredential,
   ): AuthorityRouteGrant {
     return new AuthorityRouteGrant(
       token,
@@ -62,9 +70,12 @@ export class AuthorityRegistry {
   private readonly grants = new Map<string, AuthorityRouteGrant>();
 
   registerCredential(
-    credential: PromotedAuthorityCredential,
+    credential: AnyPromotedAuthorityCredential,
   ): AuthorityRouteGrant {
-    if (!verifyPromotedAuthorityCredential(credential)) {
+    if (
+      !verifyPromotedAuthorityCredential(credential) &&
+      !verifyPromotedAuthorityCredentialV3(credential)
+    ) {
       throw new Error('authority registry requires an issued promotion credential');
     }
     const routeId = `authority:${credential.providerId}:${credential.authorityGeneration}`;

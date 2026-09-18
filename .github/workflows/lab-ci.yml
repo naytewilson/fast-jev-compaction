@@ -6,6 +6,7 @@ on:
       - north/anvil-sieve-semantic-retention-v0
       - north/authority-preserving-semantic-fabric-v1
       - north/semantic-fabric-v1-integrated-hardened-calibration-20260918
+      - north/jev-empirical-abi-v2-20260918
     paths:
       - "src/**"
       - "tests/**"

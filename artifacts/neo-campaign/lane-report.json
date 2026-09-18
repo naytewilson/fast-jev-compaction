@@ -1,0 +1,93 @@
+{
+  "schema": "anvil.neo-lane-report.v1",
+  "laneCount": 5000,
+  "corpusCandidates": 26,
+  "tokenEstimateSource": "manifest promptTokens (fallback: evidence byte length)",
+  "runs": [
+    {
+      "config": "coarse-2",
+      "planMs": 9.647,
+      "scatterMs": 2.729,
+      "packedLanes": 4948,
+      "batches": 619,
+      "realTokens": 2120588,
+      "packedTokens": 5066752,
+      "wasteTokens": 2946164,
+      "density": 0.4185,
+      "ordinalsRestored": true
+    },
+    {
+      "config": "medium-4",
+      "planMs": 5.149,
+      "scatterMs": 1.275,
+      "packedLanes": 4948,
+      "batches": 619,
+      "realTokens": 2120588,
+      "packedTokens": 2533376,
+      "wasteTokens": 412788,
+      "density": 0.8371,
+      "ordinalsRestored": true
+    },
+    {
+      "config": "fine-8",
+      "planMs": 3.06,
+      "scatterMs": 0.776,
+      "packedLanes": 4948,
+      "batches": 619,
+      "realTokens": 2120588,
+      "packedTokens": 2514176,
+      "wasteTokens": 393588,
+      "density": 0.8435,
+      "ordinalsRestored": false
+    },
+    {
+      "config": "fine-8-b16",
+      "planMs": 3.34,
+      "scatterMs": 0.555,
+      "packedLanes": 4948,
+      "batches": 310,
+      "realTokens": 2120588,
+      "packedTokens": 2514176,
+      "wasteTokens": 393588,
+      "density": 0.8435,
+      "ordinalsRestored": false
+    }
+  ],
+  "checks": [
+    {
+      "name": "source-masked-lanes-excluded",
+      "passed": true,
+      "detail": "52 lanes excluded"
+    },
+    {
+      "name": "mask-preserved-no-widening",
+      "passed": true,
+      "detail": "every packed mask bit-identical; authority=false preserved"
+    },
+    {
+      "name": "scatter-restores-ordinals",
+      "passed": true,
+      "detail": "strict original-ordinal restoration over eligible lanes"
+    },
+    {
+      "name": "missing-packed-index-fails",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "duplicate-packed-index-fails",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "candidate-identity-mismatch-fails",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "duplicate-candidate-id-fails",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schema": "anvil.neo-fault-report.v1",
+  "evidenceClass": "synthetic-fixture",
+  "providerProfileDigest": "sha256:54791b7fb4da1a842d8c52b645ce0c2aad0cf3c2ed6ce5a5f439205f0141f458",
+  "calibrationBuildDigest": "sha256:a6281985cc746f2c654916c35ac71714c3037e1158174265da6acc6ef02c29c0",
+  "calibrationIdentity": "sha256:505e8f783ad21f81ca789a4f588e7f276fbc4ee4cba7507665f813fe6029e211",
+  "safetyPhaseA": {
+    "digest": "sha256:a5848a443523c99a265ebf0197eff6323958153be48497d28ea55ce1ac90159b",
+    "verdict": "PASS_MEASURED",
+    "evidenceAuthority": "MEASURED_SHADOW",
+    "falseAuthority": {
+      "opportunities": 562,
+      "leaks": 0,
+      "fasr": 1,
+      "observedFar": 0,
+      "approximateFarUpper95": 0.005338078291814947
+    }
+  },
+  "safetyCampaign": {
+    "digest": "sha256:e1710d99242fd3e8b6d394b88328b9b6878025b8ff51bfd0f2eb06db5f33f7a9",
+    "verdict": "PASS_MEASURED",
+    "evidenceAuthority": "MEASURED_SHADOW",
+    "cycleCount": 10000,
+    "scenarioCounts": {
+      "FULL": 625,
+      "PARTIAL": 625,
+      "HEAD_TAIL": 625,
+      "CONTRADICTORY": 625,
+      "IRRELEVANT": 625,
+      "ABSENT": 625,
+      "MODEL_BUMP": 625,
+      "QUANTIZATION_SHIFT": 625,
+      "NORMALIZER_SHIFT": 625,
+      "CALIBRATION_POISON_ATTEMPT": 625,
+      "DUPLICATE_RECALIBRATION_STORM": 625,
+      "CANARY_REGRESSION": 625,
+      "ROLLBACK": 625,
+      "STALE_EVIDENCE_VIEW": 625,
+      "RECEIPT_ENRICHMENT_PRESSURE": 625,
+      "PROVIDER_IDENTITY_DOWNGRADE": 625
+    },
+    "falseAuthority": {
+      "opportunities": 9375,
+      "leaks": 0,
+      "fasr": 1,
+      "observedFar": 0,
+      "approximateFarUpper95": 0.00032
+    },
+    "fallbackCoverageRetention": 1,
+    "fallbackActivationRate": 1,
+    "routeLatencyMs": {
+      "p50": 0.051161999999976615,
+      "p95": 1.2378109999999651,
+      "p99": 1.4225969999999961
+    },
+    "firstUsefulResultMs": {
+      "p50": 0.051143000000024585,
+      "p95": 1.2378109999999651,
+      "p99": 1.4225969999999961
+    },
+    "wallMs": 1617,
+    "verified": true
+  },
+  "promotion": {
+    "evidenceDigest": "sha256:b557a54d801abb1217fb0a73cd93be7c8e20905e54510bd0c04229051e046992",
+    "promotedArtifactDigest": "sha256:b7aac057bbb1dfc69d0cb12315a6a8e4390e8c814fb99a5f38b7648c67b12210",
+    "credentialDigest": "sha256:d432dabec4ba16a4b88eebee561c790bda9e645a24fb2e31494273ca9fb6319d",
+    "authorityIdentity": "sha256:967eaa89ea4afb0af94010fc99246b420a954683c8e13f6ae09749c133727322",
+    "routeId": "authority:neo-lfm2.5-local:1",
+    "regressions": [
+      {
+        "name": "lineage-match-resolves",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "lineage-mismatch-fails",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "unknown-route-fails",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "evidence-deficit-beats-authority",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "credential-copy-reregister-fails",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "plain-object-not-credential",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "cross-provider-no-transfer",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "name": "hardware-receipt-authority-claim-rejected",
+        "passed": true,
+        "detail": ""
+      }
+    ]
+  }
+}

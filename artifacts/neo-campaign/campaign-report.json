@@ -1,0 +1,28 @@
+{
+  "schema": "anvil.neo-campaign-report.v1",
+  "evidenceClass": "synthetic-fixture",
+  "providerProfileDigest": "sha256:54791b7fb4da1a842d8c52b645ce0c2aad0cf3c2ed6ce5a5f439205f0141f458",
+  "modelIdentityDigest": "sha256:b0f1885154bae8c2e6e3e1bd907618e281fd9fc80ddb658a4a7230b77b8e5087",
+  "executionSemanticsDigest": "sha256:c2b535a3543f4be8796188f19889ad52325b0c620aab043732615df3772ef29f",
+  "normalizerDigest": "sha256:1835223d5b18db529d0846985c995d3801d15e2eac0e7e6fe306c5b5e5c7c3cc",
+  "observationABIDigest": "sha256:41e1e3f1fc4be86125b650c164b4f5b9e5d10b746fb7707cd1b8d264ac837119",
+  "corpusDigest": "sha256:286475b9eb37315be9f6519c6a99952099c4af8f019f72d6cc42df36ba75ce2d",
+  "decisionContractDigest": "sha256:77c4bd370c065f806c3c44f63f6aee4c711bf35800dbb0c344b2894268d450b4",
+  "labelBindingDigest": "sha256:7f60ed5930d5f0dd2312a705aabf4a052d2b769fb30d73f1c5615f3af5b51a41",
+  "splits": {
+    "trainingTraces": 18,
+    "holdoutTraces": 8
+  },
+  "trainReplayDigest": "sha256:0e92b0620a81cdaa7fbbe7edaa7803f5fc8812a8b995636dad513085e44106fa",
+  "holdoutReplayDigest": "sha256:b26d425505ab57f095eecb28f281b2e5c28d9962741ab5ad1eeaac5e762ae64d",
+  "calibrationBuildDigest": "sha256:a6281985cc746f2c654916c35ac71714c3037e1158174265da6acc6ef02c29c0",
+  "calibrationArtifactDigest": "sha256:7a303d00ab94a8130222e1d66f232348c46230afaeee76b9465979a36faa4351",
+  "holdoutMetrics": {
+    "ece": 0,
+    "brier": 0,
+    "nll": 9.99200722162641e-16,
+    "selectiveRisk": 0,
+    "coverage": 1,
+    "sampleCount": 40
+  }
+}
