@@ -41,6 +41,7 @@ export interface CampaignChain {
   corpusCandidates: number;
   measuredCandidates: number;
   measuredCoverage: number;
+  splitRule: string;
   identity: {
     decisionContract: { id: string; version: string; digest: Digest256 };
     corpusDigest: Digest256;
@@ -199,7 +200,18 @@ export async function buildCampaignChain(input: {
   };
   const thresholds = { evidenceSufficientFloor: 0.8, keepFull: 0.8, retain: 0.5 };
 
-  const { training, holdout } = splitCampaignCorpus(effectiveCorpus);
+  let { training, holdout } = splitCampaignCorpus(effectiveCorpus);
+  // Small measured subsets can land entirely on one parity side. Fall back
+  // to a deterministic alternating split over trace_id-sorted order so both
+  // splits populate; the applied rule is declared in splitRule.
+  let splitRule = 'digest-parity';
+  if (training.length === 0 || holdout.length === 0) {
+    const sorted = [...effectiveCorpus].sort((a, b) =>
+      a.trace_id < b.trace_id ? -1 : a.trace_id > b.trace_id ? 1 : 0);
+    training = sorted.filter((_, i) => i % 2 === 0);
+    holdout = sorted.filter((_, i) => i % 2 === 1);
+    splitRule = 'ordinal-alternating (degenerate parity subset)';
+  }
   const src = (traces: ReplayTrace[]) =>
     new Set(traces.flatMap((t) => t.candidates.map((c) => c.recovery.source_digest)));
   const trainSources = src(training);
@@ -251,6 +263,7 @@ export async function buildCampaignChain(input: {
     corpus: effectiveCorpus, labels: effectiveLabels,
     corpusCandidates, measuredCandidates,
     measuredCoverage: corpusCandidates === 0 ? 0 : measuredCandidates / corpusCandidates,
+    splitRule,
     identity, neo, profiles, thresholds, provider,
     training, holdout, trainingLabels, holdoutLabels,
     trainArtifact, holdoutArtifact, build,
