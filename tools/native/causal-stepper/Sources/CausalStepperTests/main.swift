@@ -16,6 +16,15 @@ func check(_ cond: Bool, _ msg: String) {
     print("  \(cond ? "PASS" : "FAIL") \(msg)")
 }
 
+print("== DIAGNOSTICS: deterministic top-k ranking ==")
+do {
+    let ranked = topKLogits([0.1, 0.9, 0.9, -1.0], k: 3)
+    check(ranked.map(\.id) == [1, 2, 0], "top-k orders by descending logit with token-id tie break")
+    check(ranked.map(\.logit) == [0.9, 0.9, 0.1], "top-k preserves selected logits")
+    check(topKLogits([0.2, 0.1], k: 0).isEmpty, "top-k disabled at k=0")
+    check(topKLogits([0.2, 0.1], k: 8).map(\.id) == [0, 1], "top-k clamps to vocabulary size")
+}
+
 // ---------- canonical model geometry (frozen architecture truth) ----------
 let geometry = ModelGeometry.lfm25_2p6b
 let schedule = LayerSchedule.lfm25_2p6b
