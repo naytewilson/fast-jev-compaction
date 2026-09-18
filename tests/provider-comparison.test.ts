@@ -62,7 +62,7 @@ function putTrace(cas: InMemoryCAS, t: ReturnType<typeof trace>) {
 function envelope(inputTokens: number | null = 10, outputTokens: number | null = 2) {
   return async (request: any) => ({
     mapped_response: {
-      schema: 'anvil.mapped-decision-response.v0',
+      schema: 'anvil.mapped-decision-response.v1',
       request_id: request.request_id,
       observations: request.candidate_views.map((candidate: any) => ({
         candidate_id: candidate.candidate_id,
@@ -70,7 +70,6 @@ function envelope(inputTokens: number | null = 10, outputTokens: number | null =
         still_needed: { noul: 0.9 },
         full_content_needed: { noul: 0.1 },
         unresolved_evidence: { noul: 0.1 },
-        recoverable: { noul: 0.99 },
       })),
     },
     provider_metadata: {
