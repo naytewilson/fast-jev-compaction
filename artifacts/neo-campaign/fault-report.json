@@ -5,7 +5,7 @@
   "calibrationBuildDigest": "sha256:a6281985cc746f2c654916c35ac71714c3037e1158174265da6acc6ef02c29c0",
   "calibrationIdentity": "sha256:505e8f783ad21f81ca789a4f588e7f276fbc4ee4cba7507665f813fe6029e211",
   "safetyPhaseA": {
-    "digest": "sha256:1075e184b0fdc357af006a8ca849d598cd31956b392b81c42487d0cbd82246a6",
+    "digest": "sha256:402e2c8524abb57955d8b0099aacd130c0dae3f020c512ee44e7a2a8892f4d92",
     "verdict": "PASS_MEASURED",
     "evidenceAuthority": "MEASURED_SHADOW",
     "falseAuthority": {
@@ -17,7 +17,7 @@
     }
   },
   "safetyCampaign": {
-    "digest": "sha256:4a580ee2711e9480a8b2240f805544d69cc04c6dfef9d09dd244a45ac5d88032",
+    "digest": "sha256:9b726a377549782ab2c1e0fcb8b294f9bb6cd287756076506f3d200d48660bcf",
     "verdict": "PASS_MEASURED",
     "evidenceAuthority": "MEASURED_SHADOW",
     "cycleCount": 10000,
@@ -49,22 +49,22 @@
     "fallbackCoverageRetention": 1,
     "fallbackActivationRate": 1,
     "routeLatencyMs": {
-      "p50": 0.0516010000001188,
-      "p95": 1.2339489999999387,
-      "p99": 1.5365639999999985
+      "p50": 0.0740629999999669,
+      "p95": 1.49364700000001,
+      "p99": 2.86271499999998
     },
     "firstUsefulResultMs": {
-      "p50": 0.051599000000010165,
-      "p95": 1.2332320000000436,
-      "p99": 1.5365639999999985
+      "p50": 0.07349599999997736,
+      "p95": 1.49364700000001,
+      "p99": 2.86271499999998
     },
-    "wallMs": 1661,
+    "wallMs": 2671,
     "verified": true
   },
   "promotion": {
-    "evidenceDigest": "sha256:4436e145e789409486090f57013b4e3fe24ae67cb36342c6f0cc9ea2e7106e84",
-    "promotedArtifactDigest": "sha256:c9a80c23329d10555cc615bbbb80334b3b23944d8a67f793963f9516d6a305d7",
-    "credentialDigest": "sha256:7c8c620160c8d3279c454f0cf1440d23aecbaa69c198f29e00937647df7a38f0",
+    "evidenceDigest": "sha256:45e9f0c1e7fc7b7101c411d0068c1ac68c76eb1a5d792bed6fd32c2151b0d5e4",
+    "promotedArtifactDigest": "sha256:dc80bd4105cfe40f24a0b4ba3c8b557f2f59238fa6a52cf435df4de9d0ffb1ec",
+    "credentialDigest": "sha256:6c649ff7ea5888b5e919eff025f53308a92361ec315704c74438dfbd63199943",
     "authorityIdentity": "sha256:967eaa89ea4afb0af94010fc99246b420a954683c8e13f6ae09749c133727322",
     "routeId": "authority:neo-lfm2.5-local:1",
     "regressions": [

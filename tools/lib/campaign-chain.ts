@@ -34,6 +34,13 @@ import { candidateViewDigest } from '../../src/lab/noul-file-provider.js';
 export interface CampaignChain {
   corpus: ReplayTrace[];
   labels: SemanticCalibrationLabel[];
+  // Measured-run coverage: when the noul log scores a strict subset of
+  // candidates, the chain filters to scored candidates only (fail-closed
+  // provider still rejects any missing view). measuredCandidates <
+  // corpusCandidates marks a partial run — the report must say so.
+  corpusCandidates: number;
+  measuredCandidates: number;
+  measuredCoverage: number;
   identity: {
     decisionContract: { id: string; version: string; digest: Digest256 };
     corpusDigest: Digest256;
@@ -138,6 +145,32 @@ export async function buildCampaignChain(input: {
     ? await fixtureRecords(corpus, identity.decisionContract)
     : [...loadNoulLog(input.noulPath!)];
 
+  // Partial measured run: keep only candidates the noul log actually
+  // scored (records carry per-axis probabilities for all 5 axes). The
+  // provider remains fail-closed; this filter just decides which
+  // candidates enter the chain at all.
+  const corpusCandidates = corpus.flatMap((t) => t.candidates).length;
+  let filteredCorpus = corpus;
+  if (!fixture) {
+    const scored = new Set(records.map((r) => r.candidateId));
+    filteredCorpus = corpus
+      .map((t) => ({
+        ...t,
+        candidates: t.candidates.filter((c) => scored.has(c.candidate_id)),
+      }))
+      .filter((t) => t.candidates.length > 0);
+    const measured = filteredCorpus.flatMap((t) => t.candidates).length;
+    if (measured === 0) throw new Error('noul log covers zero corpus candidates');
+    if (measured < corpusCandidates) {
+      console.error(`partial noul log: ${measured}/${corpusCandidates} candidates scored — chain uses the scored subset`);
+    }
+  }
+  const measuredCandidates = filteredCorpus.flatMap((t) => t.candidates).length;
+  const effectiveCorpus = filteredCorpus;
+  const effectiveLabels = labels.filter((l) =>
+    new Set(filteredCorpus.flatMap((t) =>
+      t.candidates.map((c) => c.recovery.source_digest))).has(l.sourceDigest));
+
   const neo = neoLfmIdentity({
     packageDigest: inventory.packageDigest,
     tokenizerDigest: inventory.tokenizerDigest,
@@ -166,13 +199,13 @@ export async function buildCampaignChain(input: {
   };
   const thresholds = { evidenceSufficientFloor: 0.8, keepFull: 0.8, retain: 0.5 };
 
-  const { training, holdout } = splitCampaignCorpus(corpus);
+  const { training, holdout } = splitCampaignCorpus(effectiveCorpus);
   const src = (traces: ReplayTrace[]) =>
     new Set(traces.flatMap((t) => t.candidates.map((c) => c.recovery.source_digest)));
   const trainSources = src(training);
   const holdoutSources = src(holdout);
-  const trainingLabels = labels.filter((l) => trainSources.has(l.sourceDigest));
-  const holdoutLabels = labels.filter((l) => holdoutSources.has(l.sourceDigest));
+  const trainingLabels = effectiveLabels.filter((l) => trainSources.has(l.sourceDigest));
+  const holdoutLabels = effectiveLabels.filter((l) => holdoutSources.has(l.sourceDigest));
 
   const provider = createNoulFileProvider(records);
   const compiler = new ProviderShadowReplayCompiler();
@@ -215,7 +248,10 @@ export async function buildCampaignChain(input: {
   });
 
   return {
-    corpus, labels, identity, neo, profiles, thresholds, provider,
+    corpus: effectiveCorpus, labels: effectiveLabels,
+    corpusCandidates, measuredCandidates,
+    measuredCoverage: corpusCandidates === 0 ? 0 : measuredCandidates / corpusCandidates,
+    identity, neo, profiles, thresholds, provider,
     training, holdout, trainingLabels, holdoutLabels,
     trainArtifact, holdoutArtifact, build,
     samplingPolicyDigest, labelAuthorityPolicyDigest,
