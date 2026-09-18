@@ -1,0 +1,4 @@
+PLAN_JSON {"computeUnits":"all","package":"segment_0_s16_ctx512_kvio_prefill","ops":4485,"preferredDevice":{"unknown":2319,"neuralEngine":2166}}
+PLAN_JSON {"computeUnits":"all","package":"segment_1_s16_ctx512_kvio_prefill","ops":4507,"preferredDevice":{"neuralEngine":2201,"unknown":2306}}
+PLAN_JSON {"computeUnits":"all","package":"segment_2_s16_ctx512_kvio_prefill","ops":4485,"preferredDevice":{"unknown":2319,"neuralEngine":2166}}
+PLAN_JSON {"preferredDevice":{"cpu":1,"neuralEngine":1351,"unknown":1357},"ops":2709,"package":"final_head_s1_2p6b","computeUnits":"all"}

@@ -1,0 +1,63 @@
+// tokenize-manifest2.mjs — unified 5-probe prompt per candidate.
+// One prompt carries all five axis questions; the assistant reply form
+// "1= 2= 3= 4= 5=" ends the prompt so each "=" marker is an answer slot.
+// probes[] records the global token index of each marker — all inside the
+// final 16-token window by construction (marker block <= 16 tokens).
+import { readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { Tokenizer } from "tokenizers";
+
+const [inPath, tokPath, outPath] = process.argv.slice(2);
+const tok = await Tokenizer.fromFile(tokPath);
+const DOT = 22;
+const AXES = ["evidence_sufficient","still_needed","full_content_needed","unresolved_evidence","recoverable"];
+const MARKERS = ["1=", " 2=", " 3=", " 4=", " 5="];
+
+const rows = readFileSync(inPath, "utf8").split("\n").filter(l => l.trim());
+const out = [];
+let totalTokens = 0;
+for (const line of rows) {
+  const row = JSON.parse(line);
+  const base = row.prompts.evidence_sufficient;
+  const qi = base.indexOf("Question:");
+  if (qi < 0) throw new Error("prompt missing Question line");
+  const prefix = base.slice(0, qi);
+  const questions = AXES.map((a, i) => {
+    const p = row.prompts[a] ?? "";
+    const m = p.match(/Question: (.+)/);
+    return `${i + 1}. ${m ? m[1] : a}`;
+  }).join("\n");
+  const head = prefix +
+    "Questions — answer Yes or No for each of the five:\n" + questions + "\n" +
+    "Reply only in the form: 1=Yes/No 2=Yes/No 3=Yes/No 4=Yes/No 5=Yes/No\n" +
+    "<|im_end|>\n<|im_start|>assistant\n";
+  const idsHead = (await tok.encode(head)).getIds();
+  const markerIds = [];
+  for (const m of MARKERS) markerIds.push((await tok.encode(m)).getIds());
+  let len = idsHead.length + markerIds.reduce((a, b) => a + b.length, 0);
+  const pad = (16 - (len % 16)) % 16;
+  const ids = [...idsHead.slice(0, 3), ...Array(pad).fill(DOT), ...idsHead.slice(3)];
+  const probes = [];
+  markerIds.forEach((seg, i) => {
+    ids.push(...seg);
+    probes.push({ axis: AXES[i], offset: ids.length - 1 });
+  });
+  if (ids.length % 16 !== 0) throw new Error("alignment failed");
+  const lastWin = ids.length - 16;
+  for (const p of probes) if (p.offset < lastWin) throw new Error(`probe ${p.axis} outside last window`);
+  totalTokens += ids.length;
+  out.push(JSON.stringify({
+    schema: "anvil.noul-ids.v2",
+    requestId: row.requestId,
+    traceId: row.traceId,
+    candidateId: row.candidateId,
+    candidateViewDigest: row.candidateViewDigest,
+    sourceDigest: row.sourceDigest,
+    promptTokens: ids.length,
+    promptDigest: "sha256:" + createHash("sha256").update(JSON.stringify(ids)).digest("hex"),
+    probes,
+    prompt_ids: ids,
+  }));
+}
+writeFileSync(outPath, out.join("\n") + "\n");
+console.log(`rows=${out.length} totalTokens=${totalTokens} -> ${outPath}`);

@@ -1,0 +1,86 @@
+CONFIG compute_units=all oracle=none
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 15s rss=83MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 30s rss=45MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 45s rss=45MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 60s rss=45MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 75s rss=45MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 90s rss=45MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 105s rss=45MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 120s rss=45MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 135s rss=45MB
+HID seg0s16 pos=15 sha=25244ab624c23558 first8=[0.0040,-0.0081,0.0452,-0.0041,-0.0080,0.0121,0.0030,0.0006]
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 15s rss=114MB
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 30s rss=64MB
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 45s rss=64MB
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 60s rss=64MB
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 75s rss=52MB
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 90s rss=52MB
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 105s rss=52MB
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 120s rss=52MB
+HID seg1s16 pos=15 sha=61564faa09831d05 first8=[0.0014,-0.0001,0.1376,0.0097,0.0010,0.0282,-0.0025,0.0050]
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 15s rss=111MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 30s rss=70MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 45s rss=70MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 60s rss=70MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 75s rss=70MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 90s rss=70MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 105s rss=70MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 120s rss=70MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 135s rss=70MB
+HID seg2s16 pos=15 sha=a655de1e5f04629f first8=[-0.1090,0.0768,0.0153,-0.0225,0.1281,0.1117,-0.2261,-0.1624]
+HID seg0s16 pos=31 sha=cd9acd254d204eef first8=[0.0050,-0.0107,0.0407,0.0036,-0.0087,-0.0005,-0.0014,-0.0047]
+HID seg1s16 pos=31 sha=11bad41312dee31a first8=[0.0203,-0.0073,0.1250,-0.0018,-0.0094,0.0360,-0.0043,0.0091]
+HID seg2s16 pos=31 sha=b7b598f7a8d43e4e first8=[0.1321,0.0067,0.0180,0.0603,0.0637,0.2744,-0.0053,-0.4944]
+HID seg0s16 pos=47 sha=4d15182fb27fca2b first8=[0.0049,-0.0035,0.0386,-0.0022,-0.0004,0.0004,0.0030,-0.0040]
+HID seg1s16 pos=47 sha=63fb4a4cf3c006aa first8=[-0.0144,-0.0028,0.1222,-0.0037,0.0131,0.0164,0.0045,0.0056]
+HID seg2s16 pos=47 sha=f56fc2c5a69101eb first8=[-0.1440,0.0781,0.0790,0.1749,-0.0725,0.0921,-0.0195,-0.2825]
+HID seg0s16 pos=63 sha=497ec078261ef909 first8=[0.0070,-0.0052,0.0314,-0.0021,-0.0024,0.0086,-0.0032,0.0053]
+HID seg1s16 pos=63 sha=e1f9ad43f3b9c25a first8=[-0.0057,0.0005,0.1007,0.0006,0.0154,0.0163,-0.0279,0.0139]
+HID seg2s16 pos=63 sha=0c808596c42c7759 first8=[0.0784,0.0995,0.1296,0.0121,-0.2466,0.0109,0.0335,-0.0433]
+HID seg0s16 pos=79 sha=cda15fa29ffe3353 first8=[0.0060,-0.0047,0.0321,-0.0018,-0.0033,0.0054,-0.0032,-0.0086]
+HID seg1s16 pos=79 sha=1fcf5d29654782ab first8=[-0.0017,0.0048,0.0844,0.0016,0.0068,0.0207,-0.0134,-0.0347]
+HID seg2s16 pos=79 sha=df29bbbcc4167671 first8=[-0.2170,-0.0314,0.1112,0.1420,-0.0615,0.0144,0.2441,-0.1134]
+HID seg0s16 pos=95 sha=35a4450d206e580c first8=[0.0007,-0.0039,0.0373,-0.0059,-0.0019,0.0029,-0.0049,-0.0075]
+HID seg1s16 pos=95 sha=0698bb1ff2365b52 first8=[-0.0070,-0.0074,0.1129,0.0087,0.0114,0.0052,0.0110,-0.0150]
+HID seg2s16 pos=95 sha=19b21dd6eb0ae56e first8=[-0.0131,0.0887,-0.0812,0.0487,-0.0847,-0.1459,-0.0055,-0.1693]
+HID seg0s16 pos=111 sha=541359982da6c450 first8=[-0.0045,-0.0061,0.0435,-0.0000,-0.0114,0.0160,0.0054,-0.0063]
+HID seg1s16 pos=111 sha=a3e428e6e8ee8593 first8=[-0.0134,-0.0059,0.0784,-0.0091,-0.0016,0.0257,0.0116,0.0055]
+HID seg2s16 pos=111 sha=3ee7929b677ad7b1 first8=[0.0745,-0.1078,0.1589,0.2434,-0.0646,0.2031,0.0546,-0.2137]
+HID seg0s16 pos=127 sha=04732dda69f3b647 first8=[0.0046,-0.0070,0.0287,-0.0054,-0.0002,0.0020,0.0011,-0.0128]
+HID seg1s16 pos=127 sha=97abee7b05bdecde first8=[-0.0081,0.0098,0.0723,-0.0062,0.0086,0.0044,0.0181,-0.0139]
+HID seg2s16 pos=127 sha=cd13ad73dd89a19e first8=[-0.0492,0.0038,0.1725,0.0791,-0.0683,-0.1242,0.2167,-0.2554]
+HID seg0s16 pos=143 sha=da192b7b383e88f7 first8=[0.0054,-0.0028,0.0334,-0.0031,-0.0008,0.0016,-0.0027,-0.0116]
+HID seg1s16 pos=143 sha=00dc560e17405171 first8=[-0.0077,-0.0069,0.0917,0.0072,0.0070,0.0048,-0.0014,-0.0433]
+HID seg2s16 pos=143 sha=46303cb91bfe3c9b first8=[-0.0012,0.0387,0.0015,0.1163,0.2162,0.0337,-0.0160,-0.0455]
+HID seg0s16 pos=159 sha=aebdda195cf57d53 first8=[-0.0024,-0.0041,0.0362,0.0001,-0.0079,0.0112,0.0058,-0.0031]
+HID seg1s16 pos=159 sha=637ae980ed7fa3bd first8=[-0.0083,-0.0011,0.0651,-0.0048,0.0009,0.0070,-0.0120,0.0078]
+HID seg2s16 pos=159 sha=27576a947e372e80 first8=[-0.0870,0.0197,0.2399,0.2285,-0.0959,0.0448,0.1166,-0.3779]
+HID seg0s16 pos=175 sha=c43dd73cf846075b first8=[0.0055,-0.0042,0.0251,-0.0031,0.0009,0.0029,0.0018,-0.0104]
+HID seg1s16 pos=175 sha=0b89b2421a20a985 first8=[-0.0187,0.0067,0.0716,-0.0027,-0.0023,-0.0103,0.0083,-0.0140]
+HID seg2s16 pos=175 sha=0e8d8ebce6632a21 first8=[-0.0149,-0.0301,0.1698,0.1472,-0.1180,-0.2024,0.1710,-0.3591]
+HID seg0s16 pos=191 sha=da4b8dda26b46639 first8=[0.0025,-0.0030,0.0297,-0.0019,-0.0010,0.0012,-0.0014,-0.0140]
+HID seg1s16 pos=191 sha=178adb467dcd9cf7 first8=[-0.0061,0.0048,0.0894,0.0219,0.0092,-0.0057,-0.0144,-0.0465]
+HID seg2s16 pos=191 sha=5c08ab9ea02338f1 first8=[-0.0122,0.0692,0.0174,0.0917,0.2406,0.0909,0.1410,0.0183]
+HID seg0s16 pos=207 sha=699f0ef28177d3ca first8=[-0.0023,0.0018,0.0352,0.0018,-0.0073,0.0037,0.0012,-0.0044]
+HID seg1s16 pos=207 sha=5a4061281648f60d first8=[-0.0066,0.0113,0.0487,-0.0056,0.0070,-0.0097,-0.0071,-0.0006]
+HID seg2s16 pos=207 sha=1342b4d931d4ae18 first8=[-0.0234,0.0277,0.2294,0.2534,-0.1111,0.0212,0.0452,-0.3667]
+HID seg0s16 pos=223 sha=0790da0bf9270ad1 first8=[0.0065,-0.0026,0.0230,-0.0040,0.0014,0.0058,-0.0004,-0.0070]
+HID seg1s16 pos=223 sha=d714711048922171 first8=[-0.0148,0.0022,0.0636,-0.0037,0.0002,-0.0070,0.0106,-0.0041]
+HID seg2s16 pos=223 sha=0a789a6cd6bfa973 first8=[0.0701,-0.0605,0.0837,0.1936,-0.0591,-0.2583,0.1941,-0.3669]
+HID seg0s16 pos=239 sha=32af369295a66c01 first8=[0.0047,0.0014,0.0235,-0.0020,0.0014,0.0015,-0.0022,-0.0130]
+HID seg1s16 pos=239 sha=6ab7e11ea4647596 first8=[0.0005,0.0120,0.0864,0.0183,0.0105,-0.0042,-0.0222,-0.0461]
+HID seg2s16 pos=239 sha=072e3e8e2b2c612c first8=[0.0242,0.0324,0.1044,0.0641,-0.0393,0.0010,0.0947,0.0086]
+HID seg0s16 pos=255 sha=0170e029f46d6437 first8=[-0.0034,-0.0041,0.0277,-0.0021,-0.0103,0.0022,-0.0037,-0.0007]
+HID seg1s16 pos=255 sha=cacb37e1024022f7 first8=[-0.0058,0.0078,0.0590,-0.0081,0.0123,0.0030,-0.0141,0.0111]
+HID seg2s16 pos=255 sha=c446069b15259a52 first8=[-0.0267,0.0429,0.1630,0.1641,-0.1036,0.0932,0.1122,-0.3054]
+HID seg0s16 pos=271 sha=1b9f43f8b409989a first8=[-0.0017,0.0001,0.0268,0.0066,-0.0093,0.0076,-0.0028,-0.0014]
+HID seg1s16 pos=271 sha=a015ee099b1b5c45 first8=[-0.0045,-0.0082,0.0417,0.0095,-0.0005,0.0101,-0.0003,-0.0167]
+HID seg2s16 pos=271 sha=d9474fa6ad17bdd6 first8=[-0.1011,-0.1644,0.1167,0.1943,0.0182,-0.2927,-0.0795,-0.3545]
+HID seg0s16 pos=287 sha=0a106682737d556f first8=[0.0092,-0.0016,0.0242,0.0025,-0.0020,-0.0015,0.0048,-0.0067]
+HID seg1s16 pos=287 sha=e928001eb58bbecb first8=[-0.0233,-0.0061,0.1009,0.0108,-0.0035,0.0027,-0.0011,-0.0086]
+HID seg2s16 pos=287 sha=77c4902018e2acb2 first8=[0.0129,0.1591,0.2771,0.2443,-0.2964,-0.1050,-0.2111,-0.1798]
+HID seg0s16 pos=303 sha=60a28a61d2dcb12c first8=[0.0006,-0.0016,0.0217,0.0026,-0.0020,0.0022,0.0014,-0.0077]
+HID seg1s16 pos=303 sha=0edeed74c80e4067 first8=[-0.0183,0.0089,0.0645,0.0012,0.0249,-0.0171,-0.0019,0.0014]
+HID seg2s16 pos=303 sha=83dd7dd054a43ec8 first8=[-0.0524,-0.0211,0.1109,-0.0309,-0.0490,0.1530,0.1372,-0.1418]
+HID seg0s16 pos=319 sha=571931f537f5a5d2 first8=[0.0032,0.0022,0.0113,-0.0053,0.0030,-0.0075,-0.0028,-0.0112]
+HID seg1s16 pos=319 sha=1d44acbd04e54a2d first8=[-0.0162,0.0085,0.0484,0.0126,0.0028,-0.0158,0.0056,-0.0036]

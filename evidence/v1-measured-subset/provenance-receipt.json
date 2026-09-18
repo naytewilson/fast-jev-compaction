@@ -1,0 +1,284 @@
+{
+  "schema": "anvil.evidence-provenance-receipt.v1",
+  "evidenceClass": "measured-local-inference-v1-subset",
+  "observationAbi": "anvil.semantic-observation-abi.v1",
+  "retentionContract": "anvil.context-retention.v1",
+  "candidateCoverage": {
+    "scored": 7,
+    "denominator": 26
+  },
+  "authority": "HISTORICAL_MEASURED_EVIDENCE",
+  "promotionAuthority": "NONE",
+  "repository": {
+    "repo": "naytewilson/fast-jev-compaction",
+    "commitSha": "f86cf1eae2b76b3ba0b031f656d30828f3db2115",
+    "workerBranch": "worker/semantic-fabric-v1-overnight-neo-20260918",
+    "manifestPath": "artifacts/neo-campaign/noul-manifest.jsonl",
+    "manifestRows": 26
+  },
+  "machine": {
+    "host": "Naytes-MacBook-Neo.local",
+    "platform": "macOS",
+    "osVersion": "27.2",
+    "osBuild": "26B5086k",
+    "arch": "arm64",
+    "soc": "Apple A18 Pro",
+    "memoryBytes": 8589934592,
+    "xcodeVersion": "26.6",
+    "xcodeBuild": "17F113",
+    "swiftVersion": "6.3.3",
+    "swiftTarget": "arm64-apple-macosx28.0"
+  },
+  "modelIdentity": {
+    "packageDigest": "sha256:3c2879b715b6a6e16e3357dce0a29f7ecb59bb20c0685c9f3c99def822699079",
+    "packageComponentDigests": {
+      "final_head_s1_2p6b": "sha256:d716ee0fd6bbb38d2233edb0570eff035134d3bdb5ab98d7ae3034360a3ea233",
+      "segment_0_s1_ctx512_kvio": "sha256:c8a31ea925687fcd1f1de28c57c455c3ff548160b813b82d5224e6eb1b604eaf",
+      "segment_0_s16_ctx512_kvio_prefill": "sha256:72032a8ead1ab72393bd55e1bc29f69d14590b6d6b72efff7bec8fb62e2176f3",
+      "segment_1_s1_ctx512_kvio": "sha256:83431fd3cf9177603f4f04992422e1417a11653ea1199d7f72f3aee7586a8c32",
+      "segment_1_s16_ctx512_kvio_prefill": "sha256:7b24d39964f504c8d36244015f14b056532b6c81ea6371fcc538db05fd525671",
+      "segment_2_s1_ctx512_kvio": "sha256:ba32bab3bdfc9c68940ef6777debee726ecfe4287c0f2382a893461faa4be3de",
+      "segment_2_s16_ctx512_kvio_prefill": "sha256:a795160ad5daa45e6c851e11ded667ff8ff31b424d27c370661e23a1a7d8dcb8"
+    },
+    "tokenizerDigest": "sha256:695be7802a0e4b8a81048f0ff5ebb7fc811a0ba5a6be63dbb24deb5a81096f41",
+    "weightsDigest": "sha256:b5365ec220f6518fada497f7fb45631e6d7844114718a7ede1f5c897bf4db93c",
+    "releaseId": "lfm25-2p6b-d1p1",
+    "backend": "coreml-auto",
+    "runtimeVersion": "CoreML/macOS-27.2-26B5086k",
+    "compilerDigest": "sha256:7b3f47be3da86847d02c1e312c202268717e950d8c92f0eb6c1c5706aa793050",
+    "quantization": "fp16",
+    "contextWindow": 512,
+    "samplingDigest": "sha256:614aa2d35df975f5f30158203357915edf45836c7975964ab00ed1943df7843f",
+    "hardwareSemanticsClass": "a18pro-arm64"
+  },
+  "stepperIdentity": {
+    "vendoredSource": "tools/native/causal-stepper @ f86cf1e",
+    "canonicalPath": "/Users/nayte/ane-hot/workspace/lfm-family-neo-validation/tools/causal-stepper",
+    "binarySha256": "sha256:3d774c0df90e5b99453029900ed11743673213b3db59763818d431bf0b6c881b",
+    "build": "swift 6.3.3 debug, arm64-apple-macosx28.0"
+  },
+  "scoreInvocation": ".build/debug/CausalStepperMac score --packages /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled --embed /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/embed_weight.bin --fixture /Users/nayte/semantic-fabric/noul-ids2.jsonl --probe-ids 11683,12447,18171,17550,2243,4547,794,2752 --compute-units all",
+  "probeTokenIds": {
+    "yes": [
+      11683,
+      12447,
+      18171,
+      17550
+    ],
+    "no": [
+      2243,
+      4547,
+      794,
+      2752
+    ]
+  },
+  "scoredCandidates": [
+    {
+      "candidateId": "cand-ct-00-0001",
+      "requestId": "mdr-ct-00",
+      "sourceDigest": "sha256:f5a6f40a20abf81811deb9695efebedd0e5252ea1af74ba9030d553dfd759cd0",
+      "candidateViewDigest": "sha256:e857c626d6d8af9d5f4beace61d6798a166c67e8550b59289999069e69cabb63",
+      "axisProbabilities": {
+        "evidence_sufficient": 0.99409172,
+        "still_needed": 0.93910684,
+        "full_content_needed": 0.94212416,
+        "unresolved_evidence": 0.97328684,
+        "recoverable": 0.99616928
+      }
+    },
+    {
+      "candidateId": "cand-ct-01-0001",
+      "requestId": "mdr-ct-01",
+      "sourceDigest": "sha256:3178363b65099545b2f7059df92932e7b6681556503f68a16f33e1732147a8bd",
+      "candidateViewDigest": "sha256:2dcff75e728b248a3fdeacb8e092fcd89093fa9f49e1c34f73bbb412293a959a",
+      "axisProbabilities": {
+        "evidence_sufficient": 0.99995566,
+        "still_needed": 0.98102015,
+        "full_content_needed": 0.92660248,
+        "unresolved_evidence": 0.99634387,
+        "recoverable": 0.99897975
+      }
+    },
+    {
+      "candidateId": "cand-ct-02-0001",
+      "requestId": "mdr-ct-02",
+      "sourceDigest": "sha256:afbb5264adeb1c911df755e85722d50108f9a38a7df420fa67b312bcdcbdaa75",
+      "candidateViewDigest": "sha256:c1477b565606ac1beb2a66c1e8462db3b948e54c89793c568f51a9dd3bb8652f",
+      "axisProbabilities": {
+        "evidence_sufficient": 0.99756568,
+        "still_needed": 0.96840613,
+        "full_content_needed": 0.95463356,
+        "unresolved_evidence": 0.9922447,
+        "recoverable": 0.96544045
+      }
+    },
+    {
+      "candidateId": "cand-ct-03-0001",
+      "requestId": "mdr-ct-03",
+      "sourceDigest": "sha256:6e5845dc8799a3e23c18cd6148ffaf3b8a37a1a3538fe417f66d8452e3a20869",
+      "candidateViewDigest": "sha256:7e3392e45fa1763e710d38abca685008aab3e5da5096d3d967316da51f99ebc9",
+      "axisProbabilities": {
+        "evidence_sufficient": 0.99073294,
+        "still_needed": 0.94668139,
+        "full_content_needed": 0.96064767,
+        "unresolved_evidence": 0.99359802,
+        "recoverable": 0.95472071
+      }
+    },
+    {
+      "candidateId": "cand-ct-04-0001",
+      "requestId": "mdr-ct-04",
+      "sourceDigest": "sha256:7e91b99cf2b1f466fbf103bcca53c7cb0a5667c1420bd897ac3531e270550cf8",
+      "candidateViewDigest": "sha256:f714abf99502c84a1e4e79edea7ab789a8d243f7375487cbf6407aea5113a7d4",
+      "axisProbabilities": {
+        "evidence_sufficient": 0.99970405,
+        "still_needed": 0.97799216,
+        "full_content_needed": 0.95781126,
+        "unresolved_evidence": 0.98722658,
+        "recoverable": 0.99088127
+      }
+    },
+    {
+      "candidateId": "cand-ct-05-0001",
+      "requestId": "mdr-ct-05",
+      "sourceDigest": "sha256:2babee9195c0bfa91a5e0d38139951d1e49596f56fafb5f00f2b682b3ddc79f0",
+      "candidateViewDigest": "sha256:7910bfa1d842053058fa2a065450dc8c449583647b3259f16c0cc65405abef88",
+      "axisProbabilities": {
+        "evidence_sufficient": 0.99586609,
+        "still_needed": 0.90625748,
+        "full_content_needed": 0.95895561,
+        "unresolved_evidence": 0.99441583,
+        "recoverable": 0.98700266
+      }
+    },
+    {
+      "candidateId": "cand-ct-06-0001",
+      "requestId": "mdr-ct-06",
+      "sourceDigest": "sha256:ddda32c336c09ee8103ee5dadaf9808f7e3cd6326ccc49116039cfcf2bb9999c",
+      "candidateViewDigest": "sha256:77e37644690bfb33dc75555459ec55ed3ca9041dfb059e1e182f6aa16639c2ba",
+      "axisProbabilities": {
+        "evidence_sufficient": 0.99962677,
+        "still_needed": 0.99080135,
+        "full_content_needed": 0.96087111,
+        "unresolved_evidence": 0.98257303,
+        "recoverable": 0.9973881
+      }
+    }
+  ],
+  "wallTimeMs": {
+    "samples": 7,
+    "p50": 903862.714,
+    "p95": 1082862.167,
+    "p99": 1082862.167,
+    "note": "per-candidate wall time under third-party machine contention; honest measured latency, not a model property"
+  },
+  "parserReproof": {
+    "complete": 7,
+    "partial": 0,
+    "deterministic": true,
+    "probeJsonCount": 35,
+    "planJsonCount": 4
+  },
+  "excludedPartials": [
+    {
+      "log": "raw/csm_score2.log",
+      "row": 7,
+      "candidateId": "cand-ct-07-0001",
+      "reason": "SCORE_BEGIN without SCORE_END — run terminated mid-row"
+    },
+    {
+      "log": "raw/csm_score3.log",
+      "row": 0,
+      "candidateId": "cand-ct-07-0001",
+      "reason": "chunked-resume run killed mid-prefill; same candidate excluded twice — correct"
+    }
+  ],
+  "rawPayloads": [
+    {
+      "sha256": "sha256:28966b70fdbd22b35ba76d403864ff89e2f5021a4d960a5cb8414c8441bce027",
+      "bytes": 16692,
+      "file": "chunk-00.jsonl"
+    },
+    {
+      "sha256": "sha256:0264db272af5a8793a28dfc4a00afb5bc88f719c8fe3ac3e33d6ec8c0206759d",
+      "bytes": 16846,
+      "file": "chunk-01.jsonl"
+    },
+    {
+      "sha256": "sha256:1b28339940c5490494bd691a66188ece4cf5a9218d41a8e3a7341b36f0aa7cc4",
+      "bytes": 16830,
+      "file": "chunk-02.jsonl"
+    },
+    {
+      "sha256": "sha256:1bc53d46687ffd86a402a833301d4f83d256654142614df91b4d567e760a8cd1",
+      "bytes": 13474,
+      "file": "chunk-03.jsonl"
+    },
+    {
+      "sha256": "sha256:d8852a454ed6e5b62d3780680cfb8a2fbf8b26eb731e3261cbbee8242c5347e1",
+      "bytes": 593,
+      "file": "chunk-driver.sh"
+    },
+    {
+      "sha256": "sha256:fcdc856723b2d1c5ed159264381b61ad09112e495f56865269aded9eaab34dc1",
+      "bytes": 37,
+      "file": "csm_plan.err"
+    },
+    {
+      "sha256": "sha256:cd593bd57c8b6726bf805c2fd45428dd46753a20dce94d21e809cdc7e7a82722",
+      "bytes": 573,
+      "file": "csm_plan.log"
+    },
+    {
+      "sha256": "sha256:cac8b25e953e6c245399492b8c70be968a78306218baceb1302aa502ac3f0362",
+      "bytes": 94802,
+      "file": "csm_score2.err"
+    },
+    {
+      "sha256": "sha256:8e9d01e1e14e95175edee168bc9cf775f96b8812f23e40dce1c4be5e203ba5cd",
+      "bytes": 22578,
+      "file": "csm_score2.log"
+    },
+    {
+      "sha256": "sha256:d35aeffb910db10b73afa8755970aaa72af7cb1ae767ceacccddc338b7f4ad06",
+      "bytes": 8220,
+      "file": "csm_score3.err"
+    },
+    {
+      "sha256": "sha256:33eba1f9319968c38043f1c6c9c7cd65f0187fead615d6e4e60d644b093b4216",
+      "bytes": 508,
+      "file": "csm_score3.log"
+    },
+    {
+      "sha256": "sha256:bc52ebaecef3099bd4c80d6bef088fca8b04848d0853e8949297f86580e39cc2",
+      "bytes": 87192,
+      "file": "noul-ids2.jsonl"
+    },
+    {
+      "sha256": "sha256:acd0e92266ff4522bce04dcc008cf05d8923b827bf006805c1f27de1b5623b10",
+      "bytes": 6965,
+      "file": "noul-live.jsonl"
+    },
+    {
+      "sha256": "sha256:afac5197994839046fee69ee1fc90da7aca17c4b45c54ea9245e5b33e118383b",
+      "bytes": 2802,
+      "file": "tokenize-manifest2.mjs"
+    },
+    {
+      "sha256": "sha256:0bb63c0633699c2aea84ec83b9ecae08bc5b7f0bbf4c6fdef17ee19c6fe14ac1",
+      "bytes": 1996,
+      "file": "tokenize-manifest.mjs"
+    },
+    {
+      "sha256": "sha256:695be7802a0e4b8a81048f0ff5ebb7fc811a0ba5a6be63dbb24deb5a81096f41",
+      "bytes": 17905598,
+      "file": "tokenizer.json"
+    }
+  ],
+  "notes": [
+    "Raw score log preserves per-probe conditional (probe-subset) AND absolute full-vocabulary probabilities; parsed JSONL exposes only conditional yes/no values. Raw payload is the richer source of truth.",
+    "V1 probabilities are NOT V2 observations: anvil.semantic-observation-abi.v2 redefines evidence_sufficient and unresolved_evidence and removes recoverable. These values must not be projected, renamed, truncated, or reinterpreted as V2.",
+    "Rows 7-25 of the canonical 26-row manifest were never scored; resumability artifacts (noul-ids2.jsonl, chunk-*.jsonl, chunk-driver.sh, score-resume.mjs) are preserved, not deleted.",
+    "MLComputePlan preferred-device counts are partial placement evidence: s16 prefill segments ~48-49% neuralEngine, final_head 1351/2709 neuralEngine + 1 cpu + 1357 unknown. NOT 100% ANE."
+  ]
+}
