@@ -21,3 +21,6 @@ export * from './receipt-spine.js';
 export * from './calibration-data.js';
 export * from './recalibration.js';
 export * from './authority-router.js';
+export * from './regret-ledger.js';
+export * from './calibration-metrics.js';
+export * from './degraded-trial.js';
