@@ -49,5 +49,11 @@ describe('offline replay matrix', () => {
     expect(report.arms.D.criticalEvidenceFalseEvictions).toBe(0);
     expect(report.arms.C.classification).toBe('ARCHITECTURAL_FAILURE');
     expect(report.traceCount).toBe(corpus.length);
+    for (const arm of ['A', 'B', 'C', 'D']) {
+      expect(report.arms[arm].sourceBytes).toBeGreaterThan(0);
+      expect(report.arms[arm].visibleBytes).toBeGreaterThanOrEqual(0);
+      expect(report.arms[arm].visibleBytes).toBeLessThanOrEqual(report.arms[arm].sourceBytes);
+    }
+    expect(report.arms.D.receiptCount).toBe(corpus.length);
   });
 });
