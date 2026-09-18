@@ -61,3 +61,4 @@ export * from './semantic-policy-profile-v2.js';
 export * from './calibrated-policy-receipt-v2.js';
 export * from './calibrated-policy-replay-v2.js';
 export * from './axis-discrimination-v2.js';
+export * from './axis-isolate-diagnostic-v2.js';
