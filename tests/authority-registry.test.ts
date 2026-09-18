@@ -1,81 +1,87 @@
 import { describe, expect, it } from 'vitest';
-import { AuthorityRegistry, AuthorityRouteGrant } from '../src/lab/authority-registry.js';
+import { AuthorityRegistry } from '../src/lab/authority-registry.js';
+import { evaluateCalibrationPromotion } from '../src/lab/calibration-promotion.js';
+import { PromotionAuthorityIssuer } from '../src/lab/promotion-credential.js';
+import { deriveProviderExecutionProfile } from '../src/lab/provider-profile.js';
 
 const d = (c: string) => 'sha256:' + c.repeat(64);
-const mask = (policy: boolean) => ({
-  source: true,
-  evidence: true,
-  calibration: policy,
-  authority: policy,
-  recovery: true,
-});
 
-describe('AuthorityRegistry', () => {
-  it('is the only issuer of policy-authoritative route grants', () => {
-    const registry = new AuthorityRegistry();
-    const grant = registry.register({
-      routeId: 'jev-primary',
-      calibrationIdentity: d('1'),
-      authorityIdentity: d('2'),
-      sourceLineageDigest: d('3'),
-      authorityGeneration: 7,
-      mask: mask(true),
-    });
-
-    expect(grant).toBeInstanceOf(AuthorityRouteGrant);
-    expect(Object.isFrozen(grant)).toBe(true);
-    expect(Object.isFrozen(grant.mask)).toBe(true);
-    expect(registry.resolve('jev-primary', d('3'))).toBe(grant);
+function credential(providerId = 'typesafe-system-one/jev-1.13.0', generation = 7) {
+  const profile = deriveProviderExecutionProfile({
+    providerId,
+    providerKind: providerId.includes('qwen') ? 'qwen-ane' : 'jev-system-one',
+    modelIdentityDigest: providerId.includes('qwen') ? d('2') : d('1'),
+    modelAssurance: providerId.includes('qwen') ? 'contentVerified' : 'opaqueVersioned',
+    executionSemanticsDigest: providerId.includes('qwen') ? d('4') : d('3'),
+    normalizerDigest: d('5'),
+    observationABIDigest: d('6'),
+  });
+  const promotion = evaluateCalibrationPromotion({
+    calibrationIdentity: providerId.includes('qwen') ? d('b') : d('a'),
+    strongHoldoutSamples: 500,
+    falseAuthorityLeaks: 0,
+    ece: 0.02,
+    brier: 0.04,
+    selectiveRisk: 0.01,
+    coverage: 0.9,
+  }, {
+    minStrongHoldoutSamples: 100,
+    maxFalseAuthorityLeaks: 0,
+    maxECE: 0.05,
+    maxBrier: 0.1,
+    maxSelectiveRisk: 0.02,
+    minCoverage: 0.8,
   });
 
-  it('rejects registration that lacks policy authority', () => {
+  return new PromotionAuthorityIssuer().issue({
+    providerProfile: profile,
+    promotion,
+    policyProfileDigest: d('7'),
+    observationABIDigest: d('6'),
+    sourceLineageDigest: d('8'),
+    authorityGeneration: generation,
+  });
+}
+
+describe('AuthorityRegistry promotion credential boundary', () => {
+  it('registers only issued credentials and derives a stable route id', () => {
     const registry = new AuthorityRegistry();
-    expect(() => registry.register({
-      routeId: 'shadow',
-      calibrationIdentity: d('1'),
-      authorityIdentity: d('2'),
-      sourceLineageDigest: d('3'),
-      authorityGeneration: 1,
-      mask: mask(false),
-    })).toThrow(/policy authority/i);
+    const c = credential();
+    const grant = registry.registerCredential(c);
+
+    expect(grant.routeId).toBe('authority:typesafe-system-one/jev-1.13.0:7');
+    expect(grant.providerProfileDigest).toBe(c.providerProfileDigest);
+    expect(grant.calibrationIdentity).toBe(c.calibrationIdentity);
+    expect(grant.calibrationAuthorized).toBe(true);
+    expect(grant.policyProfileAuthorized).toBe(true);
+    expect('mask' in grant).toBe(false);
+    expect(registry.resolve(grant.routeId, d('8'))).toBe(grant);
+  });
+
+  it('rejects structural credential copies', () => {
+    const registry = new AuthorityRegistry();
+    expect(() => registry.registerCredential({ ...credential() } as any))
+      .toThrow(/issued promotion credential/i);
   });
 
   it('fails resolution across source lineage', () => {
     const registry = new AuthorityRegistry();
-    registry.register({
-      routeId: 'jev-primary',
-      calibrationIdentity: d('1'),
-      authorityIdentity: d('2'),
-      sourceLineageDigest: d('3'),
-      authorityGeneration: 7,
-      mask: mask(true),
-    });
-    expect(registry.resolve('jev-primary', d('4'))).toBeNull();
+    const grant = registry.registerCredential(credential());
+    expect(registry.resolve(grant.routeId, d('9'))).toBeNull();
   });
 
-  it('rejects duplicate route ids', () => {
+  it('rejects duplicate provider generation routes', () => {
     const registry = new AuthorityRegistry();
-    const input = {
-      routeId: 'jev-primary',
-      calibrationIdentity: d('1'),
-      authorityIdentity: d('2'),
-      sourceLineageDigest: d('3'),
-      authorityGeneration: 7,
-      mask: mask(true),
-    };
-    registry.register(input);
-    expect(() => registry.register(input)).toThrow(/duplicate route/i);
+    registry.registerCredential(credential());
+    expect(() => registry.registerCredential(credential()))
+      .toThrow(/duplicate route/i);
   });
 
-  it('requires canonical identities', () => {
+  it('keeps providers in separate route namespaces', () => {
     const registry = new AuthorityRegistry();
-    expect(() => registry.register({
-      routeId: 'jev-primary',
-      calibrationIdentity: 'sha256:BAD',
-      authorityIdentity: d('2'),
-      sourceLineageDigest: d('3'),
-      authorityGeneration: 7,
-      mask: mask(true),
-    })).toThrow(/canonical sha256/i);
+    const jev = registry.registerCredential(credential());
+    const qwen = registry.registerCredential(credential('neo/qwen-ane'));
+    expect(jev.routeId).not.toBe(qwen.routeId);
+    expect(jev.providerProfileDigest).not.toBe(qwen.providerProfileDigest);
   });
 });
