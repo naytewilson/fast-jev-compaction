@@ -70,7 +70,7 @@ describe('deterministic isotonic calibration', () => {
 
     expect(() => fitIsotonicCalibration([
       sample('a', 0.1, 0, d('1'), 'still_needed'),
-      sample('b', 0.9, 1, d('1'), 'recoverable'),
+      sample('b', 0.9, 1, d('1'), 'full_content_needed'),
     ])).toThrow(/predicate/i);
   });
 
