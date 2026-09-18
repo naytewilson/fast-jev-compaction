@@ -1,0 +1,76 @@
+{
+  "schema": "anvil.abi-battery-identity.v1",
+  "mintedAt": "2026-09-18T09:22:36.994Z",
+  "sourceSha": "0e8ee3411e86ed8645716deacc09c4ee32f72235",
+  "decisionContract": {
+    "id": "anvil.context-retention.v1",
+    "version": "1.0.0",
+    "digest": "sha256:77c4bd370c065f806c3c44f63f6aee4c711bf35800dbb0c344b2894268d450b4"
+  },
+  "corpusId": "anvil.abi-battery-corpus.v1",
+  "corpusDigest": "sha256:db7ee7c98f3e08fc17c1e11bffe05877db09f6a87fbc62952f891df06eb811ab",
+  "labelBindingDigest": "sha256:3e91ab7210b48a0d96d395e85f07769b4c97793b97687f1a37e805f1d22de118",
+  "verifierIdentity": "anvil.mechanical-experiment-constructor.v1",
+  "labelAuthority": "STRONG (mechanical construction truth; synthetic-fixture scope)",
+  "provider": {
+    "endpoint": "https://api.typesafe.ai/v1/systemone",
+    "model": "jev-1.13.0",
+    "credentialPath": "TYPESAFE_API_KEY_FILE (~/.local/share/anvil-jev-decisiond/typesafe-api-key)",
+    "egressBoundary": "anvil.system-one-egress-grant.v0 scope=synthetic_fixture per exact request digest"
+  },
+  "arms": {
+    "five_axis": {
+      "axes": [
+        "evidence_sufficient",
+        "still_needed",
+        "full_content_needed",
+        "unresolved_evidence",
+        "recoverable"
+      ],
+      "abiVersion": "anvil.semantic-observation-abi.v1",
+      "observationABIDigest": "sha256:41e1e3f1fc4be86125b650c164b4f5b9e5d10b746fb7707cd1b8d264ac837119",
+      "providerProfile": {
+        "schema": "anvil.provider-execution-profile.v1",
+        "providerId": "typesafe-system-one/jev-1.13.0",
+        "providerKind": "jev-system-one",
+        "modelIdentityDigest": "sha256:94d36fee6e22be91ee3fe8efd98b84678f8411a2bac2ee90849cbf2ae4154962",
+        "modelAssurance": "opaqueVersioned",
+        "executionSemanticsDigest": "sha256:39ca2cea36a8f83af49d74ead63d5c469774ac86c232f260d59867da147a7bc6",
+        "normalizerDigest": "sha256:3e76bc89e6b1e84fd19171e48d38a90a87dce92dc7c06ded583ba0a46dc4ae20",
+        "observationABIDigest": "sha256:41e1e3f1fc4be86125b650c164b4f5b9e5d10b746fb7707cd1b8d264ac837119",
+        "providerProfileDigest": "sha256:85b367a22a4a9eacbcbf5b244e355cf394f5d8bf480a3e88c1ebb2997729b819"
+      }
+    },
+    "four_axis": {
+      "axes": [
+        "evidence_sufficient",
+        "still_needed",
+        "full_content_needed",
+        "unresolved_evidence"
+      ],
+      "abiVersion": "anvil.semantic-observation-abi.v2-candidate",
+      "observationABIDigest": "sha256:eca12639f02602a56f6a0443eb41d3ccada4ab17d252c02fd88c70d4a43825fa",
+      "providerProfile": {
+        "schema": "anvil.provider-execution-profile.v1",
+        "providerId": "typesafe-system-one/jev-1.13.0",
+        "providerKind": "jev-system-one",
+        "modelIdentityDigest": "sha256:94d36fee6e22be91ee3fe8efd98b84678f8411a2bac2ee90849cbf2ae4154962",
+        "modelAssurance": "opaqueVersioned",
+        "executionSemanticsDigest": "sha256:39ca2cea36a8f83af49d74ead63d5c469774ac86c232f260d59867da147a7bc6",
+        "normalizerDigest": "sha256:3e76bc89e6b1e84fd19171e48d38a90a87dce92dc7c06ded583ba0a46dc4ae20",
+        "observationABIDigest": "sha256:eca12639f02602a56f6a0443eb41d3ccada4ab17d252c02fd88c70d4a43825fa",
+        "providerProfileDigest": "sha256:fd43dce814dbc43d1221736d5cd68fcbb7b734b55c7edf3385a46aff3288b0bf"
+      }
+    }
+  },
+  "thresholds": {
+    "evidenceSufficientFloor": 0.8,
+    "keepFull": 0.8,
+    "retain": 0.5
+  },
+  "repeatCount": 8,
+  "counts": {
+    "traces": 164,
+    "labels": 820
+  }
+}
