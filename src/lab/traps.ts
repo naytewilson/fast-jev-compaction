@@ -1,6 +1,21 @@
 import { createToolRecoveryManifest } from './recovery.js';
 import type { ReplayTrace } from './replay.js';
 
+function longStdout(
+  prefix: string,
+  criticalLine: string | null,
+  criticalIndex = 512,
+  lineCount = 1024,
+): string {
+  const lines = Array.from({ length: lineCount }, (_, index) =>
+    `${prefix} step=${String(index).padStart(4, '0')} status=ok elapsed_ms=${(index % 97) + 3} artifact=unit-${index % 41}`,
+  );
+  if (criticalLine !== null) {
+    lines[criticalIndex] = criticalLine;
+  }
+  return lines.join('\n');
+}
+
 function trace(
   id: string,
   stdout: string,
@@ -12,7 +27,7 @@ function trace(
   const exitStatus = options.exitStatus ?? 0;
   return {
     trace_id: id,
-    source_run_id: `run-${id}`,
+    source_run_id: `fixture-${id}`,
     shared_state: 'Continue the engineering task while preserving source-bound evidence.',
     candidates: [{
       candidate_id: 'cand-0001',
@@ -32,44 +47,71 @@ export function dependencyTrapCorpus(): ReplayTrace[] {
   return [
     trace(
       'trap-deprecation-middle',
-      'compile start\nwarning: API legacyFoo is deprecated; use modernFoo\ncompile complete',
+      longStdout(
+        'swift-build',
+        'warning: API legacyFoo is deprecated; use modernFoo before macOS 27 rollout',
+      ),
       'legacyFoo',
     ),
     trace(
       'trap-memory-address-middle',
-      'sanitizer start\nheap-use-after-free at 0x7ffee1c0ffee\nsanitzer summary',
+      longStdout(
+        'asan',
+        'heap-use-after-free at 0x7ffee1c0ffee in ANEPlan::dispatch',
+        611,
+      ),
       '0x7ffee1c0ffee',
     ),
     trace(
       'trap-stderr-warning',
-      'progress 0%\nprogress 50%\nprogress 100%',
+      longStdout('link', null),
       'linker warning: duplicate symbol _ANEPlan',
       { stderr: 'linker warning: duplicate symbol _ANEPlan' },
     ),
     trace(
       'trap-original-failure',
-      'first attempt\nFAIL root cause: missing libANE.dylib\nlater retry succeeded',
+      longStdout(
+        'build-retry',
+        'FAIL root cause: missing libANE.dylib while resolving runtime dependency',
+        333,
+      ),
       'missing libANE.dylib',
       { exitStatus: 1 },
     ),
     trace(
       'trap-changed-path',
-      'src/a.ts\nsrc/generated/changed-contract.ts\nsrc/z.ts',
+      longStdout(
+        'scan',
+        'changed-path: src/generated/changed-contract.ts requires regeneration',
+        777,
+      ),
       'src/generated/changed-contract.ts',
     ),
     trace(
       'trap-provenance-only',
-      'duplicate-looking output\nprovenance: sha256:feedfacecafebeef\nduplicate-looking output end',
+      longStdout(
+        'evidence',
+        'provenance: sha256:feedfacecafebeef is the only source-bound receipt anchor',
+        444,
+      ),
       'sha256:feedfacecafebeef',
     ),
     trace(
       'trap-insufficient-view',
-      'head summary\nconstraint: DO_NOT_EDIT_PRODUCTION\ntail summary',
+      longStdout(
+        'context',
+        'constraint: DO_NOT_EDIT_PRODUCTION until independent exact-head review passes',
+        701,
+      ),
       'DO_NOT_EDIT_PRODUCTION',
     ),
     trace(
       'trap-recovery-mismatch',
-      'start\ncritical: exact recovery must verify\nend',
+      longStdout(
+        'recovery',
+        'critical: exact recovery must verify before referential presentation',
+        256,
+      ),
       'exact recovery must verify',
     ),
   ];
