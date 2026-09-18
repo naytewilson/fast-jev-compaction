@@ -1,0 +1,376 @@
+[
+  {
+    "trace_id": "axis-es-pos-01",
+    "source_run_id": "axis-discrimination-axis-es-pos-01",
+    "shared_state": "Verify the exact release marker is present.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-es-pos-01",
+        "stdout": "audit source_nonce=00 status=ok artifact=anchor\nCRITICAL ANCHOR_MARKER_00\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:bb3d61a306e1963f923670baf29b0a8cc49355c0d24d97474c6fd59fd5e6b780",
+          "recovery_ref": "cas:axis-discrimination-axis-es-pos-01",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_00"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-es-pos-02",
+    "source_run_id": "axis-discrimination-axis-es-pos-02",
+    "shared_state": "Confirm the exact artifact identity is present.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-es-pos-02",
+        "stdout": "audit source_nonce=01 status=ok artifact=anchor\nCRITICAL ANCHOR_MARKER_01\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:3eff2a2f7f773038a0d966bdd1d0575ed31f5183e2521b085547a3fbace7e776",
+          "recovery_ref": "cas:axis-discrimination-axis-es-pos-02",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_01"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-es-neg-01",
+    "source_run_id": "axis-discrimination-axis-es-neg-01",
+    "shared_state": "Verify the exact release marker is present.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-es-neg-01",
+        "stdout": "audit source_nonce=02 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\nCRITICAL ANCHOR_MARKER_02\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:2c5deddce47249fc23f4cfaf058f792204055162a4792843330774f96ab5adea",
+          "recovery_ref": "cas:axis-discrimination-axis-es-neg-01",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_02"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-es-neg-02",
+    "source_run_id": "axis-discrimination-axis-es-neg-02",
+    "shared_state": "Confirm the exact artifact identity is present.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-es-neg-02",
+        "stdout": "audit source_nonce=03 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\nCRITICAL ANCHOR_MARKER_03\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:7bec568bd3c4c9c85fbe2fa1fc6b47850674a5cc4cdc6d35d4917be2f7c6e2cc",
+          "recovery_ref": "cas:axis-discrimination-axis-es-neg-02",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_03"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-sn-pos-01",
+    "source_run_id": "axis-discrimination-axis-sn-pos-01",
+    "shared_state": "Find the required deployment token.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-sn-pos-01",
+        "stdout": "audit source_nonce=04 status=ok artifact=anchor\nCRITICAL ANCHOR_MARKER_04\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:555ad66ff84226ee694c0b7807dea2c9bec567e2219132c6e205bb7c0ea67315",
+          "recovery_ref": "cas:axis-discrimination-axis-sn-pos-01",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_04"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-sn-pos-02",
+    "source_run_id": "axis-discrimination-axis-sn-pos-02",
+    "shared_state": "Find the required source revision.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-sn-pos-02",
+        "stdout": "audit source_nonce=05 status=ok artifact=anchor\nCRITICAL ANCHOR_MARKER_05\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:d15b968bd7f43eb4dccd7da0cd1bf0d8731324337b769673ba2d990207813610",
+          "recovery_ref": "cas:axis-discrimination-axis-sn-pos-02",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_05"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-sn-neg-01",
+    "source_run_id": "axis-discrimination-axis-sn-neg-01",
+    "shared_state": "Find the required deployment token.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-sn-neg-01",
+        "stdout": "audit source_nonce=06 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:a4d6d96c94fab26f1e7684cc2b1fbb4651589d203f308d607ed4923e563a3e56",
+          "recovery_ref": "cas:axis-discrimination-axis-sn-neg-01",
+          "byte_count": 1393
+        },
+        "critical_evidence": []
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-sn-neg-02",
+    "source_run_id": "axis-discrimination-axis-sn-neg-02",
+    "shared_state": "Find the required source revision.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-sn-neg-02",
+        "stdout": "audit source_nonce=07 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:e27a78fb84b94566564a1dd05b9fe2de8199868679f10584dac6389cc1da2c51",
+          "recovery_ref": "cas:axis-discrimination-axis-sn-neg-02",
+          "byte_count": 1393
+        },
+        "critical_evidence": []
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-fcn-pos-01",
+    "source_run_id": "axis-discrimination-axis-fcn-pos-01",
+    "shared_state": "Verify the exact release marker before deciding.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-fcn-pos-01",
+        "stdout": "audit source_nonce=08 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\nCRITICAL ANCHOR_MARKER_08\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:b2d2bbba7f871d1dd8cab4dab3ad980447ed5bb040f9d0aac3898fc69f8fd8df",
+          "recovery_ref": "cas:axis-discrimination-axis-fcn-pos-01",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_08"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-fcn-pos-02",
+    "source_run_id": "axis-discrimination-axis-fcn-pos-02",
+    "shared_state": "Verify the exact release marker before deciding.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-fcn-pos-02",
+        "stdout": "audit source_nonce=09 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\nCRITICAL ANCHOR_MARKER_09\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:66e8be3c7aae2e81f98bc37f0e502abbb0629fffe2f054b03036fceece311e9c",
+          "recovery_ref": "cas:axis-discrimination-axis-fcn-pos-02",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_09"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-fcn-neg-01",
+    "source_run_id": "axis-discrimination-axis-fcn-neg-01",
+    "shared_state": "Verify the exact release marker before deciding.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-fcn-neg-01",
+        "stdout": "audit source_nonce=10 status=ok artifact=anchor\nCRITICAL ANCHOR_MARKER_10\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:3e9b4039a7dce7a043958dace4628dda8c7827579b2341515ccdf5b2d5ba409e",
+          "recovery_ref": "cas:axis-discrimination-axis-fcn-neg-01",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_10"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-fcn-neg-02",
+    "source_run_id": "axis-discrimination-axis-fcn-neg-02",
+    "shared_state": "Verify the exact release marker before deciding.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-fcn-neg-02",
+        "stdout": "audit source_nonce=11 status=ok artifact=anchor\nCRITICAL ANCHOR_MARKER_11\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:557cebaaf260cdcb3bd3fd4a42891d60125ed72e531daad5f56920c37b52767e",
+          "recovery_ref": "cas:axis-discrimination-axis-fcn-neg-02",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_11"
+        ]
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-ue-pos-01",
+    "source_run_id": "axis-discrimination-axis-ue-pos-01",
+    "shared_state": "Determine whether unresolved review evidence exists.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-ue-pos-01",
+        "stdout": "audit source_nonce=12 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "warning: unresolved dependency requires review",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:924b86eafa1dc31cb34b6fb40394569cff9c0ec9eb1bf5b1b4e566f46a755de6",
+          "recovery_ref": "cas:axis-discrimination-axis-ue-pos-01",
+          "byte_count": 1439
+        },
+        "critical_evidence": []
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-ue-pos-02",
+    "source_run_id": "axis-discrimination-axis-ue-pos-02",
+    "shared_state": "Determine whether unresolved review evidence exists.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-ue-pos-02",
+        "stdout": "audit source_nonce=13 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\nverification mismatch: expected digest differs from observed digest\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:66332139f601c62c13146ed38b9632f86fc4b267a7923289cf0503fb923c256f",
+          "recovery_ref": "cas:axis-discrimination-axis-ue-pos-02",
+          "byte_count": 1421
+        },
+        "critical_evidence": []
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-ue-neg-01",
+    "source_run_id": "axis-discrimination-axis-ue-neg-01",
+    "shared_state": "Determine whether unresolved review evidence exists.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-ue-neg-01",
+        "stdout": "audit source_nonce=14 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\naudit step=16 status=ok artifact=item-2\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:ba89b9a622af9b5507623657e6208e1fdf0fa6e0c1fc5a5a88d34552e9f214e5",
+          "recovery_ref": "cas:axis-discrimination-axis-ue-neg-01",
+          "byte_count": 1393
+        },
+        "critical_evidence": []
+      }
+    ]
+  },
+  {
+    "trace_id": "axis-ue-neg-02",
+    "source_run_id": "axis-discrimination-axis-ue-neg-02",
+    "shared_state": "Determine whether unresolved review evidence exists.",
+    "candidates": [
+      {
+        "candidate_id": "cand-axis-ue-neg-02",
+        "stdout": "audit source_nonce=15 status=ok artifact=anchor\naudit step=01 status=ok artifact=item-1\naudit step=02 status=ok artifact=item-2\naudit step=03 status=ok artifact=item-3\naudit step=04 status=ok artifact=item-4\naudit step=05 status=ok artifact=item-5\naudit step=06 status=ok artifact=item-6\naudit step=07 status=ok artifact=item-0\naudit step=08 status=ok artifact=item-1\naudit step=09 status=ok artifact=item-2\naudit step=10 status=ok artifact=item-3\naudit step=11 status=ok artifact=item-4\naudit step=12 status=ok artifact=item-5\naudit step=13 status=ok artifact=item-6\naudit step=14 status=ok artifact=item-0\naudit step=15 status=ok artifact=item-1\nCRITICAL ANCHOR_MARKER_15\naudit step=17 status=ok artifact=item-3\naudit step=18 status=ok artifact=item-4\naudit step=19 status=ok artifact=item-5\naudit step=20 status=ok artifact=item-6\naudit step=21 status=ok artifact=item-0\naudit step=22 status=ok artifact=item-1\naudit step=23 status=ok artifact=item-2\naudit step=24 status=ok artifact=item-3\naudit step=25 status=ok artifact=item-4\naudit step=26 status=ok artifact=item-5\naudit step=27 status=ok artifact=item-6\naudit step=28 status=ok artifact=item-0\naudit step=29 status=ok artifact=item-1\naudit step=30 status=ok artifact=item-2\naudit step=31 status=ok artifact=item-3",
+        "stderr": "",
+        "exit_status": 0,
+        "head_lines": 4,
+        "tail_lines": 4,
+        "presentation_budget_bytes": 2048,
+        "recovery": {
+          "source_digest": "sha256:518067b5b89107a032ab87cc86830a06216910b406c163a615d495d1cc8c021c",
+          "recovery_ref": "cas:axis-discrimination-axis-ue-neg-02",
+          "byte_count": 1379
+        },
+        "critical_evidence": [
+          "CRITICAL ANCHOR_MARKER_15"
+        ]
+      }
+    ]
+  }
+]
