@@ -4,18 +4,25 @@ import {
 } from './calibration-artifact.js';
 import { applyIsotonicCalibration } from './isotonic-calibrator.js';
 import {
+  createCalibratedPolicyReceipt,
+  type CalibratedPolicyReceipt,
+} from './calibrated-policy-receipt.js';
+import {
   runObservationOnlyArm,
   type MappedObservationProvider,
   type ObservationPolicyThresholds,
   type ObservationProfiles,
 } from './observation-arm.js';
-import {
-  fullPresentation,
-  referentialPresentation,
-  type ReplayPresentation,
-  type ReplayTrace,
+import type {
+  ReplayPresentation,
+  ReplayTrace,
 } from './replay.js';
-import type { InMemoryCAS } from './recovery.js';
+import { sha256Digest, type InMemoryCAS } from './recovery.js';
+import type { ReplayReceipt } from './receipt.js';
+import {
+  decideSemanticPolicy,
+  type SemanticPolicyDecision,
+} from './semantic-policy.js';
 import {
   MAPPED_OBSERVATION_AXES,
   type MappedCandidateObservation,
@@ -42,7 +49,10 @@ export interface CalibratedObservationReplayResult {
   calibrationIdentity: string;
   rawObservations: readonly MappedCandidateObservation[];
   calibratedObservations: readonly MappedCandidateObservation[];
+  policyDecisions: readonly SemanticPolicyDecision[];
   presentations: readonly ReplayPresentation[];
+  rawReplayReceipt: ReplayReceipt;
+  receipt: Readonly<CalibratedPolicyReceipt> | null;
 }
 
 function freezeObservation(
@@ -119,56 +129,43 @@ function calibrateObservations(
   }));
 }
 
-function evaluateCalibratedPresentations(
+function evaluateCalibratedPolicy(
   trace: ReplayTrace,
   cas: InMemoryCAS,
   observations: readonly MappedCandidateObservation[],
   thresholds: ObservationPolicyThresholds,
-): readonly ReplayPresentation[] {
+): {
+  decisions: readonly SemanticPolicyDecision[];
+  presentations: readonly ReplayPresentation[];
+} {
   const byID = new Map(
     observations.map((observation) => [observation.candidate_id, observation]),
   );
 
-  return Object.freeze(trace.candidates.map((candidate) => {
+  const results = trace.candidates.map((candidate) => {
     const observation = byID.get(candidate.candidate_id);
     if (observation === undefined) {
-      return fullPresentation(candidate, 'PRISTINE_FALLBACK');
+      throw new Error(
+        `calibrated observation missing candidate ${candidate.candidate_id}`,
+      );
     }
-
-    if (observation.evidence_sufficient.noul < thresholds.evidenceSufficientFloor) {
-      return fullPresentation(candidate, 'ABSTAIN');
-    }
-
-    if (observation.unresolved_evidence.noul >= thresholds.keepFull) {
-      return fullPresentation(candidate);
-    }
-
-    if (!cas.verifyTool(
-      candidate.recovery,
-      candidate.stdout,
-      candidate.stderr,
-      candidate.exit_status,
-    ).ok) {
-      return fullPresentation(candidate);
-    }
-
-    if (observation.full_content_needed.noul >= thresholds.keepFull) {
-      return fullPresentation(candidate);
-    }
-
-    if (observation.still_needed.noul >= thresholds.retain) {
-      return referentialPresentation(candidate);
-    }
-
-    return Object.freeze({
-      candidate_id: candidate.candidate_id,
-      disposition: 'EVICTED' as const,
-      visible_text: '',
-      source_digest: candidate.recovery.source_digest,
-      omitted_bytes: candidate.recovery.byte_count,
-      recovery_required: true,
+    return decideSemanticPolicy({
+      candidate,
+      observation,
+      thresholds,
+      recovery: () => cas.verifyTool(
+        candidate.recovery,
+        candidate.stdout,
+        candidate.stderr,
+        candidate.exit_status,
+      ),
     });
-  }));
+  });
+
+  return {
+    decisions: Object.freeze(results.map((result) => result.decision)),
+    presentations: Object.freeze(results.map((result) => result.presentation)),
+  };
 }
 
 export async function runCalibratedObservationReplay(
@@ -184,6 +181,11 @@ export async function runCalibratedObservationReplay(
     input.provider,
   );
 
+  const rawReplayReceipt = rawRun.receipts[0];
+  if (rawReplayReceipt === undefined) {
+    throw new Error('observation replay did not emit a receipt');
+  }
+
   if (rawRun.observations === null) {
     return Object.freeze({
       schema: 'anvil.calibrated-observation-replay.v1' as const,
@@ -192,7 +194,10 @@ export async function runCalibratedObservationReplay(
       calibrationIdentity: input.calibrationArtifact.calibrationIdentity,
       rawObservations: Object.freeze([]),
       calibratedObservations: Object.freeze([]),
+      policyDecisions: Object.freeze([]),
       presentations: Object.freeze([...rawRun.presentations]),
+      rawReplayReceipt,
+      receipt: null,
     });
   }
 
@@ -203,12 +208,29 @@ export async function runCalibratedObservationReplay(
     input.calibrationArtifact,
     rawObservations,
   );
-  const presentations = evaluateCalibratedPresentations(
+  const evaluated = evaluateCalibratedPolicy(
     input.trace,
     input.cas,
     calibratedObservations,
     input.thresholds,
   );
+  const rawObservationDigest = sha256Digest(JSON.stringify(rawObservations));
+  const calibratedObservationDigest =
+    sha256Digest(JSON.stringify(calibratedObservations));
+  const receipt = createCalibratedPolicyReceipt({
+    traceId: input.trace.trace_id,
+    sourceRunId: input.trace.source_run_id,
+    providerProfileDigest: input.providerProfile.providerProfileDigest,
+    calibrationIdentity: input.calibrationArtifact.calibrationIdentity,
+    calibrationArtifactDigest: input.calibrationArtifact.artifactDigest,
+    decisionContractDigest: input.profiles.decision_contract.digest,
+    policyProfileDigest: input.profiles.policy_profile.digest,
+    rawReplayReceiptDigest: rawReplayReceipt.receipt_digest,
+    rawObservationDigest,
+    calibratedObservationDigest,
+    thresholds: input.thresholds,
+    decisions: evaluated.decisions,
+  });
 
   return Object.freeze({
     schema: 'anvil.calibrated-observation-replay.v1' as const,
@@ -217,6 +239,9 @@ export async function runCalibratedObservationReplay(
     calibrationIdentity: input.calibrationArtifact.calibrationIdentity,
     rawObservations,
     calibratedObservations,
-    presentations,
+    policyDecisions: evaluated.decisions,
+    presentations: evaluated.presentations,
+    rawReplayReceipt,
+    receipt,
   });
 }

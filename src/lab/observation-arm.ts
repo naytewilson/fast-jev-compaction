@@ -15,6 +15,10 @@ import {
   type ReplayReceipt,
 } from './receipt.js';
 import { sha256Digest, type InMemoryCAS } from './recovery.js';
+import {
+  decideSemanticPolicy,
+  type SemanticPolicyDecision,
+} from './semantic-policy.js';
 import type {
   MappedDecisionRequest,
   MappedDecisionResponse,
@@ -121,6 +125,7 @@ function parseProviderEnvelope(value: unknown):
 export type ObservationReplayRun = ReplayRun & {
   receipts: ReplayReceipt[];
   observations: readonly MappedCandidateObservation[] | null;
+  policyDecisions: readonly SemanticPolicyDecision[] | null;
 };
 
 function freezeObservations(
@@ -334,6 +339,7 @@ function fallbackRun(
     arm: 'D',
     presentations,
     observations: null,
+    policyDecisions: null,
     receipts: [
       makeReceipt(trace, profiles, {
         request: context.request,
@@ -432,37 +438,24 @@ export async function runObservationOnlyArm(
     observation.candidate_id,
     observation,
   ]));
-  const presentations = trace.candidates.map((candidate) => {
+  const policyResults = trace.candidates.map((candidate) => {
     const observation = byID.get(candidate.candidate_id)!;
-    if (observation.evidence_sufficient.noul < thresholds.evidenceSufficientFloor) {
-      return fullPresentation(candidate, 'ABSTAIN');
-    }
-    if (observation.unresolved_evidence.noul >= thresholds.keepFull) {
-      return fullPresentation(candidate);
-    }
-    if (!cas.verifyTool(
-      candidate.recovery,
-      candidate.stdout,
-      candidate.stderr,
-      candidate.exit_status,
-    ).ok) {
-      return fullPresentation(candidate);
-    }
-    if (observation.full_content_needed.noul >= thresholds.keepFull) {
-      return fullPresentation(candidate);
-    }
-    if (observation.still_needed.noul >= thresholds.retain) {
-      return referentialPresentation(candidate);
-    }
-    return {
-      candidate_id: candidate.candidate_id,
-      disposition: 'EVICTED' as const,
-      visible_text: '',
-      source_digest: candidate.recovery.source_digest,
-      omitted_bytes: candidate.recovery.byte_count,
-      recovery_required: true,
-    };
+    return decideSemanticPolicy({
+      candidate,
+      observation,
+      thresholds,
+      recovery: () => cas.verifyTool(
+        candidate.recovery,
+        candidate.stdout,
+        candidate.stderr,
+        candidate.exit_status,
+      ),
+    });
   });
+  const presentations = policyResults.map((result) => result.presentation);
+  const policyDecisions = Object.freeze(
+    policyResults.map((result) => result.decision),
+  );
 
   const observationDigest = sha256Digest(JSON.stringify(reassembled.observations));
   const dispositions = presentations.map((presentation) => presentation.disposition);
@@ -470,6 +463,7 @@ export async function runObservationOnlyArm(
     arm: 'D',
     presentations,
     observations: freezeObservations(reassembled.observations),
+    policyDecisions,
     receipts: [
       makeReceipt(trace, profiles, {
         request,
