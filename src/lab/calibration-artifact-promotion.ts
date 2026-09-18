@@ -5,38 +5,24 @@ import {
 } from './identity.js';
 import {
   evaluateCalibrationPromotion,
-  type CalibrationPromotionEvidence,
   type CalibrationPromotionPolicy,
 } from './calibration-promotion.js';
 import {
   verifyProviderCalibrationArtifact,
   type ProviderCalibrationArtifact,
 } from './calibration-artifact.js';
-import { sha256Digest } from './recovery.js';
-
-export interface ArtifactPromotionEvidence
-  extends Omit<CalibrationPromotionEvidence, 'calibrationIdentity'> {}
+import {
+  verifyCompiledArtifactPromotionEvidence,
+  type CompiledArtifactPromotionEvidence,
+} from './promotion-evidence.js';
 
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
-const ISSUE_TOKEN = Symbol('ANVIL.PromotedCalibrationArtifact.v1');
+const ISSUE_TOKEN = Symbol('ANVIL.PromotedCalibrationArtifact.v2');
 const ISSUED = new WeakSet<object>();
 
 function requireDigest(value: string, field: string): Uint8Array {
   if (!DIGEST.test(value)) throw new TypeError(`${field} must be canonical sha256`);
   return Buffer.from(value.slice('sha256:'.length), 'hex');
-}
-
-function evidenceDigest(evidence: ArtifactPromotionEvidence): Digest256 {
-  return sha256Digest(JSON.stringify({
-    schema: 'anvil.artifact-promotion-evidence.v1',
-    strongHoldoutSamples: evidence.strongHoldoutSamples,
-    falseAuthorityLeaks: evidence.falseAuthorityLeaks,
-    ece: evidence.ece,
-    brier: evidence.brier,
-    selectiveRisk: evidence.selectiveRisk,
-    coverage: evidence.coverage,
-    champion: evidence.champion ?? null,
-  }));
 }
 
 function promotedDigest(input: {
@@ -53,11 +39,11 @@ function promotedDigest(input: {
     { tag: 4, data: requireDigest(input.promotionPolicyDigest, 'promotionPolicyDigest') },
     { tag: 5, data: requireDigest(input.promotionEvidenceDigest, 'promotionEvidenceDigest') },
   ];
-  return digestTaggedIdentity('ANVIL.PromotedCalibrationArtifact.v1', components);
+  return digestTaggedIdentity('ANVIL.PromotedCalibrationArtifact.v2', components);
 }
 
 export class PromotedCalibrationArtifact {
-  public readonly schema = 'anvil.promoted-calibration-artifact.v1' as const;
+  public readonly schema = 'anvil.promoted-calibration-artifact.v2' as const;
 
   private constructor(
     token: symbol,
@@ -73,17 +59,14 @@ export class PromotedCalibrationArtifact {
     Object.freeze(this);
   }
 
-  static issue(
-    token: symbol,
-    fields: {
-      artifactDigest: Digest256;
-      providerProfileDigest: Digest256;
-      calibrationIdentity: Digest256;
-      promotionPolicyDigest: Digest256;
-      promotionEvidenceDigest: Digest256;
-      promotedArtifactDigest: Digest256;
-    },
-  ): PromotedCalibrationArtifact {
+  static issue(token: symbol, fields: {
+    artifactDigest: Digest256;
+    providerProfileDigest: Digest256;
+    calibrationIdentity: Digest256;
+    promotionPolicyDigest: Digest256;
+    promotionEvidenceDigest: Digest256;
+    promotedArtifactDigest: Digest256;
+  }): PromotedCalibrationArtifact {
     if (token !== ISSUE_TOKEN) throw new Error('promoted artifact issuer mismatch');
     return new PromotedCalibrationArtifact(
       token,
@@ -102,16 +85,33 @@ export class CalibrationArtifactPromotionRegistry {
 
   promote(
     artifact: ProviderCalibrationArtifact,
-    evidence: ArtifactPromotionEvidence,
+    evidence: CompiledArtifactPromotionEvidence,
     policy: CalibrationPromotionPolicy,
   ): Readonly<PromotedCalibrationArtifact> {
     if (!verifyProviderCalibrationArtifact(artifact)) {
       throw new Error('promotion requires an issued provider calibration artifact');
     }
+    if (!verifyCompiledArtifactPromotionEvidence(evidence)) {
+      throw new Error('promotion requires issued compiled promotion evidence');
+    }
+    if (evidence.artifactDigest !== artifact.artifactDigest) {
+      throw new Error('compiled promotion evidence artifact mismatch');
+    }
+    if (evidence.providerProfileDigest !== artifact.providerProfileDigest) {
+      throw new Error('compiled promotion evidence provider mismatch');
+    }
+    if (evidence.calibrationIdentity !== artifact.calibrationIdentity) {
+      throw new Error('compiled promotion evidence calibration mismatch');
+    }
 
     const decision = evaluateCalibrationPromotion({
-      ...evidence,
       calibrationIdentity: artifact.calibrationIdentity,
+      strongHoldoutSamples: evidence.strongHoldoutSamples,
+      falseAuthorityLeaks: evidence.falseAuthorityLeaks,
+      ece: evidence.ece,
+      brier: evidence.brier,
+      selectiveRisk: evidence.selectiveRisk,
+      coverage: evidence.coverage,
     }, policy);
     if (decision.status !== 'CANARY_ELIGIBLE' || decision.reasons.length !== 0) {
       throw new Error(
@@ -119,24 +119,22 @@ export class CalibrationArtifactPromotionRegistry {
       );
     }
 
-    const promotionEvidenceDigest = evidenceDigest(evidence);
     const digest = promotedDigest({
       artifactDigest: artifact.artifactDigest,
       providerProfileDigest: artifact.providerProfileDigest,
       calibrationIdentity: artifact.calibrationIdentity,
       promotionPolicyDigest: decision.policyDigest,
-      promotionEvidenceDigest,
+      promotionEvidenceDigest: evidence.evidenceDigest,
     });
     if (this.promoted.has(digest)) {
       throw new Error(`duplicate promoted calibration artifact ${digest}`);
     }
-
     const promoted = PromotedCalibrationArtifact.issue(ISSUE_TOKEN, {
       artifactDigest: artifact.artifactDigest,
       providerProfileDigest: artifact.providerProfileDigest,
       calibrationIdentity: artifact.calibrationIdentity,
       promotionPolicyDigest: decision.policyDigest,
-      promotionEvidenceDigest,
+      promotionEvidenceDigest: evidence.evidenceDigest,
       promotedArtifactDigest: digest,
     });
     this.promoted.set(digest, promoted);
@@ -155,7 +153,7 @@ export function verifyPromotedCalibrationArtifact(
       !ISSUED.has(value)
     ) return false;
     const promoted = value as PromotedCalibrationArtifact;
-    if (promoted.schema !== 'anvil.promoted-calibration-artifact.v1') return false;
+    if (promoted.schema !== 'anvil.promoted-calibration-artifact.v2') return false;
     return promotedDigest({
       artifactDigest: promoted.artifactDigest,
       providerProfileDigest: promoted.providerProfileDigest,

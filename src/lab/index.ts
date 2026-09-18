@@ -38,3 +38,4 @@ export * from './promotion-credential.js';
 export * from './provider-comparison.js';
 export * from './calibration-artifact.js';
 export * from './calibration-artifact-promotion.js';
+export * from './calibration-evidence-compiler.js';\nexport * from './provider-safety-trial.js';\nexport * from './promotion-evidence.js';\n
