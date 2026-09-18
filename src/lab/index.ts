@@ -52,4 +52,6 @@ export * from './provider-calibration-artifact-v2.js';
 export * from './calibration-evidence-v2.js';
 export * from './provider-shadow-replay-v2.js';
 export * from './provider-comparison-v2.js';
-export * from './promotion-evidence-v2.js';\nexport * from './calibration-artifact-promotion-v2.js';\nexport * from './promotion-credential-v3.js';\n
+export * from './promotion-evidence-v2.js';
+export * from './calibration-artifact-promotion-v2.js';
+export * from './promotion-credential-v3.js';
