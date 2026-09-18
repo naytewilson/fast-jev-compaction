@@ -287,9 +287,8 @@ const routeId =
 Registry rules:
 - `verifyPromotedAuthorityCredential(credential)` must pass.
 - duplicate route ID rejects.
-- grant mask is constructed internally as:
-  `source=true, evidence=true, calibration=true, authority=true, recovery=false`.
-- recovery is not granted by promotion credential. Mechanical recovery remains a separate runtime fact.
+- route grants expose only provider-bound promotion identity plus `calibrationAuthorized=true` and `policyProfileAuthorized=true`. They do NOT contain a `SemanticAuthorityMask`.
+- `M_source`, `M_evidence`, and `M_recovery` remain per-lane runtime facts owned by evidence/recovery boundaries.
 - registry never accepts a caller-defined mask.
 - grant binds providerProfileDigest and calibrationIdentity for later inspection.
 
@@ -298,14 +297,15 @@ Registry rules:
 Tests create credentials through `PromotionAuthorityIssuer` and register them.
 
 Keep deterministic route behavior:
-1. primary credential route
-2. hydrate
-3. pristine
-4. compatible credential route
-5. alternate credential route
-6. unoptimized
+1. if `evidenceDeficit=true` and mechanical recovery exists, hydrate
+2. if `evidenceDeficit=true` and pristine evidence exists, pristine
+3. primary credential route only when no evidence deficit is declared
+4. pristine conservative route when primary authority is absent
+5. compatible credential route
+6. alternate credential route
+7. unoptimized
 
-Unknown route IDs remain non-authoritative.
+A promotion credential establishes only the calibration/authority factors. It never asserts lane source/evidence/recovery. Unknown route IDs remain non-authoritative.
 
 - [ ] **Step 4: Export**
 
