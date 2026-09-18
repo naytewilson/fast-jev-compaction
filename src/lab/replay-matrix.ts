@@ -38,13 +38,12 @@ function emptyAggregate(): ArmAggregate {
 }
 
 function sourceBytes(trace: ReplayTrace): number {
-  return trace.candidates.reduce(
-    (total, candidate) =>
-      total +
-      Buffer.byteLength(candidate.stdout, 'utf8') +
-      Buffer.byteLength(candidate.stderr, 'utf8'),
-    0,
-  );
+  return trace.candidates.reduce((total, candidate) => {
+    const pristine = [candidate.stdout, candidate.stderr]
+      .filter((value) => value.length > 0)
+      .join('\n');
+    return total + Buffer.byteLength(pristine, 'utf8');
+  }, 0);
 }
 
 function visibleBytes(run: ReplayRun): number {
