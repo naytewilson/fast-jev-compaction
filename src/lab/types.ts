@@ -1,12 +1,11 @@
-export const MAPPED_DECISION_REQUEST_SCHEMA = 'anvil.mapped-decision-request.v0' as const;
-export const MAPPED_DECISION_RESPONSE_SCHEMA = 'anvil.mapped-decision-response.v0' as const;
+export const MAPPED_DECISION_REQUEST_SCHEMA = 'anvil.mapped-decision-request.v1' as const;
+export const MAPPED_DECISION_RESPONSE_SCHEMA = 'anvil.mapped-decision-response.v1' as const;
 
 export const MAPPED_OBSERVATION_AXES = [
   'evidence_sufficient',
   'still_needed',
   'full_content_needed',
   'unresolved_evidence',
-  'recoverable',
 ] as const;
 
 export type MappedObservationAxis = (typeof MAPPED_OBSERVATION_AXES)[number];
@@ -76,7 +75,6 @@ export interface MappedCandidateObservation {
   still_needed: NoulObservation;
   full_content_needed: NoulObservation;
   unresolved_evidence: NoulObservation;
-  recoverable: NoulObservation;
 }
 
 export interface MappedDecisionResponse {

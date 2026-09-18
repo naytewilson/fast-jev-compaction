@@ -87,7 +87,7 @@ function put(cas: InMemoryCAS, t: ReturnType<typeof trace>) {
 function envelope() {
   return async (request: any) => ({
     mapped_response: {
-      schema: 'anvil.mapped-decision-response.v0',
+      schema: 'anvil.mapped-decision-response.v1',
       request_id: request.request_id,
       observations: request.candidate_views.map((candidate: any) => ({
         candidate_id: candidate.candidate_id,
@@ -95,7 +95,6 @@ function envelope() {
         still_needed: { noul: 0.82 },
         full_content_needed: { noul: 0.13 },
         unresolved_evidence: { noul: 0.17 },
-        recoverable: { noul: 0.99 },
       })),
     },
     provider_metadata: {
@@ -125,7 +124,7 @@ describe('observation replay exposes validated shadow observations', () => {
 
     expect(run.observations).not.toBeNull();
     expect(run.observations?.[0].candidate_id).toBe(t.candidates[0].candidate_id);
-    expect(run.observations?.[0].recoverable.noul).toBe(0.99);
+    expect(run.observations?.[0].still_needed.noul).toBe(0.82);
   });
 });
 
@@ -148,9 +147,9 @@ describe('ProviderShadowReplayCompiler', () => {
 
     expect(artifact.schema).toBe('anvil.provider-shadow-replay.v1');
     expect(artifact.providerProfileDigest).toBe(p.providerProfileDigest);
-    expect(artifact.predictions).toHaveLength(5);
+    expect(artifact.predictions).toHaveLength(4);
     expect(artifact.predictions.every((x) => x.executionProfileDigest === p.providerProfileDigest)).toBe(true);
-    expect(artifact.predictions.find((x) => x.predicateId === 'recoverable')?.probability).toBe(0.99);
+    expect(artifact.predictions.find((x) => x.predicateId === 'still_needed')?.probability).toBe(0.82);
     expect(verifyProviderShadowReplayArtifact(artifact)).toBe(true);
   });
 

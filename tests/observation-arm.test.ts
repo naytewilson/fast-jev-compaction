@@ -41,7 +41,7 @@ function trace() {
 
 function response(request: any, values: Partial<Record<string, number>> = {}) {
   return {
-    schema: 'anvil.mapped-decision-response.v0',
+    schema: 'anvil.mapped-decision-response.v1',
     request_id: request.request_id,
     observations: request.candidate_views.map((candidate: any) => ({
       candidate_id: candidate.candidate_id,
@@ -49,7 +49,6 @@ function response(request: any, values: Partial<Record<string, number>> = {}) {
       still_needed: { noul: values.still_needed ?? 0.2 },
       full_content_needed: { noul: values.full_content_needed ?? 0.9 },
       unresolved_evidence: { noul: values.unresolved_evidence ?? 0.1 },
-      recoverable: { noul: values.recoverable ?? 0.99 },
     })),
   };
 }
@@ -110,13 +109,12 @@ describe('observation-only SIEVE candidate arm', () => {
     expect(result.presentations[0]).toMatchObject({ disposition: 'FULL' });
   });
 
-  it('semantic recoverable cannot override missing mechanical CAS recovery', async () => {
+  it('semantic observer cannot override missing mechanical CAS recovery', async () => {
     const CAS = exportedValue('InMemoryCAS');
     const run = exportedFunction('runObservationOnlyArm');
     const t = trace();
     const result = await run(t, new CAS(), profiles(), thresholds, async (request: any) =>
       response(request, {
-        recoverable: 1,
         full_content_needed: 0.1,
         still_needed: 0.9,
       }));

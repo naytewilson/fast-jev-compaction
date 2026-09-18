@@ -11,14 +11,13 @@ const expected = {
 };
 
 const valid = {
-  schema: 'anvil.semantic-observation-abi.v1',
+  schema: 'anvil.semantic-observation-abi.v2',
   ...expected,
   evidenceSufficient: 0.91,
   predicates: {
     stillNeeded: 0.8,
     fullContentNeeded: 0.2,
     unresolvedEvidence: 0.1,
-    recoverable: 0.99,
   },
   telemetry: {
     entropy: null,

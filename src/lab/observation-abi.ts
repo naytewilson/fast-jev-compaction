@@ -6,13 +6,12 @@ export interface SemanticLaneIdentity {
 }
 
 export interface SemanticObservationEnvelope extends SemanticLaneIdentity {
-  schema: 'anvil.semantic-observation-abi.v1';
+  schema: 'anvil.semantic-observation-abi.v2';
   evidenceSufficient: number;
   predicates: {
     stillNeeded: number;
     fullContentNeeded: number;
     unresolvedEvidence: number;
-    recoverable: number;
   };
   telemetry: {
     entropy: number | null;
@@ -39,7 +38,6 @@ const PREDICATE_KEYS = [
   'stillNeeded',
   'fullContentNeeded',
   'unresolvedEvidence',
-  'recoverable',
 ] as const;
 
 const TELEMETRY_KEYS = ['entropy', 'margin'] as const;
@@ -82,7 +80,7 @@ export function validateSemanticObservationEnvelope(
     );
   }
 
-  if (value.schema !== 'anvil.semantic-observation-abi.v1') {
+  if (value.schema !== 'anvil.semantic-observation-abi.v2') {
     return fail('observation_abi_mismatch', 'observation ABI schema mismatch');
   }
 

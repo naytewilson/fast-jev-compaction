@@ -21,7 +21,6 @@ const PREDICATES = new Set<MappedObservationAxis>([
   'still_needed',
   'full_content_needed',
   'unresolved_evidence',
-  'recoverable',
 ]);
 
 function requireDigest(value: string, field: string): void {

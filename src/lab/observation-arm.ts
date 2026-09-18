@@ -132,7 +132,6 @@ function freezeObservations(
     still_needed: Object.freeze({ ...observation.still_needed }),
     full_content_needed: Object.freeze({ ...observation.full_content_needed }),
     unresolved_evidence: Object.freeze({ ...observation.unresolved_evidence }),
-    recoverable: Object.freeze({ ...observation.recoverable }),
   })));
 }
 
@@ -165,7 +164,7 @@ function buildRequest(
     });
 
   return {
-    schema: 'anvil.mapped-decision-request.v0',
+    schema: 'anvil.mapped-decision-request.v1',
     request_id: `mdr-${trace.trace_id}`,
     source_run_id: trace.source_run_id,
     ...profiles,

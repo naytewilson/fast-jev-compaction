@@ -4,10 +4,10 @@ import { compileContextRetentionProgram } from '../src/lab/semantic-program.js';
 const digest = (c: string) => 'sha256:' + c.repeat(64);
 
 describe('RegisteredSemanticProgram compiler', () => {
-  it('freezes the five context-retention predicates in canonical order', () => {
+  it('freezes the four context-retention predicates in canonical order', () => {
     const program = compileContextRetentionProgram({
-      id: 'anvil.context-retention.v1',
-      version: '0.1.0',
+      id: 'anvil.context-retention.v2',
+      version: '2.0.0',
       digest: digest('a'),
     });
 
@@ -16,21 +16,22 @@ describe('RegisteredSemanticProgram compiler', () => {
       'still_needed',
       'full_content_needed',
       'unresolved_evidence',
-      'recoverable',
     ]);
+    expect(program.observationABIVersion).toBe('anvil.semantic-observation-abi.v2');
+    expect(program.predicates).toHaveLength(4);
     expect(program.predicates[0].requiresEvidenceSufficient).toBe(false);
     expect(program.predicates.slice(1).every((p) => p.requiresEvidenceSufficient)).toBe(true);
   });
 
   it('produces a stable compiled-program digest bound to the source contract', () => {
     const a = compileContextRetentionProgram({
-      id: 'anvil.context-retention.v1',
-      version: '0.1.0',
+      id: 'anvil.context-retention.v2',
+      version: '2.0.0',
       digest: digest('a'),
     });
     const b = compileContextRetentionProgram({
-      id: 'anvil.context-retention.v1',
-      version: '0.1.0',
+      id: 'anvil.context-retention.v2',
+      version: '2.0.0',
       digest: digest('b'),
     });
 

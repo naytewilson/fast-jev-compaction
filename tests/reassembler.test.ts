@@ -18,13 +18,12 @@ function observation(candidate_id: string, noul = 0.5) {
     still_needed: axis(noul),
     full_content_needed: axis(noul),
     unresolved_evidence: axis(noul),
-    recoverable: axis(noul),
   };
 }
 
 function response(observations: unknown[], request_id = 'mdr-0001') {
   return {
-    schema: 'anvil.mapped-decision-response.v0',
+    schema: 'anvil.mapped-decision-response.v1',
     request_id,
     observations,
   };
@@ -100,7 +99,6 @@ describe('strict mapped observation reassembly', () => {
     'still_needed',
     'full_content_needed',
     'unresolved_evidence',
-    'recoverable',
   ]) {
     it(`fails closed when ${field} is missing`, () => {
       const reassemble = exportedFunction('reassembleMappedObservations');
