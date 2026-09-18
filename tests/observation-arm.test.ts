@@ -138,6 +138,61 @@ describe('observation-only SIEVE candidate arm', () => {
     expect(result.presentations[0].visible_text).toContain('recovery=cas:observation-cand-1');
   });
 
+  it('uses exact omitted stdout bytes in the mapped semantic view', async () => {
+    const CAS = exportedValue('InMemoryCAS');
+    const run = exportedFunction('runObservationOnlyArm');
+    const encode = exportedFunction('encodeToolEvidence');
+    const carve = exportedFunction('carveHardRoots');
+    const t = trace();
+    const cas = new CAS();
+    cas.put(
+      'observation-cand-1',
+      encode(t.candidates[0].stdout, t.candidates[0].stderr, t.candidates[0].exit_status),
+    );
+
+    let captured: any;
+    await run(t, cas, profiles(), thresholds, async (request: any) => {
+      captured = request;
+      return response(request);
+    });
+
+    const carved = carve({
+      exitStatus: t.candidates[0].exit_status,
+      stdout: t.candidates[0].stdout,
+      stderr: t.candidates[0].stderr,
+      headLines: t.candidates[0].head_lines,
+      tailLines: t.candidates[0].tail_lines,
+      presentationBudgetBytes: t.candidates[0].presentation_budget_bytes,
+    });
+    expect(carved.kind).toBe('ELIGIBLE');
+    expect(captured.candidate_views[0].semantic_view.omitted_bytes)
+      .toBe(carved.omitted_stdout_bytes);
+  });
+
+  it('does not call the semantic provider when deterministic hard roots exceed budget', async () => {
+    const CAS = exportedValue('InMemoryCAS');
+    const run = exportedFunction('runObservationOnlyArm');
+    const encode = exportedFunction('encodeToolEvidence');
+    const t = trace();
+    t.candidates[0].presentation_budget_bytes = 1;
+
+    const cas = new CAS();
+    cas.put(
+      'observation-cand-1',
+      encode(t.candidates[0].stdout, t.candidates[0].stderr, t.candidates[0].exit_status),
+    );
+
+    let providerCalls = 0;
+    const result = await run(t, cas, profiles(), thresholds, async (request: any) => {
+      providerCalls += 1;
+      return response(request);
+    });
+
+    expect(providerCalls).toBe(0);
+    expect(result.presentations[0]).toMatchObject({ disposition: 'PRISTINE_FALLBACK' });
+    expect(result.presentations[0].visible_text).toContain('CRITICAL-MIDDLE');
+  });
+
   it('binds receipt digest to semantic identity and contains no credentials or question text', async () => {
     const createReceipt = exportedFunction('createReplayReceipt');
     const verifyReceipt = exportedFunction('verifyReplayReceipt');
