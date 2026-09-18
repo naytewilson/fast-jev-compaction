@@ -11,3 +11,6 @@ export * from './observation-arm.js';
 export * from './receipt.js';
 export * from './replay-matrix.js';
 export * from './system-one-adapter.js';
+export * from './identity.js';
+export * from './evidence-view.js';
+export * from './authority-mask.js';
