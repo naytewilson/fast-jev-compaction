@@ -1,4 +1,6 @@
 import { sha256Digest } from './recovery.js';
+import { SEMANTIC_OBSERVATION_ABI_DIGEST_V2 } from './semantic-contract-v2.js';
+import { deriveSemanticPolicyProfileV2 } from './semantic-policy-profile-v2.js';
 import {
   SEMANTIC_POLICY_REASONS_V2,
   type ObservationPolicyThresholdsV2,
@@ -15,6 +17,8 @@ export interface CalibratedPolicyReceiptV2Input {
   calibrationIdentity: string;
   calibrationArtifactDigest: string;
   decisionContractDigest: string;
+  policyProfileId: string;
+  policyProfileVersion: string;
   policyProfileDigest: string;
   policySemanticsDigest: string;
   rawReplayReceiptDigest: string;
@@ -62,6 +66,8 @@ const RECEIPT_KEYS = [
   'calibrationIdentity',
   'calibrationArtifactDigest',
   'decisionContractDigest',
+  'policyProfileId',
+  'policyProfileVersion',
   'policyProfileDigest',
   'policySemanticsDigest',
   'rawReplayReceiptDigest',
@@ -195,11 +201,25 @@ function buildCore(input: CalibratedPolicyReceiptV2Input) {
     requireDigest(value, field);
   }
 
+  if (input.observationABIDigest !== SEMANTIC_OBSERVATION_ABI_DIGEST_V2) {
+    throw new Error('calibrated V2 receipt Observation ABI digest mismatch');
+  }
+  requireText(input.policyProfileId, 'policyProfileId');
+  requireText(input.policyProfileVersion, 'policyProfileVersion');
+
   const thresholds = cloneThresholds(input.thresholds);
-  const thresholdDigest = sha256Digest(canonical({
-    schema: 'anvil.semantic-policy-thresholds.v2',
-    ...thresholds,
-  }));
+  const derivedPolicy = deriveSemanticPolicyProfileV2({
+    id: input.policyProfileId,
+    version: input.policyProfileVersion,
+    thresholds,
+  });
+  if (input.policyProfileDigest !== derivedPolicy.policyProfileDigest) {
+    throw new Error('calibrated V2 receipt policy profile digest mismatch');
+  }
+  if (input.policySemanticsDigest !== derivedPolicy.policySemanticsDigest) {
+    throw new Error('calibrated V2 receipt policy semantics digest mismatch');
+  }
+  const thresholdDigest = derivedPolicy.thresholdDigest;
 
   const decisions = Object.freeze(input.decisions.map(validateDecision));
   const seen = new Set<string>();
@@ -226,6 +246,8 @@ function buildCore(input: CalibratedPolicyReceiptV2Input) {
     calibrationIdentity: input.calibrationIdentity,
     calibrationArtifactDigest: input.calibrationArtifactDigest,
     decisionContractDigest: input.decisionContractDigest,
+    policyProfileId: input.policyProfileId,
+    policyProfileVersion: input.policyProfileVersion,
     policyProfileDigest: input.policyProfileDigest,
     policySemanticsDigest: input.policySemanticsDigest,
     rawReplayReceiptDigest: input.rawReplayReceiptDigest,
@@ -278,6 +300,8 @@ export function verifyCalibratedPolicyReceiptV2(
       calibrationIdentity: receipt.calibrationIdentity,
       calibrationArtifactDigest: receipt.calibrationArtifactDigest,
       decisionContractDigest: receipt.decisionContractDigest,
+      policyProfileId: receipt.policyProfileId,
+      policyProfileVersion: receipt.policyProfileVersion,
       policyProfileDigest: receipt.policyProfileDigest,
       policySemanticsDigest: receipt.policySemanticsDigest,
       rawReplayReceiptDigest: receipt.rawReplayReceiptDigest,

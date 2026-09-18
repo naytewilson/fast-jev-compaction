@@ -3,30 +3,40 @@ import {
   createCalibratedPolicyReceiptV2,
   verifyCalibratedPolicyReceiptV2,
 } from '../src/lab/calibrated-policy-receipt-v2.js';
+import { SEMANTIC_OBSERVATION_ABI_DIGEST_V2 } from '../src/lab/semantic-contract-v2.js';
+import { deriveSemanticPolicyProfileV2 } from '../src/lab/semantic-policy-profile-v2.js';
 
 const d = (c: string) => 'sha256:' + c.repeat(64);
 
 function input() {
+  const thresholds = {
+    evidenceSufficientFloor: 0.8,
+    retain: 0.5,
+    keepFull: 0.8,
+    reviewFloor: 0.8,
+  };
+  const policyProfile = deriveSemanticPolicyProfileV2({
+    id: 'jev-v2-shadow-policy',
+    version: '2.0.0',
+    thresholds,
+  });
   return {
     traceId: 'trace-v2',
     sourceRunId: 'run-v2',
     providerProfileDigest: d('1'),
-    observationABIDigest: d('2'),
+    observationABIDigest: SEMANTIC_OBSERVATION_ABI_DIGEST_V2,
     compiledProgramDigest: d('3'),
     calibrationIdentity: d('4'),
     calibrationArtifactDigest: d('5'),
     decisionContractDigest: d('6'),
-    policyProfileDigest: d('7'),
-    policySemanticsDigest: d('8'),
+    policyProfileId: policyProfile.id,
+    policyProfileVersion: policyProfile.version,
+    policyProfileDigest: policyProfile.policyProfileDigest,
+    policySemanticsDigest: policyProfile.policySemanticsDigest,
     rawReplayReceiptDigest: d('9'),
     rawObservationDigest: d('a'),
     calibratedObservationDigest: d('b'),
-    thresholds: {
-      evidenceSufficientFloor: 0.8,
-      retain: 0.5,
-      keepFull: 0.8,
-      reviewFloor: 0.8,
-    },
+    thresholds,
     decisions: [{
       candidate_id: 'cand-v2',
       source_digest: d('c'),
@@ -55,6 +65,7 @@ describe('CalibratedPolicyReceipt V2', () => {
     const receipt = createCalibratedPolicyReceiptV2(input());
     for (const tampered of [
       { ...receipt, observationABIDigest: d('e') },
+      { ...receipt, policyProfileDigest: d('e') },
       { ...receipt, calibratedObservationDigest: d('e') },
       { ...receipt, thresholds: { ...receipt.thresholds, retain: 0.4 } },
       {
@@ -67,6 +78,13 @@ describe('CalibratedPolicyReceipt V2', () => {
     ]) {
       expect(verifyCalibratedPolicyReceiptV2(tampered as any)).toBe(false);
     }
+  });
+
+  it('rejects policy identity that is not derived from the exact thresholds', () => {
+    expect(() => createCalibratedPolicyReceiptV2({
+      ...input(),
+      policyProfileDigest: d('e'),
+    })).toThrow(/policy profile digest/i);
   });
 
   it('rejects inconsistent recovery state', () => {

@@ -290,6 +290,8 @@ export async function runCalibratedObservationReplayV2(
     calibrationIdentity: input.calibrationArtifact.calibrationIdentity,
     calibrationArtifactDigest: input.calibrationArtifact.artifactDigest,
     decisionContractDigest: input.profiles.decision_contract.digest,
+    policyProfileId: input.policyProfile.id,
+    policyProfileVersion: input.policyProfile.version,
     policyProfileDigest: input.policyProfile.policyProfileDigest,
     policySemanticsDigest: input.policyProfile.policySemanticsDigest,
     rawReplayReceiptDigest: rawReplayReceipt.receipt_digest,
