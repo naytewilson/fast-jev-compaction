@@ -7,6 +7,7 @@ import {
   deriveProviderExecutionProfile,
   runCalibratedObservationReplay,
   runObservationOnlyArm,
+  verifyCalibratedPolicyReceipt,
 } from '../src/lab/index.js';
 import type { SemanticCalibrationLabel } from '../src/lab/semantic-label.js';
 import type { SemanticReplayPrediction } from '../src/lab/calibration-replay.js';
@@ -229,4 +230,46 @@ describe('calibrated observation policy replay', () => {
       provider: provider(),
     })).rejects.toThrow(/provider profile|calibration/i);
   });
+  it('emits typed policy decisions and a source-bound calibrated policy receipt', async () => {
+    const profile = providerProfile();
+    const build = calibrationBuild(profile);
+    const t = trace();
+    const cas = new InMemoryCAS();
+    cas.put(
+      'calibrated-policy-1',
+      encodeToolEvidence(t.candidates[0].stdout, '', 0),
+    );
+    const profiles = {
+      decision_contract: { id: 'anvil.context-retention.v2', version: '2.0.0', digest: d('a') },
+      execution_profile: { id: profile.providerId, version: '1.0.0', digest: profile.providerProfileDigest },
+      calibration_profile: { id: 'jev-calibrated', version: '1.0.0', digest: build.calibrationArtifact.calibrationIdentity },
+      policy_profile: { id: 'shadow-policy', version: '1.0.0', digest: d('6') },
+    };
+
+    const calibrated = await runCalibratedObservationReplay({
+      trace: t,
+      cas,
+      profiles,
+      thresholds,
+      providerProfile: profile,
+      calibrationArtifact: build.calibrationArtifact,
+      provider: provider(),
+    });
+
+    expect(calibrated.policyDecisions).toEqual([
+      expect.objectContaining({
+        candidateId: 'cand-0001',
+        disposition: 'REFERENTIAL',
+        reason: 'still_needed_reference',
+        mechanicalRecoveryVerified: true,
+      }),
+    ]);
+    expect(calibrated.receipt.rawReplayReceiptDigest)
+      .toBe(calibrated.rawReplayReceipt.receipt_digest);
+    expect(calibrated.receipt.calibrationArtifactDigest)
+      .toBe(build.calibrationArtifact.artifactDigest);
+    expect(calibrated.receipt.decisions[0].reason).toBe('still_needed_reference');
+    expect(verifyCalibratedPolicyReceipt(calibrated.receipt)).toBe(true);
+  });
+
 });
