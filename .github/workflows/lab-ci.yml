@@ -10,6 +10,7 @@ on:
     paths:
       - "src/**"
       - "tests/**"
+      - "tools/native/causal-stepper/**"
       - "package.json"
       - "package-lock.json"
       - "tsconfig*.json"
@@ -18,6 +19,7 @@ on:
     paths:
       - "src/**"
       - "tests/**"
+      - "tools/native/causal-stepper/**"
       - "package.json"
       - "package-lock.json"
       - "tsconfig*.json"
@@ -44,3 +46,9 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Build native causal stepper
+        working-directory: tools/native/causal-stepper
+        run: swift build -c release
+      - name: Run native causal-stepper regressions
+        working-directory: tools/native/causal-stepper
+        run: swift run -c release CausalStepperTests
