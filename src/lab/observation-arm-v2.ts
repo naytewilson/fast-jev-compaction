@@ -477,6 +477,7 @@ function makeReceipt(
 function fallbackRun(
   trace: ReplayTrace,
   profiles: ObservationProfilesV2,
+  mechanicalRecovery: readonly Readonly<MechanicalRecoveryEvidence>[],
   reason: string,
   context: Partial<Omit<
     ReceiptContext,
@@ -493,15 +494,17 @@ function fallbackRun(
     arm: 'D2',
     presentations,
     observations: null,
-    mechanicalRecovery: Object.freeze([]),
+    mechanicalRecovery,
     policy: Object.freeze([]),
     receipts: [
       makeReceipt(trace, profiles, {
         request: context.request,
         rawResponse: context.rawResponse,
-        observationDigest: sha256Digest(
-          `PRISTINE_FALLBACK_V2:${reason}`,
-        ),
+        observationDigest: sha256Digest(JSON.stringify({
+          schema: 'anvil.semantic-fabric-v2-fallback-evidence.v0',
+          reason,
+          mechanicalRecovery,
+        })),
         dispositions,
         errorCode: reason,
         pristineFallback: true,
@@ -522,6 +525,11 @@ export async function runObservationOnlyArmV2(
 ): Promise<ObservationReplayRunV2> {
   validateThresholds(thresholds);
 
+  const mechanicalRecovery = Object.freeze(
+    trace.candidates.map((candidate) =>
+      evaluateMechanicalRecovery(cas, candidate)),
+  );
+
   const carvedByID = new Map<string, HardRootEligible>();
   for (const candidate of trace.candidates) {
     const carved = carveHardRoots({
@@ -533,9 +541,15 @@ export async function runObservationOnlyArmV2(
       presentationBudgetBytes: candidate.presentation_budget_bytes,
     });
     if (carved.kind === 'PRISTINE') {
-      return fallbackRun(trace, profiles, 'hard_roots_exceed_budget', {
-        providerMetadata,
-      });
+      return fallbackRun(
+        trace,
+        profiles,
+        mechanicalRecovery,
+        'hard_roots_exceed_budget',
+        {
+          providerMetadata,
+        },
+      );
     }
     carvedByID.set(candidate.candidate_id, carved);
   }
@@ -543,10 +557,16 @@ export async function runObservationOnlyArmV2(
   const request = buildRequest(trace, profiles, carvedByID);
   const validation = validateSemanticDecisionRequestV2(request);
   if (!validation.ok) {
-    return fallbackRun(trace, profiles, `request:${validation.code}`, {
-      request,
-      providerMetadata,
-    });
+    return fallbackRun(
+      trace,
+      profiles,
+      mechanicalRecovery,
+      `request:${validation.code}`,
+      {
+        request,
+        providerMetadata,
+      },
+    );
   }
 
   let providerResult: unknown;
@@ -554,22 +574,34 @@ export async function runObservationOnlyArmV2(
   try {
     providerResult = await provider(request);
   } catch {
-    return fallbackRun(trace, profiles, 'provider_exception', {
-      request,
-      latencyMs: Date.now() - providerStart,
-      providerMetadata,
-    });
+    return fallbackRun(
+      trace,
+      profiles,
+      mechanicalRecovery,
+      'provider_exception',
+      {
+        request,
+        latencyMs: Date.now() - providerStart,
+        providerMetadata,
+      },
+    );
   }
   const latencyMs = Date.now() - providerStart;
 
   const parsed = parseProviderEnvelope(providerResult);
   if (parsed.kind === 'invalid') {
-    return fallbackRun(trace, profiles, 'provider_envelope_invalid', {
-      request,
-      rawResponse: providerResult,
-      latencyMs,
-      providerMetadata,
-    });
+    return fallbackRun(
+      trace,
+      profiles,
+      mechanicalRecovery,
+      'provider_envelope_invalid',
+      {
+        request,
+        rawResponse: providerResult,
+        latencyMs,
+        providerMetadata,
+      },
+    );
   }
 
   const raw = parsed.kind === 'envelope'
@@ -588,6 +620,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
+      mechanicalRecovery,
       `reassembly:${reassembled.code}`,
       {
         request,
@@ -603,11 +636,6 @@ export async function runObservationOnlyArmV2(
       observation.candidate_id,
       observation,
     ]),
-  );
-
-  const mechanicalRecovery = Object.freeze(
-    trace.candidates.map((candidate) =>
-      evaluateMechanicalRecovery(cas, candidate)),
   );
 
   const recoveryByID = new Map(
