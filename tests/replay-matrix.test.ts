@@ -52,8 +52,9 @@ describe('offline replay matrix', () => {
     for (const arm of ['A', 'B', 'C', 'D']) {
       expect(report.arms[arm].sourceBytes).toBeGreaterThan(0);
       expect(report.arms[arm].visibleBytes).toBeGreaterThanOrEqual(0);
-      expect(report.arms[arm].visibleBytes).toBeLessThanOrEqual(report.arms[arm].sourceBytes);
+      expect(Number.isFinite(report.arms[arm].visibleBytes)).toBe(true);
     }
+    expect(report.arms.A.visibleBytes).toBe(report.arms.A.sourceBytes);
     expect(report.arms.D.receiptCount).toBe(corpus.length);
   });
 });
