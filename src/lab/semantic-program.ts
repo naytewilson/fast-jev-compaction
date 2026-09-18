@@ -12,11 +12,11 @@ export interface RegisteredSemanticPredicate {
 }
 
 export interface RegisteredSemanticProgram {
-  schema: 'anvil.registered-semantic-program.v1';
-  id: 'anvil.context-retention.v1';
-  version: '1.0.0';
+  schema: 'anvil.registered-semantic-program.v2';
+  id: 'anvil.context-retention.v2';
+  version: '2.0.0';
   decisionContract: ProfileIdentity;
-  observationABIVersion: 'anvil.semantic-observation-abi.v1';
+  observationABIVersion: 'anvil.semantic-observation-abi.v2';
   predicates: readonly RegisteredSemanticPredicate[];
   programDigest: string;
 }
@@ -29,9 +29,7 @@ const DEFINITIONS: Record<MappedObservationAxis, string> = {
   full_content_needed:
     'Replacing omitted source content with an exact reversible reference would materially reduce usefulness.',
   unresolved_evidence:
-    'The candidate contains unresolved failure, warning, contradiction, dependency, or verification evidence.',
-  recoverable:
-    'The candidate appears semantically recoverable through its declared identity; mechanical recovery remains separately authoritative.',
+    'The candidate contains evidence whose interpretation, freshness, dependency state, failure status, contradiction status, or verification state still requires review.',
 };
 
 function frozenIdentity(identity: ProfileIdentity): ProfileIdentity {
@@ -55,11 +53,11 @@ export function compileContextRetentionProgram(
 
   const contract = frozenIdentity(decisionContract);
   const core = {
-    schema: 'anvil.registered-semantic-program.v1' as const,
-    id: 'anvil.context-retention.v1' as const,
-    version: '1.0.0' as const,
+    schema: 'anvil.registered-semantic-program.v2' as const,
+    id: 'anvil.context-retention.v2' as const,
+    version: '2.0.0' as const,
     decisionContract: contract,
-    observationABIVersion: 'anvil.semantic-observation-abi.v1' as const,
+    observationABIVersion: 'anvil.semantic-observation-abi.v2' as const,
     predicates,
   };
 
