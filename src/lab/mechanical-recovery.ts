@@ -54,7 +54,7 @@ function evidenceDigest(input: {
 
 export class MechanicalRecoveryEvidence {
   public readonly schema = 'anvil.mechanical-recovery-evidence.v1' as const;
-  private readonly authorityBrand = true;
+  readonly #authorityBrand: true = true;
 
   private constructor(
     token: symbol,
