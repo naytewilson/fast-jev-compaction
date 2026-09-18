@@ -3,10 +3,14 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
+  AUTHORITY_POLICY_OUTCOMES,
   FileReceiptSpineJournal,
+  GENESIS_AUTHORITY_RECEIPT_DIGEST,
   ReceiptEnrichmentQueue,
   verifyAuthorityReceiptSpine,
+  type AuthorityPolicyOutcome,
 } from '../src/lab/receipt-spine.js';
+import { sha256Digest } from '../src/lab/recovery.js';
 
 const dirs: string[] = [];
 const digest = (c: string) => 'sha256:' + c.repeat(64);
@@ -17,7 +21,7 @@ function journalPath(): string {
   return join(dir, 'authority.jsonl');
 }
 
-function input(policyOutcome = 'authorized') {
+function input(policyOutcome: AuthorityPolicyOutcome = 'authorized') {
   return {
     requestId: 'req-1',
     sourceDigest: digest('1'),
@@ -38,32 +42,69 @@ afterEach(() => {
   while (dirs.length > 0) rmSync(dirs.pop()!, { recursive: true, force: true });
 });
 
-describe('durable authority receipt spine', () => {
-  it('persists monotonic verified spines across journal reopen', () => {
-    const path = journalPath();
-    const journal = new FileReceiptSpineJournal(path);
+describe('durable authority receipt spine v2', () => {
+  it('hash-chains every receipt from a canonical genesis digest', () => {
+    const journal = new FileReceiptSpineJournal(journalPath());
     const a = journal.append(input());
     const b = journal.append({ ...input('fallback'), requestId: 'req-2' });
+    const c = journal.append({ ...input('suppressed'), requestId: 'req-3' });
 
-    expect(a.sequence).toBe(1);
-    expect(b.sequence).toBe(2);
-    expect(verifyAuthorityReceiptSpine(a)).toBe(true);
-    expect(verifyAuthorityReceiptSpine(b)).toBe(true);
-
-    const reopened = new FileReceiptSpineJournal(path);
-    expect(reopened.readAll().map((r) => r.sequence)).toEqual([1, 2]);
-    expect(reopened.append({ ...input(), requestId: 'req-3' }).sequence).toBe(3);
+    expect(a.previousReceiptDigest).toBe(GENESIS_AUTHORITY_RECEIPT_DIGEST);
+    expect(b.previousReceiptDigest).toBe(a.receiptDigest);
+    expect(c.previousReceiptDigest).toBe(b.receiptDigest);
+    expect(a.receiptSchema).toBe('anvil.authority-receipt-spine.v2');
+    expect(verifyAuthorityReceiptSpine(c)).toBe(true);
   });
 
-  it('detects tampering before replaying journal authority', () => {
+  it('detects a rewritten middle receipt because the next link no longer matches', () => {
     const path = journalPath();
     const journal = new FileReceiptSpineJournal(path);
     journal.append(input());
+    journal.append({ ...input('fallback'), requestId: 'req-2' });
+    journal.append({ ...input('suppressed'), requestId: 'req-3' });
 
-    const raw = readFileSync(path, 'utf8');
-    writeFileSync(path, raw.replace('"policyOutcome":"authorized"', '"policyOutcome":"suppressed"'));
+    const lines = readFileSync(path, 'utf8').trim().split('\n');
+    const middle = JSON.parse(lines[1]);
+    middle.policyOutcome = 'abstain';
+    const { receiptDigest: _oldDigest, ...withoutDigest } = middle;
+    middle.receiptDigest = sha256Digest(JSON.stringify(withoutDigest));
+    lines[1] = JSON.stringify(middle);
+    writeFileSync(path, lines.join('\n') + '\n');
 
-    expect(() => new FileReceiptSpineJournal(path)).toThrow(/receipt_digest_mismatch/i);
+    expect(() => new FileReceiptSpineJournal(path)).toThrow(/previous_receipt_digest_mismatch/i);
+  });
+
+  it('uses a closed policy-outcome vocabulary', () => {
+    expect(AUTHORITY_POLICY_OUTCOMES).toEqual([
+      'authorized',
+      'suppressed',
+      'hydrate',
+      'fallback',
+      'escalate',
+      'abstain',
+      'unoptimized',
+    ]);
+    expect(() => new FileReceiptSpineJournal(journalPath()).append({
+      ...input(),
+      policyOutcome: 'invented' as AuthorityPolicyOutcome,
+    })).toThrow(/policyOutcome/i);
+  });
+
+  it('rejects malformed self-consistent-looking receipts', () => {
+    const journal = new FileReceiptSpineJournal(journalPath());
+    const receipt = journal.append(input());
+    expect(verifyAuthorityReceiptSpine({
+      ...receipt,
+      receiptSchema: 'anvil.authority-receipt-spine.v1',
+    } as any)).toBe(false);
+    expect(verifyAuthorityReceiptSpine({
+      ...receipt,
+      sequence: 0,
+    } as any)).toBe(false);
+    expect(verifyAuthorityReceiptSpine({
+      ...receipt,
+      sourceDigest: 'sha256:BAD',
+    } as any)).toBe(false);
   });
 });
 
