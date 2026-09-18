@@ -51,3 +51,4 @@ export * from './calibration-replay-v2.js';
 export * from './provider-calibration-artifact-v2.js';
 export * from './calibration-evidence-v2.js';
 export * from './provider-shadow-replay-v2.js';
+export * from './provider-comparison-v2.js';
