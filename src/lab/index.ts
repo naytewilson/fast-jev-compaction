@@ -10,3 +10,4 @@ export * from './upstream-arm.js';
 export * from './observation-arm.js';
 export * from './receipt.js';
 export * from './replay-matrix.js';
+export * from './system-one-adapter.js';
