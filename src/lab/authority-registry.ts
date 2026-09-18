@@ -1,19 +1,10 @@
 import {
-  deriveSemanticCapabilities,
-  type SemanticAuthorityMask,
-} from './authority-mask.js';
-
-export interface AuthorityRegistrationInput {
-  routeId: string;
-  calibrationIdentity: string;
-  authorityIdentity: string;
-  sourceLineageDigest: string;
-  authorityGeneration: number;
-  mask: SemanticAuthorityMask;
-}
+  verifyPromotedAuthorityCredential,
+  type PromotedAuthorityCredential,
+} from './promotion-credential.js';
 
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
-const ISSUER = Symbol('ANVIL.AuthorityRegistry.v1');
+const GRANT_TOKEN = Symbol('ANVIL.AuthorityRouteGrant.v2');
 
 function requireDigest(value: string, field: string): void {
   if (!DIGEST.test(value)) throw new TypeError(`${field} must be canonical sha256`);
@@ -26,31 +17,43 @@ function requireRouteId(value: string): void {
 }
 
 export class AuthorityRouteGrant {
+  public readonly calibrationAuthorized = true as const;
+  public readonly policyProfileAuthorized = true as const;
+
   private constructor(
+    token: symbol,
     public readonly routeId: string,
+    public readonly providerId: string,
+    public readonly providerProfileDigest: string,
     public readonly calibrationIdentity: string,
     public readonly authorityIdentity: string,
+    public readonly policyProfileDigest: string,
+    public readonly observationABIDigest: string,
     public readonly sourceLineageDigest: string,
     public readonly authorityGeneration: number,
-    public readonly mask: Readonly<SemanticAuthorityMask>,
+    public readonly credentialDigest: string,
   ) {
+    if (token !== GRANT_TOKEN) throw new Error('route grant is registry protected');
     Object.freeze(this);
   }
 
-  static issue(
-    issuer: symbol,
-    input: AuthorityRegistrationInput,
+  static fromCredential(
+    token: symbol,
+    routeId: string,
+    credential: PromotedAuthorityCredential,
   ): AuthorityRouteGrant {
-    if (issuer !== ISSUER) {
-      throw new Error('AuthorityRouteGrant may only be issued by AuthorityRegistry');
-    }
     return new AuthorityRouteGrant(
-      input.routeId,
-      input.calibrationIdentity,
-      input.authorityIdentity,
-      input.sourceLineageDigest,
-      input.authorityGeneration,
-      Object.freeze({ ...input.mask }),
+      token,
+      routeId,
+      credential.providerId,
+      credential.providerProfileDigest,
+      credential.calibrationIdentity,
+      credential.authorityIdentity,
+      credential.policyProfileDigest,
+      credential.observationABIDigest,
+      credential.sourceLineageDigest,
+      credential.authorityGeneration,
+      credential.credentialDigest,
     );
   }
 }
@@ -58,23 +61,23 @@ export class AuthorityRouteGrant {
 export class AuthorityRegistry {
   private readonly grants = new Map<string, AuthorityRouteGrant>();
 
-  register(input: AuthorityRegistrationInput): AuthorityRouteGrant {
-    requireRouteId(input.routeId);
-    requireDigest(input.calibrationIdentity, 'calibrationIdentity');
-    requireDigest(input.authorityIdentity, 'authorityIdentity');
-    requireDigest(input.sourceLineageDigest, 'sourceLineageDigest');
-    if (!Number.isSafeInteger(input.authorityGeneration) || input.authorityGeneration < 0) {
-      throw new TypeError('authorityGeneration must be a non-negative safe integer');
+  registerCredential(
+    credential: PromotedAuthorityCredential,
+  ): AuthorityRouteGrant {
+    if (!verifyPromotedAuthorityCredential(credential)) {
+      throw new Error('authority registry requires an issued promotion credential');
     }
-    if (!deriveSemanticCapabilities(input.mask).mayDrivePolicy) {
-      throw new Error('route registration requires policy authority');
+    const routeId = `authority:${credential.providerId}:${credential.authorityGeneration}`;
+    requireRouteId(routeId);
+    if (this.grants.has(routeId)) {
+      throw new Error(`duplicate route id ${routeId}`);
     }
-    if (this.grants.has(input.routeId)) {
-      throw new Error(`duplicate route id ${input.routeId}`);
-    }
-
-    const grant = AuthorityRouteGrant.issue(ISSUER, input);
-    this.grants.set(input.routeId, grant);
+    const grant = AuthorityRouteGrant.fromCredential(
+      GRANT_TOKEN,
+      routeId,
+      credential,
+    );
+    this.grants.set(routeId, grant);
     return grant;
   }
 

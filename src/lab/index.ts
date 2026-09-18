@@ -33,3 +33,6 @@ export * from './semantic-label.js';
 export * from './calibration-replay.js';
 export * from './isotonic-calibrator.js';
 export * from './calibration-promotion.js';
+export * from './provider-profile.js';
+export * from './promotion-credential.js';
+export * from './provider-comparison.js';

@@ -58,6 +58,7 @@ function validateRequest(request: AuthorityRoutingRequest): void {
     throw new TypeError('routeGeneration must be a non-negative safe integer');
   }
   validateRouteId(request.primaryRouteId, 'primaryRouteId');
+
   for (const [field, ids] of [
     ['compatibleProfileRouteIds', request.compatibleProfileRouteIds],
     ['alternateProviderRouteIds', request.alternateProviderRouteIds],
@@ -108,13 +109,19 @@ export function selectAuthorityRoute(
 ): AuthorityRoutingDecision {
   validateRequest(request);
 
+  if (request.evidenceDeficit) {
+    if (request.mechanicalRecoveryAvailable) {
+      return decision(request, 'hydrate', null, 'recoverable-evidence-deficit');
+    }
+    if (request.pristineAvailable) {
+      return decision(request, 'pristine', null, 'evidence-deficit-pristine');
+    }
+    return decision(request, 'unoptimized', null, 'evidence-deficit-no-semantic-route');
+  }
+
   const primary = registry.resolve(request.primaryRouteId, request.sourceLineageDigest);
   if (primary !== null) {
     return decision(request, 'primary', primary, 'primary-authority-valid');
-  }
-
-  if (request.evidenceDeficit && request.mechanicalRecoveryAvailable) {
-    return decision(request, 'hydrate', null, 'recoverable-evidence-deficit');
   }
 
   if (request.pristineAvailable) {
