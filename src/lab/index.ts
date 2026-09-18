@@ -47,3 +47,4 @@ export * from './promotion-evidence.js';
 export * from './provider-shadow-replay.js';
 export * from './calibration-artifact-v2.js';
 export * from './calibration-evidence-compiler-v2.js';
+export * from './provider-shadow-replay-v2.js';
