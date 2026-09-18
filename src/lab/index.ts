@@ -46,3 +46,8 @@ export * from './semantic-contract-v2.js';
 export * from './mechanical-recovery.js';
 export * from './observation-arm-v2.js';
 export * from './system-one-adapter-v2.js';
+export * from './semantic-label-v2.js';
+export * from './calibration-replay-v2.js';
+export * from './provider-calibration-artifact-v2.js';
+export * from './calibration-evidence-v2.js';
+export * from './provider-shadow-replay-v2.js';
