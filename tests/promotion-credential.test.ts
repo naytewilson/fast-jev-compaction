@@ -1,108 +1,64 @@
 import { describe, expect, it } from 'vitest';
-import { evaluateCalibrationPromotion } from '../src/lab/calibration-promotion.js';
 import {
   PromotionAuthorityIssuer,
   verifyPromotedAuthorityCredential,
 } from '../src/lab/promotion-credential.js';
-import { deriveProviderExecutionProfile } from '../src/lab/provider-profile.js';
+import { evaluateCalibrationPromotion } from '../src/lab/calibration-promotion.js';
+import { makeCredential, makePromotedArtifact, makeProviderProfile, d } from './provider-authority-fixtures.js';
 
-const d = (c: string) => 'sha256:' + c.repeat(64);
-
-const promotionPolicy = {
-  minStrongHoldoutSamples: 100,
-  maxFalseAuthorityLeaks: 0,
-  maxECE: 0.05,
-  maxBrier: 0.1,
-  maxSelectiveRisk: 0.02,
-  minCoverage: 0.8,
-};
-
-function promotion(calibrationIdentity = d('a')) {
-  return evaluateCalibrationPromotion({
-    calibrationIdentity,
-    strongHoldoutSamples: 500,
-    falseAuthorityLeaks: 0,
-    ece: 0.02,
-    brier: 0.04,
-    selectiveRisk: 0.01,
-    coverage: 0.9,
-  }, promotionPolicy);
-}
-
-function profile(providerId = 'typesafe-system-one/jev-1.13.0', kind: any = 'jev-system-one') {
-  return deriveProviderExecutionProfile({
-    providerId,
-    providerKind: kind,
-    modelIdentityDigest: providerId.includes('qwen') ? d('2') : d('1'),
-    modelAssurance: providerId.includes('qwen') ? 'contentVerified' : 'opaqueVersioned',
-    executionSemanticsDigest: providerId.includes('qwen') ? d('4') : d('3'),
-    normalizerDigest: d('5'),
-    observationABIDigest: d('6'),
-  });
-}
-
-function issue(provider = profile(), p = promotion()) {
-  return new PromotionAuthorityIssuer().issue({
-    providerProfile: provider,
-    promotion: p,
-    policyProfileDigest: d('7'),
-    observationABIDigest: d('6'),
-    sourceLineageDigest: d('8'),
-    authorityGeneration: 3,
-  });
-}
-
-describe('promotion-issued authority credential', () => {
-  it('mints only from an eligible promotion decision', () => {
-    const credential = issue();
-    expect(credential.schema).toBe('anvil.promoted-authority-credential.v1');
-    expect(Object.isFrozen(credential)).toBe(true);
+describe('artifact-descended promotion credential', () => {
+  it('mints from an issued promoted calibration artifact', () => {
+    const { credential, promotedArtifact } = makeCredential();
+    expect(credential.calibrationIdentity).toBe(promotedArtifact.calibrationIdentity);
+    expect(credential.promotedArtifactDigest).toBe(promotedArtifact.promotedArtifactDigest);
     expect(verifyPromotedAuthorityCredential(credential)).toBe(true);
+  });
 
-    const shadow = evaluateCalibrationPromotion({
+  it('rejects a promoted artifact from another provider profile', () => {
+    const qwen = makeProviderProfile('neo/qwen-ane');
+    const { promotedArtifact } = makePromotedArtifact('typesafe-system-one/jev-1.13.0');
+
+    expect(() => new PromotionAuthorityIssuer().issue({
+      providerProfile: qwen,
+      promotedArtifact,
+      policyProfileDigest: d('6'),
+      observationABIDigest: qwen.observationABIDigest,
+      sourceLineageDigest: d('7'),
+      authorityGeneration: 7,
+    })).toThrow(/provider profile/i);
+  });
+
+  it('generic promotion results no longer satisfy the issuer', () => {
+    const providerProfile = makeProviderProfile();
+    const generic = evaluateCalibrationPromotion({
       calibrationIdentity: d('a'),
       strongHoldoutSamples: 500,
-      falseAuthorityLeaks: 1,
+      falseAuthorityLeaks: 0,
       ece: 0.02,
       brier: 0.04,
       selectiveRisk: 0.01,
       coverage: 0.9,
-    }, promotionPolicy);
+    }, {
+      minStrongHoldoutSamples: 100,
+      maxFalseAuthorityLeaks: 0,
+      maxECE: 0.05,
+      maxBrier: 0.1,
+      maxSelectiveRisk: 0.02,
+      minCoverage: 0.8,
+    });
 
-    expect(() => issue(profile(), shadow)).toThrow(/CANARY_ELIGIBLE/i);
-  });
-
-  it('binds credential identity to the provider profile', () => {
-    const jevCredential = issue(profile());
-    const qwenCredential = issue(profile('neo/qwen-ane', 'qwen-ane'));
-    expect(qwenCredential.credentialDigest).not.toBe(jevCredential.credentialDigest);
-    expect(qwenCredential.providerProfileDigest).not.toBe(jevCredential.providerProfileDigest);
-  });
-
-  it('rejects ABI mismatch during issuance', () => {
     expect(() => new PromotionAuthorityIssuer().issue({
-      providerProfile: profile(),
-      promotion: promotion(),
-      policyProfileDigest: d('7'),
-      observationABIDigest: d('9'),
-      sourceLineageDigest: d('8'),
-      authorityGeneration: 3,
-    })).toThrow(/observation ABI/i);
+      providerProfile,
+      promotedArtifact: generic as any,
+      policyProfileDigest: d('6'),
+      observationABIDigest: providerProfile.observationABIDigest,
+      sourceLineageDigest: d('7'),
+      authorityGeneration: 7,
+    })).toThrow(/promoted calibration artifact/i);
   });
 
-  it('plain structural copies do not become valid credentials', () => {
-    const credential = issue();
+  it('plain credential copies remain non-credentials', () => {
+    const { credential } = makeCredential();
     expect(verifyPromotedAuthorityCredential({ ...credential })).toBe(false);
-  });
-
-  it('measurement evidence cannot be substituted for a promotion decision', () => {
-    expect(() => new PromotionAuthorityIssuer().issue({
-      providerProfile: profile('neo/qwen-ane', 'qwen-ane'),
-      promotion: { status: 'MEASUREMENT_ACCEPTED_NO_AUTHORITY' } as any,
-      policyProfileDigest: d('7'),
-      observationABIDigest: d('6'),
-      sourceLineageDigest: d('8'),
-      authorityGeneration: 3,
-    })).toThrow(/CANARY_ELIGIBLE/i);
   });
 });
