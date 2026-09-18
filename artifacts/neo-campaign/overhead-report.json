@@ -1,0 +1,38 @@
+{
+  "schema": "anvil.neo-overhead-report.v1",
+  "note": "CPU-side overhead measurements on Dell (control-plane work); observer/model timings live in the Neo score run + hardware receipt.",
+  "results": [
+    {
+      "name": "candidateViewDigest",
+      "iters": 2000,
+      "avgMs": 0.01236
+    },
+    {
+      "name": "candidateViewDigest-memo-hit",
+      "iters": 2000,
+      "avgMs": 0.0002
+    },
+    {
+      "name": "createLocalHardwareReceipt",
+      "iters": 2000,
+      "avgMs": 0.05091
+    },
+    {
+      "name": "verifyLocalHardwareReceipt",
+      "iters": 2000,
+      "avgMs": 0.046
+    },
+    {
+      "name": "sha256-2262B-view",
+      "iters": 5000,
+      "avgMs": 0.00373
+    }
+  ],
+  "checks": [
+    {
+      "name": "memoized-digest-bit-identical",
+      "passed": true,
+      "detail": "cached view digests equal fresh computes on all 26 views"
+    }
+  ]
+}
