@@ -101,11 +101,11 @@ describe('V2 axis-discrimination anchor corpus', () => {
     });
     expect(Object.values(inverted.axes).every((axis) => axis.classification === 'INVERTED')).toBe(true);
     expect(inverted.fullExpansionJustified).toBe(false);
-    expect(inverted.semanticsRepairAxes.sort()).toEqual([
+    expect([...inverted.semanticsRepairAxes].sort()).toEqual([
       'full_content_needed',
       'unresolved_evidence',
     ]);
-    expect(inverted.providerFitBlockerAxes.sort()).toEqual([
+    expect([...inverted.providerFitBlockerAxes].sort()).toEqual([
       'evidence_sufficient',
       'still_needed',
     ]);
