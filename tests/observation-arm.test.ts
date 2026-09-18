@@ -145,4 +145,31 @@ describe('observation-only SIEVE candidate arm', () => {
     const serialized = JSON.stringify(a);
     expect(serialized).not.toMatch(/api[_-]?key|bearer|question/i);
   });
+  it('emits a bound replay receipt from the observation arm itself', async () => {
+    const CAS = exportedValue('InMemoryCAS');
+    const run = exportedFunction('runObservationOnlyArm');
+    const verifyReceipt = exportedFunction('verifyReplayReceipt');
+    const t = trace();
+    const cas = new CAS();
+    cas.put('observation-cand-1', t.candidates[0].stdout);
+
+    const result = await run(t, cas, profiles(), thresholds, async (request: any) =>
+      response(request, {
+        full_content_needed: 0.95,
+        unresolved_evidence: 0.95,
+        still_needed: 0.9,
+      }));
+
+    expect(result.receipts).toHaveLength(1);
+    expect(verifyReceipt(result.receipts[0])).toBe(true);
+    expect(result.receipts[0]).toMatchObject({
+      trace_id: 'observation-trace',
+      source_run_id: 'run-observation',
+      arm: 'D',
+      decision_contract_digest: digest('a'),
+      execution_profile_digest: digest('b'),
+      calibration_profile_digest: digest('c'),
+      policy_profile_digest: digest('d'),
+    });
+  });
 });
