@@ -4,10 +4,12 @@ import {
   SEMANTIC_POLICY_REASONS_V2,
   SEMANTIC_POLICY_SPEC_DIGEST_V2,
 } from '../src/lab/semantic-policy-v2.js';
-import { createToolRecoveryManifest } from '../src/lab/recovery.js';
-import type { MechanicalRecoveryEvidence } from '../src/lab/mechanical-recovery.js';
-
-const d = (c: string) => 'sha256:' + c.repeat(64);
+import {
+  InMemoryCAS,
+  createToolRecoveryManifest,
+  encodeToolEvidence,
+} from '../src/lab/recovery.js';
+import { evaluateMechanicalRecovery } from '../src/lab/mechanical-recovery.js';
 
 const thresholds = {
   evidenceSufficientFloor: 0.8,
@@ -41,18 +43,18 @@ function observation(patch: Record<string, number> = {}) {
   };
 }
 
-function recovery(
-  status: 'VERIFIED' | 'UNAVAILABLE' = 'VERIFIED',
-): MechanicalRecoveryEvidence {
+function recovery(status: 'VERIFIED' | 'UNAVAILABLE' = 'VERIFIED') {
+  const value = candidate();
+  const cas = new InMemoryCAS();
+  if (status === 'VERIFIED') {
+    cas.put(
+      'policy-v2-object',
+      encodeToolEvidence(value.stdout, value.stderr, value.exit_status),
+    );
+  }
   return {
-    schema: 'anvil.mechanical-recovery-evidence.v1',
-    candidate_id: 'cand-policy-v2',
-    source_digest: candidate().recovery.source_digest,
-    recovery_ref: candidate().recovery.recovery_ref,
-    cas_snapshot_digest: d('1'),
-    status,
-    failure_code: status === 'VERIFIED' ? null : 'missing_object',
-    evidence_digest: d(status === 'VERIFIED' ? '2' : '3'),
+    cas,
+    evidence: evaluateMechanicalRecovery(cas, value),
   };
 }
 
@@ -70,6 +72,7 @@ describe('Semantic Fabric V2 deterministic policy engine', () => {
   });
 
   it('gives evidence sufficiency first authority over every downstream score', () => {
+    const authority = recovery();
     const result = decideSemanticPolicyV2({
       candidate: candidate(),
       observation: observation({
@@ -79,7 +82,8 @@ describe('Semantic Fabric V2 deterministic policy engine', () => {
         unresolved_evidence: 1,
       }),
       thresholds,
-      recovery: recovery(),
+      recovery: authority.evidence,
+      currentStoreSnapshotDigest: authority.cas.snapshotDigest(),
     });
     expect(result.decision).toMatchObject({
       disposition: 'ABSTAIN',
@@ -91,6 +95,7 @@ describe('Semantic Fabric V2 deterministic policy engine', () => {
   });
 
   it('keeps unresolved evidence advisory after the evidence gate, including the eviction lane', () => {
+    const authority = recovery();
     const result = decideSemanticPolicyV2({
       candidate: candidate(),
       observation: observation({
@@ -98,7 +103,8 @@ describe('Semantic Fabric V2 deterministic policy engine', () => {
         unresolved_evidence: 0.95,
       }),
       thresholds,
-      recovery: recovery(),
+      recovery: authority.evidence,
+      currentStoreSnapshotDigest: authority.cas.snapshotDigest(),
     });
     expect(result.decision).toMatchObject({
       disposition: 'FULL',
@@ -108,62 +114,77 @@ describe('Semantic Fabric V2 deterministic policy engine', () => {
   });
 
   it('requires exact mechanical recovery before eviction or referential presentation', () => {
+    const unavailable = recovery('UNAVAILABLE');
     const evictBlocked = decideSemanticPolicyV2({
       candidate: candidate(),
       observation: observation({ still_needed: 0.1 }),
       thresholds,
-      recovery: recovery('UNAVAILABLE'),
+      recovery: unavailable.evidence,
+      currentStoreSnapshotDigest: unavailable.cas.snapshotDigest(),
     });
     expect(evictBlocked.decision.reason).toBe('mechanical_recovery_unavailable');
     expect(evictBlocked.presentation.disposition).toBe('FULL');
 
+    const evictAuthority = recovery();
     const evicted = decideSemanticPolicyV2({
       candidate: candidate(),
       observation: observation({ still_needed: 0.1 }),
       thresholds,
-      recovery: recovery(),
+      recovery: evictAuthority.evidence,
+      currentStoreSnapshotDigest: evictAuthority.cas.snapshotDigest(),
     });
     expect(evicted.decision.reason).toBe('not_still_needed');
     expect(evicted.presentation.disposition).toBe('EVICTED');
 
+    const unavailableReference = recovery('UNAVAILABLE');
     const referenceBlocked = decideSemanticPolicyV2({
       candidate: candidate(),
       observation: observation(),
       thresholds,
-      recovery: recovery('UNAVAILABLE'),
+      recovery: unavailableReference.evidence,
+      currentStoreSnapshotDigest: unavailableReference.cas.snapshotDigest(),
     });
     expect(referenceBlocked.decision.reason)
       .toBe('mechanical_recovery_unavailable');
 
+    const referenceAuthority = recovery();
     const reference = decideSemanticPolicyV2({
       candidate: candidate(),
       observation: observation(),
       thresholds,
-      recovery: recovery(),
+      recovery: referenceAuthority.evidence,
+      currentStoreSnapshotDigest: referenceAuthority.cas.snapshotDigest(),
     });
     expect(reference.decision).toMatchObject({
       disposition: 'REFERENTIAL',
       reason: 'reversible_reference',
       source_digest: candidate().recovery.source_digest,
-      mechanical_recovery_evidence_digest: d('2'),
+      mechanical_recovery_evidence_digest:
+        referenceAuthority.evidence.evidence_digest,
     });
     expect(reference.presentation.visible_text)
       .toContain('recovery=cas:policy-v2-object');
   });
 
   it('rejects cross-candidate recovery evidence and invalid thresholds', () => {
+    const authority = recovery();
     expect(() => decideSemanticPolicyV2({
       candidate: candidate(),
       observation: observation(),
       thresholds,
-      recovery: { ...recovery(), candidate_id: 'cand-other' },
+      recovery: {
+        ...authority.evidence,
+        candidate_id: 'cand-other',
+      } as any,
+      currentStoreSnapshotDigest: authority.cas.snapshotDigest(),
     })).toThrow(/candidate|recovery/i);
 
     expect(() => decideSemanticPolicyV2({
       candidate: candidate(),
       observation: observation(),
       thresholds: { ...thresholds, reviewFloor: 1.1 },
-      recovery: recovery(),
+      recovery: authority.evidence,
+      currentStoreSnapshotDigest: authority.cas.snapshotDigest(),
     })).toThrow(/threshold/i);
   });
 });

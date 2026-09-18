@@ -62,7 +62,7 @@ type ProviderEnvelope = {
 export type ObservationReplayRunV2 = ReplayRun & {
   receipts: ReplayReceipt[];
   observations: readonly SemanticCandidateObservationV2[] | null;
-  mechanicalRecovery: readonly Readonly<MechanicalRecoveryEvidence>[];
+  mechanicalRecovery: readonly MechanicalRecoveryEvidence[];
   policy: readonly Readonly<SemanticPolicyDecisionV2>[];
 };
 
@@ -342,7 +342,7 @@ function makeReceipt(
 function fallbackRun(
   trace: ReplayTrace,
   profiles: ObservationProfilesV2,
-  mechanicalRecovery: readonly Readonly<MechanicalRecoveryEvidence>[],
+  mechanicalRecovery: readonly MechanicalRecoveryEvidence[],
   reason: string,
   context: Partial<Omit<
     ReceiptContext,
@@ -390,7 +390,7 @@ export async function runObservationOnlyArmV2(
 ): Promise<ObservationReplayRunV2> {
   validateThresholds(thresholds);
 
-  const mechanicalRecovery = Object.freeze(
+  const preflightMechanicalRecovery = Object.freeze(
     trace.candidates.map((candidate) =>
       evaluateMechanicalRecovery(cas, candidate)),
   );
@@ -409,7 +409,7 @@ export async function runObservationOnlyArmV2(
       return fallbackRun(
         trace,
         profiles,
-        mechanicalRecovery,
+        preflightMechanicalRecovery,
         'hard_roots_exceed_budget',
         {
           providerMetadata,
@@ -425,7 +425,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
-      mechanicalRecovery,
+      preflightMechanicalRecovery,
       `request:${validation.code}`,
       {
         request,
@@ -442,7 +442,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
-      mechanicalRecovery,
+      preflightMechanicalRecovery,
       'provider_exception',
       {
         request,
@@ -458,7 +458,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
-      mechanicalRecovery,
+      preflightMechanicalRecovery,
       'provider_envelope_invalid',
       {
         request,
@@ -485,7 +485,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
-      mechanicalRecovery,
+      preflightMechanicalRecovery,
       `reassembly:${reassembled.code}`,
       {
         request,
@@ -502,6 +502,14 @@ export async function runObservationOnlyArmV2(
       observation,
     ]),
   );
+
+  // Recovery authority is intentionally re-issued after the async provider
+  // boundary. Preflight evidence remains diagnostic-only for fallback paths.
+  const mechanicalRecovery = Object.freeze(
+    trace.candidates.map((candidate) =>
+      evaluateMechanicalRecovery(cas, candidate)),
+  );
+  const currentStoreSnapshotDigest = cas.snapshotDigest();
 
   const recoveryByID = new Map(
     mechanicalRecovery.map((evidence) => [
@@ -524,6 +532,7 @@ export async function runObservationOnlyArmV2(
         observation,
         recovery,
         thresholds,
+        currentStoreSnapshotDigest,
       });
     }),
   );
