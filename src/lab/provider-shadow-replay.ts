@@ -4,6 +4,7 @@ import {
   type MappedObservationProvider,
   type ObservationPolicyThresholds,
   type ObservationProfiles,
+  type ObservationReplayRun,
 } from './observation-arm.js';
 import {
   verifyProviderExecutionProfile,
@@ -276,7 +277,7 @@ export class ProviderShadowReplayCompiler {
       }
     }
 
-    const runs = [];
+    const runs: ObservationReplayRun[] = [];
     for (const trace of input.traces) {
       const run = await runObservationOnlyArm(
         trace,
@@ -300,8 +301,8 @@ export class ProviderShadowReplayCompiler {
 
     input.traces.forEach((trace, traceIndex) => {
       const run = runs[traceIndex];
-      const byCandidate = new Map(
-        (run.observations ?? []).map((observation) => [
+      const byCandidate = new Map<string, MappedCandidateObservation>(
+        (run.observations ?? []).map((observation): [string, MappedCandidateObservation] => [
           observation.candidate_id,
           observation,
         ]),
