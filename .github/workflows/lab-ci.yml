@@ -5,6 +5,7 @@ on:
     branches:
       - north/anvil-sieve-semantic-retention-v0
       - north/authority-preserving-semantic-fabric-v1
+      - north/semantic-fabric-trust-boundary-v1
     paths:
       - "src/**"
       - "tests/**"
