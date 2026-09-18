@@ -147,7 +147,7 @@ function canonicalizeCalibrators(
   providerProfileDigest: string,
 ): readonly Readonly<IsotonicCalibrationModel>[] {
   if (calibrators.length !== MAPPED_OBSERVATION_AXES.length) {
-    throw new Error('calibration artifact requires exactly five registered predicates');
+    throw new Error('calibration artifact requires exactly four registered semantic predicates');
   }
   const byPredicate = new Map<MappedObservationAxis, Readonly<IsotonicCalibrationModel>>();
   for (const model of calibrators) {
