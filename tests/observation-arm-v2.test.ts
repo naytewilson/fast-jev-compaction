@@ -104,6 +104,30 @@ describe('Semantic Fabric V2 authority-preserving observation arm', () => {
     expect(run.observations).toBeNull();
   });
 
+  it('records mechanical recovery even when the semantic provider fails', async () => {
+    const t = trace();
+    const cas = new InMemoryCAS();
+    cas.put('v2-cand-a', encodeToolEvidence(t.candidates[0].stdout, '', 0));
+
+    const run = await runObservationOnlyArmV2(
+      t,
+      cas,
+      profiles,
+      thresholds,
+      async () => { throw new Error('offline'); },
+    );
+
+    expect(run.presentations[0].disposition).toBe('PRISTINE_FALLBACK');
+    expect(run.observations).toBeNull();
+    expect(run.mechanicalRecovery).toEqual([
+      expect.objectContaining({
+        candidate_id: 'cand-a',
+        status: 'VERIFIED',
+      }),
+    ]);
+    expect(run.receipts[0].error_code).toBe('provider_exception');
+  });
+
   it('short-circuits semantic authority on insufficient evidence before unresolved advice', async () => {
     const t = trace();
     const cas = new InMemoryCAS();
