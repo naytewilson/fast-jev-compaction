@@ -7,6 +7,7 @@ import {
   type SemanticDecisionRequestV2,
   type SemanticDecisionResponseV2,
 } from './semantic-contract-v2.js';
+import { SEMANTIC_AXIS_INSTRUCTIONS_V2 } from './semantic-axis-spec-v2.js';
 import { sha256Digest } from './recovery.js';
 import type {
   SystemOneFetch,
@@ -24,16 +25,7 @@ export const SYSTEM_ONE_SEMANTIC_STATE_SCHEMA_V2 =
 
 const PINNED_JEV_MODEL = /^jev-\d+\.\d+\.\d+$/;
 
-const AXIS_INSTRUCTIONS: Record<ModeledSemanticAxisV2, string> = {
-  evidence_sufficient:
-    'Estimate whether the bounded candidate view and shared state are sufficient to judge this exact candidate for the active mission. Stale, missing, truncated, task-mismatched, or orthogonal evidence should reduce this score.',
-  still_needed:
-    'Estimate whether this exact source-bound candidate carries information likely needed for the active mission.',
-  full_content_needed:
-    'Estimate whether replacing omitted source content with an exact reversible reference would materially reduce usefulness for the active mission.',
-  unresolved_evidence:
-    'Estimate whether the candidate contains evidence that merits review because of an unresolved failure, warning, dependency, verification gap, or contradiction. Missing evidence alone is not sufficient to establish this predicate.',
-};
+const AXIS_INSTRUCTIONS = SEMANTIC_AXIS_INSTRUCTIONS_V2;
 
 export interface SystemOneSemanticEgressGrantV2 {
   schema: 'anvil.system-one-egress-grant.v1';

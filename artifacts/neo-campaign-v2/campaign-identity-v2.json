@@ -1,0 +1,47 @@
+{
+  "schema": "anvil.campaign-identity.v2",
+  "decisionContract": {
+    "id": "anvil.context-retention.v2",
+    "version": "2.0.0",
+    "digest": "sha256:eb15f87b1e00cc9f68097317a147d1c39bf605129f62883317533435ef80f978"
+  },
+  "corpusDigest": "sha256:ad19fd7d12218c121238f442526ce9387d6cd1648ce64b09ee1be55aaaffb2f4",
+  "labelBindingDigest": "sha256:c1c45a16fe5bc32c99e5809d94b6f12568c3610b5b957758f2da2b578e6e6932",
+  "manifestDigest": "sha256:645ffc812384535d10bf565ead9ffbd408da93db4dc10a26133e8d65f4a664eb",
+  "axisSpecDigest": "sha256:edce037c11caa8017e314e0ffac03f0ea4fcbc5518ed464ad51a5d3657b17a53",
+  "profiles": {
+    "decision_contract": {
+      "id": "anvil.context-retention.v2",
+      "version": "2.0.0",
+      "digest": "sha256:eb15f87b1e00cc9f68097317a147d1c39bf605129f62883317533435ef80f978"
+    },
+    "execution_profile": {
+      "id": "neo-lfm2.5-local-v2",
+      "version": "2.0.0",
+      "digest": "sha256:af931e2f2f0c26b6e4a3e7f988dcdc1b09ea1bd0f4b5ebf1979bbbc553a047b9"
+    },
+    "calibration_profile": {
+      "id": "shadow-v2",
+      "version": "2.0.0",
+      "digest": "sha256:4f8fb18ef5eae04a024007a5df35cc9e12d20e31738cc930f68014a20d345bee"
+    },
+    "policy_profile": {
+      "id": "shadow-policy-v2",
+      "version": "2.0.0",
+      "digest": "sha256:94773fa511c584c57e166ae4f654c3e03ab720081f579e24f1d408b8050753ed"
+    }
+  },
+  "subsetCandidates": [
+    "cand-ct-00-0001",
+    "cand-ct-01-0001",
+    "cand-ct-02-0001",
+    "cand-ct-03-0001",
+    "cand-ct-04-0001",
+    "cand-ct-05-0001",
+    "cand-ct-06-0001"
+  ],
+  "subsetCoverage": {
+    "scored": 7,
+    "denominator": 26
+  }
+}
