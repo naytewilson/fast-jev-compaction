@@ -220,6 +220,44 @@ describe('observation-only SIEVE candidate arm', () => {
     const serialized = JSON.stringify(a);
     expect(serialized).not.toMatch(/api[_-]?key|bearer|question/i);
   });
+  it('unwraps provider telemetry envelopes and binds model usage into the receipt', async () => {
+    const CAS = exportedValue('InMemoryCAS');
+    const run = exportedFunction('runObservationOnlyArm');
+    const encode = exportedFunction('encodeToolEvidence');
+    const t = trace();
+    const cas = new CAS();
+    cas.put(
+      'observation-cand-1',
+      encode(t.candidates[0].stdout, t.candidates[0].stderr, t.candidates[0].exit_status),
+    );
+
+    const result = await run(t, cas, profiles(), thresholds, async (request: any) => ({
+      mapped_response: response(request, {
+        full_content_needed: 0.95,
+        unresolved_evidence: 0.95,
+      }),
+      provider_metadata: {
+        requested_model: 'jev-1.13.0',
+        effective_model: 'jev-1.13.0',
+        input_tokens: 321,
+        output_tokens: 54,
+        cost_usd: null,
+      },
+    }));
+
+    expect(result.presentations[0].disposition).toBe('FULL');
+    expect(result.receipts[0]).toMatchObject({
+      pristine_fallback: false,
+      provider_model_requested: 'jev-1.13.0',
+      provider_model_effective: 'jev-1.13.0',
+      provider_usage: {
+        input_tokens: 321,
+        output_tokens: 54,
+        cost_usd: null,
+      },
+    });
+  });
+
   it('emits a bound replay receipt from the observation arm itself', async () => {
     const CAS = exportedValue('InMemoryCAS');
     const run = exportedFunction('runObservationOnlyArm');
