@@ -9,7 +9,11 @@ import {
   type ReplayRun,
   type ReplayTrace,
 } from './replay.js';
-import { createReplayReceipt, type ReplayReceipt } from './receipt.js';
+import {
+  createReplayReceipt,
+  type ReplayProviderUsage,
+  type ReplayReceipt,
+} from './receipt.js';
 import { sha256Digest, type InMemoryCAS } from './recovery.js';
 import type {
   MappedDecisionRequest,
@@ -29,6 +33,14 @@ export interface ObservationPolicyThresholds {
   evidenceSufficientFloor: number;
   keepFull: number;
   retain: number;
+}
+
+export interface ObservationProviderMetadata {
+  requested_model?: string;
+  effective_model?: string;
+  input_tokens?: number | null;
+  output_tokens?: number | null;
+  cost_usd?: number | null;
 }
 
 export type MappedObservationProvider = (
@@ -83,34 +95,145 @@ function buildRequest(
   };
 }
 
-function candidateSetDigest(trace: ReplayTrace): string {
-  return sha256Digest(JSON.stringify(
-    trace.candidates.map((candidate) => ({
-      candidate_id: candidate.candidate_id,
-      source_digest: candidate.recovery.source_digest,
-      recovery_ref: candidate.recovery.recovery_ref,
-    })),
-  ));
+function digestJSON(value: unknown, fallbackLabel: string): string {
+  try {
+    const encoded = JSON.stringify(value);
+    if (encoded === undefined) return sha256Digest(fallbackLabel);
+    return sha256Digest(encoded);
+  } catch {
+    return sha256Digest(fallbackLabel);
+  }
 }
+
+function sourceTraceDigest(trace: ReplayTrace): string {
+  return digestJSON({
+    trace_id: trace.trace_id,
+    source_run_id: trace.source_run_id,
+    shared_state: trace.shared_state,
+    candidates: trace.candidates.map((candidate) => ({
+      candidate_id: candidate.candidate_id,
+      stdout: candidate.stdout,
+      stderr: candidate.stderr,
+      exit_status: candidate.exit_status,
+      head_lines: candidate.head_lines,
+      tail_lines: candidate.tail_lines,
+      presentation_budget_bytes: candidate.presentation_budget_bytes,
+      recovery: candidate.recovery,
+      critical_evidence: candidate.critical_evidence,
+    })),
+  }, 'invalid-source-trace');
+}
+
+function candidateSetDigest(trace: ReplayTrace): string {
+  return digestJSON(
+    [...trace.candidates]
+      .sort((a, b) => a.candidate_id.localeCompare(b.candidate_id))
+      .map((candidate) => ({
+        candidate_id: candidate.candidate_id,
+        source_digest: candidate.recovery.source_digest,
+        recovery_ref: candidate.recovery.recovery_ref,
+      })),
+    'invalid-candidate-set',
+  );
+}
+
+function hardRootPolicyDigest(trace: ReplayTrace): string {
+  return digestJSON({
+    schema: 'anvil.hard-roots.v0',
+    candidates: [...trace.candidates]
+      .sort((a, b) => a.candidate_id.localeCompare(b.candidate_id))
+      .map((candidate) => ({
+        candidate_id: candidate.candidate_id,
+        head_lines: candidate.head_lines,
+        tail_lines: candidate.tail_lines,
+        presentation_budget_bytes: candidate.presentation_budget_bytes,
+        preserve_exit_status: true,
+        preserve_all_stderr: true,
+      })),
+  }, 'invalid-hard-root-policy');
+}
+
+function recoveryManifestDigest(trace: ReplayTrace): string {
+  return digestJSON(
+    [...trace.candidates]
+      .sort((a, b) => a.candidate_id.localeCompare(b.candidate_id))
+      .map((candidate) => ({
+        candidate_id: candidate.candidate_id,
+        ...candidate.recovery,
+      })),
+    'invalid-recovery-manifest',
+  );
+}
+
+type ReceiptContext = {
+  request?: MappedDecisionRequest;
+  rawResponse?: unknown;
+  observationDigest: string;
+  dispositions: string[];
+  errorCode: string | null;
+  pristineFallback: boolean;
+  latencyMs: number | null;
+  providerMetadata?: ObservationProviderMetadata;
+};
 
 function makeReceipt(
   trace: ReplayTrace,
   profiles: ObservationProfiles,
-  observationDigest: string,
-  dispositions: string[],
+  context: ReceiptContext,
 ): ReplayReceipt {
+  const requestedModel =
+    context.providerMetadata?.requested_model ?? profiles.execution_profile.id;
+  const effectiveModel =
+    context.providerMetadata?.effective_model ?? requestedModel;
+  const providerUsage: ReplayProviderUsage = {
+    input_tokens: context.providerMetadata?.input_tokens ?? null,
+    output_tokens: context.providerMetadata?.output_tokens ?? null,
+    cost_usd: context.providerMetadata?.cost_usd ?? null,
+  };
+
   return createReplayReceipt({
     receipt_schema: 'anvil.semantic-retention-replay-receipt.v0',
     trace_id: trace.trace_id,
+    source_trace_digest: sourceTraceDigest(trace),
     source_run_id: trace.source_run_id,
     arm: 'D',
+
+    decision_contract_id: profiles.decision_contract.id,
+    decision_contract_version: profiles.decision_contract.version,
     decision_contract_digest: profiles.decision_contract.digest,
+    execution_profile_id: profiles.execution_profile.id,
+    execution_profile_version: profiles.execution_profile.version,
     execution_profile_digest: profiles.execution_profile.digest,
+    calibration_profile_id: profiles.calibration_profile.id,
+    calibration_profile_version: profiles.calibration_profile.version,
     calibration_profile_digest: profiles.calibration_profile.digest,
+    policy_profile_id: profiles.policy_profile.id,
+    policy_profile_version: profiles.policy_profile.version,
     policy_profile_digest: profiles.policy_profile.digest,
+
+    shared_state_digest: sha256Digest(trace.shared_state),
     candidate_set_digest: candidateSetDigest(trace),
-    observation_set_digest: observationDigest,
-    dispositions,
+    ordered_candidate_ids: [...trace.candidates]
+      .sort((a, b) => a.candidate_id.localeCompare(b.candidate_id))
+      .map((candidate) => candidate.candidate_id),
+    provider_request_digest: context.request
+      ? digestJSON(context.request, 'invalid-provider-request')
+      : sha256Digest('NO_PROVIDER_REQUEST'),
+    provider_response_digest: context.rawResponse !== undefined
+      ? digestJSON(context.rawResponse, 'invalid-provider-response')
+      : sha256Digest('NO_PROVIDER_RESPONSE'),
+    observation_set_digest: context.observationDigest,
+    hard_root_policy_digest: hardRootPolicyDigest(trace),
+    recovery_manifest_digest: recoveryManifestDigest(trace),
+    policy_dispositions: context.dispositions,
+    dispositions: context.dispositions,
+
+    provider_model_requested: requestedModel,
+    provider_model_effective: effectiveModel,
+    provider_usage: providerUsage,
+    latency_ms: context.latencyMs,
+    error_code: context.errorCode,
+    pristine_fallback: context.pristineFallback,
   });
 }
 
@@ -118,19 +241,25 @@ function fallbackRun(
   trace: ReplayTrace,
   profiles: ObservationProfiles,
   reason: string,
+  context: Partial<Omit<ReceiptContext, 'observationDigest' | 'dispositions' | 'errorCode' | 'pristineFallback'>> = {},
 ): ObservationReplayRun {
   const presentations = trace.candidates.map((candidate) =>
     fullPresentation(candidate, 'PRISTINE_FALLBACK'));
+  const dispositions = presentations.map((presentation) => presentation.disposition);
   return {
     arm: 'D',
     presentations,
     receipts: [
-      makeReceipt(
-        trace,
-        profiles,
-        sha256Digest(`PRISTINE_FALLBACK:${reason}`),
-        presentations.map((presentation) => presentation.disposition),
-      ),
+      makeReceipt(trace, profiles, {
+        request: context.request,
+        rawResponse: context.rawResponse,
+        observationDigest: sha256Digest(`PRISTINE_FALLBACK:${reason}`),
+        dispositions,
+        errorCode: reason,
+        pristineFallback: true,
+        latencyMs: context.latencyMs ?? null,
+        providerMetadata: context.providerMetadata,
+      }),
     ],
   };
 }
@@ -141,6 +270,7 @@ export async function runObservationOnlyArm(
   profiles: ObservationProfiles,
   thresholds: ObservationPolicyThresholds,
   provider: MappedObservationProvider,
+  providerMetadata?: ObservationProviderMetadata,
 ): Promise<ObservationReplayRun> {
   const carvedByID = new Map<string, HardRootEligible>();
   for (const candidate of trace.candidates) {
@@ -153,7 +283,9 @@ export async function runObservationOnlyArm(
       presentationBudgetBytes: candidate.presentation_budget_bytes,
     });
     if (carved.kind === 'PRISTINE') {
-      return fallbackRun(trace, profiles, 'hard_roots_exceed_budget');
+      return fallbackRun(trace, profiles, 'hard_roots_exceed_budget', {
+        providerMetadata,
+      });
     }
     carvedByID.set(candidate.candidate_id, carved);
   }
@@ -161,15 +293,24 @@ export async function runObservationOnlyArm(
   const request = buildRequest(trace, profiles, carvedByID);
   const validation = validateMappedDecisionRequest(request);
   if (!validation.ok) {
-    return fallbackRun(trace, profiles, `request:${validation.code}`);
+    return fallbackRun(trace, profiles, `request:${validation.code}`, {
+      request,
+      providerMetadata,
+    });
   }
 
   let raw: unknown;
+  const providerStart = Date.now();
   try {
     raw = await provider(request);
   } catch {
-    return fallbackRun(trace, profiles, 'provider_exception');
+    return fallbackRun(trace, profiles, 'provider_exception', {
+      request,
+      latencyMs: Date.now() - providerStart,
+      providerMetadata,
+    });
   }
+  const latencyMs = Date.now() - providerStart;
 
   const reassembled = reassembleMappedObservations(
     request.request_id,
@@ -177,10 +318,18 @@ export async function runObservationOnlyArm(
     raw,
   );
   if (reassembled.kind === 'PRISTINE_FALLBACK') {
-    return fallbackRun(trace, profiles, `reassembly:${reassembled.code}`);
+    return fallbackRun(trace, profiles, `reassembly:${reassembled.code}`, {
+      request,
+      rawResponse: raw,
+      latencyMs,
+      providerMetadata,
+    });
   }
 
-  const byID = new Map(reassembled.observations.map((observation) => [observation.candidate_id, observation]));
+  const byID = new Map(reassembled.observations.map((observation) => [
+    observation.candidate_id,
+    observation,
+  ]));
   const presentations = trace.candidates.map((candidate) => {
     const observation = byID.get(candidate.candidate_id)!;
     if (observation.evidence_sufficient.noul < thresholds.evidenceSufficientFloor) {
@@ -214,16 +363,21 @@ export async function runObservationOnlyArm(
   });
 
   const observationDigest = sha256Digest(JSON.stringify(reassembled.observations));
+  const dispositions = presentations.map((presentation) => presentation.disposition);
   return {
     arm: 'D',
     presentations,
     receipts: [
-      makeReceipt(
-        trace,
-        profiles,
+      makeReceipt(trace, profiles, {
+        request,
+        rawResponse: raw,
         observationDigest,
-        presentations.map((presentation) => presentation.disposition),
-      ),
+        dispositions,
+        errorCode: null,
+        pristineFallback: false,
+        latencyMs,
+        providerMetadata,
+      }),
     ],
   };
 }
