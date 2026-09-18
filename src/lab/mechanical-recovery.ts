@@ -141,7 +141,7 @@ function candidateIdentityValid(candidate: ReplayCandidate): boolean {
 export function evaluateMechanicalRecovery(
   cas: InMemoryCAS,
   candidate: ReplayCandidate,
-): Readonly<MechanicalRecoveryEvidence> {
+): MechanicalRecoveryEvidence {
   const verification = cas.verifyTool(
     candidate.recovery,
     candidate.stdout,

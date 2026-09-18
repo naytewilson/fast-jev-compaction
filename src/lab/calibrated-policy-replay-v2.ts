@@ -56,7 +56,7 @@ export interface CalibratedObservationReplayV2Result {
   policyProfileDigest: string;
   rawObservations: readonly SemanticCandidateObservationV2[];
   calibratedObservations: readonly SemanticCandidateObservationV2[];
-  mechanicalRecovery: readonly Readonly<MechanicalRecoveryEvidence>[];
+  mechanicalRecovery: readonly MechanicalRecoveryEvidence[];
   policyDecisions: readonly Readonly<SemanticPolicyDecisionV2>[];
   presentations: readonly ReplayPresentation[];
   rawReplayReceipt: ReplayReceipt;

@@ -62,7 +62,7 @@ type ProviderEnvelope = {
 export type ObservationReplayRunV2 = ReplayRun & {
   receipts: ReplayReceipt[];
   observations: readonly SemanticCandidateObservationV2[] | null;
-  mechanicalRecovery: readonly Readonly<MechanicalRecoveryEvidence>[];
+  mechanicalRecovery: readonly MechanicalRecoveryEvidence[];
   policy: readonly Readonly<SemanticPolicyDecisionV2>[];
 };
 
@@ -342,7 +342,7 @@ function makeReceipt(
 function fallbackRun(
   trace: ReplayTrace,
   profiles: ObservationProfilesV2,
-  mechanicalRecovery: readonly Readonly<MechanicalRecoveryEvidence>[],
+  mechanicalRecovery: readonly MechanicalRecoveryEvidence[],
   reason: string,
   context: Partial<Omit<
     ReceiptContext,
@@ -368,7 +368,7 @@ function fallbackRun(
         observationDigest: sha256Digest(JSON.stringify({
           schema: 'anvil.semantic-fabric-v2-fallback-evidence.v0',
           reason,
-          preflightMechanicalRecovery,
+          mechanicalRecovery,
         })),
         dispositions,
         errorCode: reason,
@@ -425,7 +425,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
-      mechanicalRecovery,
+      preflightMechanicalRecovery,
       `request:${validation.code}`,
       {
         request,
@@ -442,7 +442,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
-      mechanicalRecovery,
+      preflightMechanicalRecovery,
       'provider_exception',
       {
         request,
@@ -458,7 +458,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
-      mechanicalRecovery,
+      preflightMechanicalRecovery,
       'provider_envelope_invalid',
       {
         request,
@@ -485,7 +485,7 @@ export async function runObservationOnlyArmV2(
     return fallbackRun(
       trace,
       profiles,
-      mechanicalRecovery,
+      preflightMechanicalRecovery,
       `reassembly:${reassembled.code}`,
       {
         request,
