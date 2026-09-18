@@ -25,3 +25,6 @@ export * from './regret-ledger.js';
 export * from './calibration-metrics.js';
 export * from './degraded-trial.js';
 export * from './fault-campaign.js';
+export * from './execution-profile.js';
+export * from './hardware-receipt.js';
+export * from './local-profile-gate.js';
