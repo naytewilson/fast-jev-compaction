@@ -55,3 +55,4 @@ export * from './provider-comparison-v2.js';
 export * from './promotion-evidence-v2.js';
 export * from './calibration-artifact-promotion-v2.js';
 export * from './promotion-credential-v3.js';
+export * from './evidence-gate-sweep-v2.js';

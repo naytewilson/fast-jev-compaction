@@ -78,7 +78,7 @@ function canonicalSample(sample: CalibrationReplaySampleV2) {
   };
 }
 
-function merkleRoot(
+export function calibrationReplayMerkleRootV2(
   samples: readonly CalibrationReplaySampleV2[],
 ): Digest256 {
   if (samples.length === 0) {
@@ -300,8 +300,8 @@ export class CalibrationEvidenceCompilerV2 {
     requireCompletePredicates(training, 'training');
     requireCompletePredicates(holdout, 'holdout');
 
-    const trainingMerkleRoot = merkleRoot(training);
-    const holdoutMerkleRoot = merkleRoot(holdout);
+    const trainingMerkleRoot = calibrationReplayMerkleRootV2(training);
+    const holdoutMerkleRoot = calibrationReplayMerkleRootV2(holdout);
     const datasetGenerationDigest = sha256Digest(JSON.stringify({
       schema: 'anvil.calibration-dataset-generation.v2',
       providerProfileDigest: input.providerProfile.providerProfileDigest,
