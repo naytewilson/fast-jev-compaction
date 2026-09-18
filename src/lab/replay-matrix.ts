@@ -1,6 +1,6 @@
 import { classifyReplay, evaluateReplay } from './metrics.js';
 import { runObservationOnlyArm } from './observation-arm.js';
-import { runDeterministicArm, runPristineArm, type ReplayTrace } from './replay.js';
+import { runDeterministicArm, runPristineArm, type ReplayRun, type ReplayTrace } from './replay.js';
 import type { InMemoryCAS } from './recovery.js';
 import { runUpstreamComparator, type UpstreamRetentionObserver } from './upstream-arm.js';
 
@@ -15,6 +15,9 @@ export interface ReplayMatrixDependencies {
 type ArmAggregate = {
   criticalEvidenceFalseEvictions: number;
   recoveryNeeds: number;
+  sourceBytes: number;
+  visibleBytes: number;
+  receiptCount: number;
   classification: 'PASS' | 'ARCHITECTURAL_FAILURE' | 'UNSCORED';
 };
 
@@ -23,15 +26,43 @@ export interface ReplayMatrixReport {
   arms: Record<'A' | 'B' | 'C' | 'D', ArmAggregate>;
 }
 
+function emptyAggregate(): ArmAggregate {
+  return {
+    criticalEvidenceFalseEvictions: 0,
+    recoveryNeeds: 0,
+    sourceBytes: 0,
+    visibleBytes: 0,
+    receiptCount: 0,
+    classification: 'UNSCORED',
+  };
+}
+
+function sourceBytes(trace: ReplayTrace): number {
+  return trace.candidates.reduce(
+    (total, candidate) =>
+      total +
+      Buffer.byteLength(candidate.stdout, 'utf8') +
+      Buffer.byteLength(candidate.stderr, 'utf8'),
+    0,
+  );
+}
+
+function visibleBytes(run: ReplayRun): number {
+  return run.presentations.reduce(
+    (total, presentation) => total + Buffer.byteLength(presentation.visible_text, 'utf8'),
+    0,
+  );
+}
+
 export async function runReplayMatrix(
   corpus: ReplayTrace[],
   dependencies: ReplayMatrixDependencies,
 ): Promise<ReplayMatrixReport> {
   const totals: Record<'A' | 'B' | 'C' | 'D', ArmAggregate> = {
-    A: { criticalEvidenceFalseEvictions: 0, recoveryNeeds: 0, classification: 'UNSCORED' },
-    B: { criticalEvidenceFalseEvictions: 0, recoveryNeeds: 0, classification: 'UNSCORED' },
-    C: { criticalEvidenceFalseEvictions: 0, recoveryNeeds: 0, classification: 'UNSCORED' },
-    D: { criticalEvidenceFalseEvictions: 0, recoveryNeeds: 0, classification: 'UNSCORED' },
+    A: emptyAggregate(),
+    B: emptyAggregate(),
+    C: emptyAggregate(),
+    D: emptyAggregate(),
   };
 
   const profiles = {
@@ -47,24 +78,29 @@ export async function runReplayMatrix(
   };
 
   for (const trace of corpus) {
+    const observationRun = await runObservationOnlyArm(
+      trace,
+      dependencies.cas,
+      profiles,
+      thresholds,
+      dependencies.observationProvider,
+    );
     const runs = {
       A: runPristineArm(trace, dependencies.cas),
       B: runDeterministicArm(trace, dependencies.cas),
       C: await runUpstreamComparator(trace, dependencies.cas, dependencies.upstreamObserver, 0.5),
-      D: await runObservationOnlyArm(
-        trace,
-        dependencies.cas,
-        profiles,
-        thresholds,
-        dependencies.observationProvider,
-      ),
+      D: observationRun,
     };
 
+    const traceSourceBytes = sourceBytes(trace);
     for (const arm of ['A', 'B', 'C', 'D'] as const) {
       const metrics = evaluateReplay(trace, runs[arm]);
       totals[arm].criticalEvidenceFalseEvictions += metrics.criticalEvidenceFalseEvictions;
       totals[arm].recoveryNeeds += metrics.recoveryNeeds;
+      totals[arm].sourceBytes += traceSourceBytes;
+      totals[arm].visibleBytes += visibleBytes(runs[arm]);
     }
+    totals.D.receiptCount += observationRun.receipts.length;
   }
 
   for (const arm of ['A', 'B', 'C', 'D'] as const) {
