@@ -28,3 +28,4 @@ export * from './fault-campaign.js';
 export * from './execution-profile.js';
 export * from './hardware-receipt.js';
 export * from './local-profile-gate.js';
+export * from './authority-registry.js';

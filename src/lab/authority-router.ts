@@ -1,7 +1,7 @@
-import {
-  deriveSemanticCapabilities,
-  type SemanticAuthorityMask,
-} from './authority-mask.js';
+import type {
+  AuthorityRegistry,
+  AuthorityRouteGrant,
+} from './authority-registry.js';
 
 export type AuthorityRouteKind =
   | 'primary'
@@ -11,22 +11,16 @@ export type AuthorityRouteKind =
   | 'alternate-provider'
   | 'unoptimized';
 
-export interface AuthorityRouteCandidate {
-  id: string;
-  authorityIdentity: string;
-  mask: SemanticAuthorityMask;
-}
-
 export interface AuthorityRoutingRequest {
   requestId: string;
   sourceLineageDigest: string;
   routeGeneration: number;
-  primary: AuthorityRouteCandidate;
+  primaryRouteId: string;
   evidenceDeficit: boolean;
   mechanicalRecoveryAvailable: boolean;
   pristineAvailable: boolean;
-  compatibleProfiles: AuthorityRouteCandidate[];
-  alternateProviders: AuthorityRouteCandidate[];
+  compatibleProfileRouteIds: string[];
+  alternateProviderRouteIds: string[];
 }
 
 export interface AuthorityRoutingDecision {
@@ -41,19 +35,46 @@ export interface AuthorityRoutingDecision {
   taskContinues: true;
 }
 
+const DIGEST = /^sha256:[0-9a-f]{64}$/;
+
 function validGeneration(value: number): boolean {
   return Number.isSafeInteger(value) && value >= 0;
 }
 
-function authoritative(candidate: AuthorityRouteCandidate): boolean {
-  return deriveSemanticCapabilities(candidate.mask).mayDrivePolicy;
+function validateRouteId(value: string, field: string): void {
+  if (value.length === 0 || value.includes('\0')) {
+    throw new TypeError(`${field} must be non-empty and NUL-free`);
+  }
+}
+
+function validateRequest(request: AuthorityRoutingRequest): void {
+  if (request.requestId.length === 0 || request.requestId.includes('\0')) {
+    throw new TypeError('requestId must be non-empty and NUL-free');
+  }
+  if (!DIGEST.test(request.sourceLineageDigest)) {
+    throw new TypeError('sourceLineageDigest must be canonical sha256');
+  }
+  if (!validGeneration(request.routeGeneration)) {
+    throw new TypeError('routeGeneration must be a non-negative safe integer');
+  }
+  validateRouteId(request.primaryRouteId, 'primaryRouteId');
+  for (const [field, ids] of [
+    ['compatibleProfileRouteIds', request.compatibleProfileRouteIds],
+    ['alternateProviderRouteIds', request.alternateProviderRouteIds],
+  ] as const) {
+    const seen = new Set<string>();
+    for (const id of ids) {
+      validateRouteId(id, field);
+      if (seen.has(id)) throw new Error(`${field} contains duplicate route id ${id}`);
+      seen.add(id);
+    }
+  }
 }
 
 function decision(
   request: AuthorityRoutingRequest,
   route: AuthorityRouteKind,
-  routeId: string | null,
-  authorityIdentity: string | null,
+  grant: AuthorityRouteGrant | null,
   reason: string,
 ): AuthorityRoutingDecision {
   return Object.freeze({
@@ -61,65 +82,74 @@ function decision(
     sourceLineageDigest: request.sourceLineageDigest,
     routeGeneration: request.routeGeneration,
     route,
-    routeId,
+    routeId: grant?.routeId ?? null,
     previousAuthorityIdentity: null,
-    effectiveAuthorityIdentity: authorityIdentity,
+    effectiveAuthorityIdentity: grant?.authorityIdentity ?? null,
     reason,
     taskContinues: true as const,
   });
 }
 
+function firstResolved(
+  ids: readonly string[],
+  request: AuthorityRoutingRequest,
+  registry: AuthorityRegistry,
+): AuthorityRouteGrant | null {
+  for (const id of ids) {
+    const grant = registry.resolve(id, request.sourceLineageDigest);
+    if (grant !== null) return grant;
+  }
+  return null;
+}
+
 export function selectAuthorityRoute(
   request: AuthorityRoutingRequest,
+  registry: AuthorityRegistry,
 ): AuthorityRoutingDecision {
-  if (request.requestId.length === 0 || request.sourceLineageDigest.length === 0) {
-    throw new TypeError('request/source lineage must be non-empty');
-  }
-  if (!validGeneration(request.routeGeneration)) {
-    throw new TypeError('routeGeneration must be a non-negative safe integer');
-  }
+  validateRequest(request);
 
-  if (authoritative(request.primary)) {
-    return decision(
-      request,
-      'primary',
-      request.primary.id,
-      request.primary.authorityIdentity,
-      'primary-authority-valid',
-    );
+  const primary = registry.resolve(request.primaryRouteId, request.sourceLineageDigest);
+  if (primary !== null) {
+    return decision(request, 'primary', primary, 'primary-authority-valid');
   }
 
   if (request.evidenceDeficit && request.mechanicalRecoveryAvailable) {
-    return decision(request, 'hydrate', null, null, 'recoverable-evidence-deficit');
+    return decision(request, 'hydrate', null, 'recoverable-evidence-deficit');
   }
 
   if (request.pristineAvailable) {
-    return decision(request, 'pristine', null, null, 'semantic-authority-degraded');
+    return decision(request, 'pristine', null, 'semantic-authority-degraded');
   }
 
-  const compatible = request.compatibleProfiles.find(authoritative);
-  if (compatible !== undefined) {
+  const compatible = firstResolved(
+    request.compatibleProfileRouteIds,
+    request,
+    registry,
+  );
+  if (compatible !== null) {
     return decision(
       request,
       'compatible-profile',
-      compatible.id,
-      compatible.authorityIdentity,
+      compatible,
       'compatible-authority-valid',
     );
   }
 
-  const alternate = request.alternateProviders.find(authoritative);
-  if (alternate !== undefined) {
+  const alternate = firstResolved(
+    request.alternateProviderRouteIds,
+    request,
+    registry,
+  );
+  if (alternate !== null) {
     return decision(
       request,
       'alternate-provider',
-      alternate.id,
-      alternate.authorityIdentity,
+      alternate,
       'alternate-authority-valid',
     );
   }
 
-  return decision(request, 'unoptimized', null, null, 'no-semantic-authority-route');
+  return decision(request, 'unoptimized', null, 'no-semantic-authority-route');
 }
 
 export function handoffAuthority(
