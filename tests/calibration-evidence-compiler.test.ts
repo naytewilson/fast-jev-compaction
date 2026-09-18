@@ -26,24 +26,24 @@ function input(providerId = 'typesafe-system-one/jev-1.13.0') {
 }
 
 describe('CalibrationEvidenceCompiler', () => {
-  it('compiles a complete strong five-predicate corpus into a verified build artifact', () => {
+  it('compiles a complete strong four-predicate corpus into a verified build artifact', () => {
     const { build } = makeBuild();
     expect(build.schema).toBe('anvil.provider-calibration-build.v1');
-    expect(build.calibrationArtifact.calibrators).toHaveLength(5);
-    expect(build.holdoutMetrics.sampleCount).toBe(10);
+    expect(build.calibrationArtifact.calibrators).toHaveLength(4);
+    expect(build.holdoutMetrics.sampleCount).toBe(8);
     expect(verifyProviderCalibrationBuildArtifact(build)).toBe(true);
   });
 
   it('rejects training or holdout missing a registered predicate', () => {
     const a = input();
-    a.trainingLabels = a.trainingLabels.filter((x) => x.predicateId !== 'recoverable');
-    a.trainingPredictions = a.trainingPredictions.filter((x) => x.predicateId !== 'recoverable');
-    expect(() => new CalibrationEvidenceCompiler().compile(a)).toThrow(/five|predicate/i);
+    a.trainingLabels = a.trainingLabels.filter((x) => x.predicateId !== 'unresolved_evidence');
+    a.trainingPredictions = a.trainingPredictions.filter((x) => x.predicateId !== 'unresolved_evidence');
+    expect(() => new CalibrationEvidenceCompiler().compile(a)).toThrow(/four|predicate/i);
 
     const b = input();
-    b.holdoutLabels = b.holdoutLabels.filter((x) => x.predicateId !== 'recoverable');
-    b.holdoutPredictions = b.holdoutPredictions.filter((x) => x.predicateId !== 'recoverable');
-    expect(() => new CalibrationEvidenceCompiler().compile(b)).toThrow(/five|predicate/i);
+    b.holdoutLabels = b.holdoutLabels.filter((x) => x.predicateId !== 'unresolved_evidence');
+    b.holdoutPredictions = b.holdoutPredictions.filter((x) => x.predicateId !== 'unresolved_evidence');
+    expect(() => new CalibrationEvidenceCompiler().compile(b)).toThrow(/four|predicate/i);
   });
 
   it('rejects WEAK labels and mixed provider predictions', () => {
