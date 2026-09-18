@@ -91,13 +91,22 @@ describe('local execution profile measurement gate', () => {
       .toBe('REJECTED');
   });
 
-  it('rejects a non-ANE backend for the ANE campaign', () => {
+  it('rejects a coherent non-ANE execution profile for the ANE campaign', () => {
     const r = receipt({
       machine: {
         ...baseInput().machine,
         accelerator: 'CPU',
         backend: 'cpu',
       },
+      executionSemantics: deriveExecutionSemanticsIdentity({
+        backend: 'cpu',
+        runtimeVersion: 'CoreML-1',
+        compilerDigest: d('5'),
+        contextWindow: 4096,
+        quantization: 'int4',
+        samplingDigest: d('6'),
+        hardwareSemanticsClass: 'apple-a18pro-cpu',
+      }),
     });
     expect(evaluateLocalProfileReceipt(r, expected).status).toBe('REJECTED');
   });
