@@ -12,6 +12,7 @@ import {
   makeProviderProfileV2,
   d2,
 } from './v2-calibration-fixtures.js';
+import { deriveProviderExecutionProfile } from '../src/lab/provider-profile.js';
 
 function input(providerId = 'typesafe-system-one/jev-1.13.0') {
   const providerProfile = makeProviderProfileV2(providerId);
@@ -71,10 +72,15 @@ describe('Semantic Fabric V2 calibration evidence compiler', () => {
 
   it('rejects a provider profile bound to the old five-axis ABI', () => {
     const bad = input();
-    bad.providerProfile = {
-      ...bad.providerProfile,
+    bad.providerProfile = deriveProviderExecutionProfile({
+      providerId: bad.providerProfile.providerId,
+      providerKind: bad.providerProfile.providerKind,
+      modelIdentityDigest: bad.providerProfile.modelIdentityDigest,
+      modelAssurance: bad.providerProfile.modelAssurance,
+      executionSemanticsDigest: bad.providerProfile.executionSemanticsDigest,
+      normalizerDigest: bad.providerProfile.normalizerDigest,
       observationABIDigest: d2('0'),
-    } as any;
+    });
 
     expect(() => new CalibrationEvidenceCompilerV2().compile(bad))
       .toThrow(/Observation ABI/i);
