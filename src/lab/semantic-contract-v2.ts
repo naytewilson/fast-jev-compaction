@@ -23,6 +23,16 @@ export const MODELED_SEMANTIC_AXES_V2 = [
 export type ModeledSemanticAxisV2 =
   (typeof MODELED_SEMANTIC_AXES_V2)[number];
 
+export const SEMANTIC_OBSERVATION_ABI_SPEC_V2 = Object.freeze({
+  schema: 'anvil.semantic-observation-abi.v2' as const,
+  modeledAxes: MODELED_SEMANTIC_AXES_V2,
+  recoverabilityAuthority: 'mechanical-only' as const,
+  unresolvedEvidenceSemantics: 'review-advisory-after-evidence-gate' as const,
+});
+
+export const SEMANTIC_OBSERVATION_ABI_DIGEST_V2 =
+  sha256Digest(JSON.stringify(SEMANTIC_OBSERVATION_ABI_SPEC_V2));
+
 export interface SemanticCandidateObservationV2 {
   candidate_id: string;
   evidence_sufficient: NoulObservation;
