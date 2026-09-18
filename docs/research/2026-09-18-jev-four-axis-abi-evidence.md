@@ -85,3 +85,17 @@ The invariant remains:
 
 > Semantic acceleration may preserve or reduce authority. It cannot create
 > source, evidence, recovery, calibration, or execution authority.
+
+
+### 5. Mechanical recovery authority is issuer-bound
+
+A structural object claiming `status: VERIFIED` is not recovery authority.
+
+The v2 path uses a `MechanicalRecoveryAttestor` that derives status only from
+the CAS verifier and binds the attestation to the exact CAS snapshot digest.
+The deterministic retention policy rejects structural copies and stale
+attestations before allowing referential presentation or eviction.
+
+This closes a subtle authority hole in which a caller could otherwise fabricate
+a recovery-shaped object even after the modeled `recoverable` predicate had
+been removed.
