@@ -217,7 +217,8 @@ export class ReceiptEnrichmentQueue {
 
     if (victimIndex < 0) return { accepted: false };
 
-    const [evicted] = this.items.splice(victimIndex, 1, queued);
+    const [evicted] = this.items.splice(victimIndex, 1);
+    this.items.push(queued);
     return { accepted: true, evictedId: evicted.id };
   }
 
