@@ -72,6 +72,10 @@ describe('observation-only SIEVE candidate arm', () => {
     }));
     expect(result.presentations[0]).toMatchObject({ disposition: 'PRISTINE_FALLBACK' });
     expect(result.presentations[0].visible_text).toContain('CRITICAL-MIDDLE');
+    expect(result.receipts[0]).toMatchObject({
+      pristine_fallback: true,
+      error_code: 'reassembly:cardinality_mismatch',
+    });
   });
 
   it('keeps full content when evidence sufficiency is below floor', async () => {
@@ -241,10 +245,39 @@ describe('observation-only SIEVE candidate arm', () => {
       trace_id: 'observation-trace',
       source_run_id: 'run-observation',
       arm: 'D',
+      decision_contract_id: 'anvil.context-retention.v1',
+      decision_contract_version: '0.1.0',
       decision_contract_digest: digest('a'),
+      execution_profile_id: 'offline-fixture',
+      execution_profile_version: '0.1.0',
       execution_profile_digest: digest('b'),
+      calibration_profile_id: 'fixture-calibration',
+      calibration_profile_version: '0.1.0',
       calibration_profile_digest: digest('c'),
+      policy_profile_id: 'fixture-policy',
+      policy_profile_version: '0.1.0',
       policy_profile_digest: digest('d'),
+      ordered_candidate_ids: ['cand-0001'],
+      provider_model_requested: 'offline-fixture',
+      provider_model_effective: 'offline-fixture',
+      pristine_fallback: false,
+      error_code: null,
     });
+    for (const key of [
+      'receipt_id',
+      'source_trace_digest',
+      'shared_state_digest',
+      'candidate_set_digest',
+      'provider_request_digest',
+      'provider_response_digest',
+      'observation_set_digest',
+      'hard_root_policy_digest',
+      'recovery_manifest_digest',
+      'provider_usage',
+      'latency_ms',
+      'receipt_digest',
+    ]) {
+      expect(result.receipts[0]).toHaveProperty(key);
+    }
   });
 });
