@@ -32,6 +32,7 @@ struct Args {
     var cu: String = "all"       // all | cne | cpu  -> MLComputeUnits
     var oracle: String = ""      // dir with manifest.json + <name>.bin refs
     var probeIds: String = ""      // probe token ids
+    var diagnosticTopK: Int = 0    // score mode: opt-in full-vocab top-k telemetry
     var only: String = ""        // mat mode: restrict to one package name
     static func parse() -> Args {
         var a = Args()
@@ -48,6 +49,7 @@ struct Args {
             case "--compute-units": a.cu = it.first ?? "all"; it = it.dropFirst()
             case "--oracle": a.oracle = it.first ?? ""; it = it.dropFirst()
             case "--probe-ids": a.probeIds = it.first ?? ""; it = it.dropFirst()
+            case "--diagnostic-top-k": a.diagnosticTopK = Int(it.first ?? "0") ?? -1; it = it.dropFirst()
             case "--only": a.only = it.first ?? ""; it = it.dropFirst()
             default: eprint("unknown arg \(k)"); _ = it.dropFirst()
             }
@@ -57,6 +59,10 @@ struct Args {
 }
 
 var args = Args.parse()
+if args.diagnosticTopK < 0 || args.diagnosticTopK > 64 {
+    eprint("--diagnostic-top-k must be between 0 and 64")
+    exit(2)
+}
 let schedule = LayerSchedule.lfm25_2p6b
 let geometry = ModelGeometry.lfm25_2p6b
 let partition = PartitionMap.lfm25_2p6b_3x10
@@ -296,6 +302,7 @@ case "score":
     // fields so the consumer can join probabilities to request/candidate.
     let (emb, segs, head) = makeAdapters()
     head.probeIDs = args.probeIds.split(separator: ",").compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+    head.diagnosticTopK = args.diagnosticTopK
     guard !head.probeIDs.isEmpty else { eprint("score: --probe-ids required"); exit(2) }
     let cfg = StepperConfig(schedule: schedule, geometry: geometry, partition: partition,
                             embedding: emb, segments: segs, head: head,
