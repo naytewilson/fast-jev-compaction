@@ -1,4 +1,5 @@
 import type { CalibrationEvidenceLabel } from './calibration-data.js';
+import type { SemanticCalibrationLabel } from './semantic-label.js';
 import { sha256Digest } from './recovery.js';
 
 export type RegretDisposition =
@@ -103,6 +104,56 @@ export class CounterfactualRegretLedger {
     }
 
     return outcome.taskSucceeded ? 'SAFE_RETENTION' : 'UNRESOLVED';
+  }
+
+
+  materializeStillNeededLabels(context: {
+    decisionContractDigest: string;
+    labelBindingDigest: string;
+  }): readonly Readonly<SemanticCalibrationLabel>[] {
+    validateDigest(context.decisionContractDigest, 'decisionContractDigest');
+    validateDigest(context.labelBindingDigest, 'labelBindingDigest');
+
+    const labels: Readonly<SemanticCalibrationLabel>[] = [];
+    const ids = [...this.decisions.keys()].sort((a, b) => a.localeCompare(b));
+
+    for (const decisionId of ids) {
+      const decision = this.decisions.get(decisionId)!;
+      const outcome = this.outcomes.get(decisionId);
+      if (outcome === undefined || !outcome.verified || outcome.verifierIdentity === undefined) {
+        continue;
+      }
+
+      const classification = this.classify(decisionId);
+      if (classification !== 'FALSE_EVICTION' && classification !== 'SAFE_EVICTION') {
+        continue;
+      }
+
+      const target: 0 | 1 = classification === 'FALSE_EVICTION' ? 1 : 0;
+      const boundOutcomeDigest = sha256Digest(JSON.stringify({
+        semanticLabelSchema: 'anvil.semantic-calibration-label.v1',
+        predicateId: 'still_needed',
+        context,
+        decision,
+        outcome,
+        classification,
+        target,
+      }));
+
+      labels.push(Object.freeze({
+        labelId: `regret:still_needed:${decisionId}`,
+        authority: 'STRONG' as const,
+        decisionContractDigest: context.decisionContractDigest,
+        predicateId: 'still_needed' as const,
+        labelBindingDigest: context.labelBindingDigest,
+        sourceDigest: decision.sourceDigest,
+        outcomeDigest: boundOutcomeDigest,
+        target,
+        verifierIdentity: outcome.verifierIdentity,
+      }));
+    }
+
+    return Object.freeze(labels);
   }
 
   materializeCalibrationLabels(): readonly Readonly<CalibrationEvidenceLabel>[] {

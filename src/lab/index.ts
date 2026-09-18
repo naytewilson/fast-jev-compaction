@@ -28,3 +28,7 @@ export * from './fault-campaign.js';
 export * from './execution-profile.js';
 export * from './hardware-receipt.js';
 export * from './local-profile-gate.js';
+export * from './semantic-label.js';
+export * from './calibration-replay.js';
+export * from './isotonic-calibrator.js';
+export * from './calibration-promotion.js';
