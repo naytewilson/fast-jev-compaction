@@ -1,0 +1,5 @@
+2026-09-18T18:43:19Z [acquire] FABLE_ADMIT klass=XL verdict=ADMIT why=ok P=1 s=82.99% D=68.66GB src=live law=seat_free+disk_ge_50GB
+2026-09-18T18:43:19Z [pre_load] FABLE_ADMIT klass=XL verdict=ADMIT why=ok P=1 s=82.99% D=68.66GB src=live in_lease_entry=PASS
+2026-09-18T18:43:33Z [pre_first_op] FABLE_ADMIT klass=XL verdict=ADMIT why=ok P=1 s=82.99% D=71.90GB src=live in_lease_entry=PASS
+2026-09-18T18:54:30Z [pre_probe] FABLE_ADMIT klass=XL verdict=ADMIT why=ok P=1 s=93.75% D=70.86GB src=live in_lease_entry=PASS
+2026-09-18T19:05:47Z [pre_full] FABLE_ADMIT klass=XL verdict=ADMIT why=ok P=1 s=93.00% D=70.88GB src=live in_lease_entry=PASS

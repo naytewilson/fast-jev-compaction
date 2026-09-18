@@ -1,0 +1,36 @@
+law	ANVIL_ANE_GOVERNOR_v2
+profile_sha256	a1d87a2975f6eb367d59292b57502430208bb78f7c78f0e9d9d4a2254727b6d5
+profile_name	jev_v2_framing_canary
+model_id	lfm25-2p6b-d1p1
+accel	ane
+hash_mode	full
+requested_stage	L6
+seat_class	XL
+admit_klass	XL
+swap_launch_max	
+oracle	none	fp16	fp16
+watchdog	30	2	10.0	600	0
+tick_regex	ms":[0-9.]+
+stage_to_hot	0
+cmd_L1	/Users/nayte/ane-hot/workspace/lfm-family-neo-validation/tools/causal-stepper/.build/debug/CausalStepperMac load --packages /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled --embed /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/embed_weight.bin --probe-ids 11683,12447,18171,17550,2243,4547,794,2752 --compute-units all --only segment_0_s16_ctx512_kvio_prefill,segment_1_s16_ctx512_kvio_prefill,segment_2_s16_ctx512_kvio_prefill,final_head_s1_2p6b
+deadline_L1	5400
+cmd_L2	/Users/nayte/ane-hot/workspace/lfm-family-neo-validation/tools/causal-stepper/.build/debug/CausalStepperMac score --packages /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled --embed /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/embed_weight.bin --probe-ids 11683,12447,18171,17550,2243,4547,794,2752 --compute-units all --fixture /Users/nayte/semantic-fabric/noul-ids-v3-smoke.jsonl
+deadline_L2	3600
+cmd_L3	/Users/nayte/ane-hot/workspace/lfm-family-neo-validation/tools/causal-stepper/.build/debug/CausalStepperMac score --packages /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled --embed /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/embed_weight.bin --probe-ids 11683,12447,18171,17550,2243,4547,794,2752 --compute-units all --fixture /Users/nayte/semantic-fabric/noul-ids-v3-smoke.jsonl
+deadline_L3	1800
+cmd_L4	
+deadline_L4	3600
+cmd_L5	
+deadline_L5	3600
+cmd_L6	/Users/nayte/ane-hot/workspace/lfm-family-neo-validation/tools/causal-stepper/.build/debug/CausalStepperMac score --packages /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled --embed /Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/embed_weight.bin --probe-ids 11683,12447,18171,17550,2243,4547,794,2752 --compute-units all --fixture /Users/nayte/jev-v2-isolate-20260918/repo/artifacts/axis-framing-canary/canary-fixture.jsonl
+deadline_L6	7200
+cmd_L7	
+deadline_L7	7200
+binary	/Users/nayte/ane-hot/workspace/lfm-family-neo-validation/tools/causal-stepper/.build/debug/CausalStepperMac	24ed6aacb0e8883ea5f2011b64158e7b92b667bb0b05b15fcd878dd5c0e6d41c
+model	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_0_s16_ctx512_kvio_prefill.mlmodelc	bdaec5dc87b3557b929b7006bafc2d6cb88725ec52eb6838afe9c1dd2e9e8bf7
+model	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_1_s16_ctx512_kvio_prefill.mlmodelc	2c600410323c2638a3fcfe89576ca32cc4c45be988202fd770d8f3c6f6683114
+model	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_2_s16_ctx512_kvio_prefill.mlmodelc	f665327eb057d8b7080354b729624e372b783a1418b8b2f55d996740f83a31fa
+model	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/final_head_s1_2p6b.mlmodelc	fa65e8aeb7473bccd71de6779fcc6db98b39a1f2dd4a920702a7dc72d7002332
+fixture	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/embed_weight.bin	b5365ec220f6518fada497f7fb45631e6d7844114718a7ede1f5c897bf4db93c
+fixture	/Users/nayte/jev-v2-isolate-20260918/repo/artifacts/axis-framing-canary/canary-fixture.jsonl	fe04fb5d06c8089c509fee8c666d82e21e7f7821b3b7964e1d9dc18e3463693d
+fixture	/Users/nayte/semantic-fabric/noul-ids-v3-smoke.jsonl	39ec3f00d80c30ad3c8709c90e1f0a049a119c866b6311e77c3c557563f8e95a
