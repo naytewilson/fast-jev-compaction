@@ -8,7 +8,11 @@ export interface RecoveryManifest {
 
 export type RecoveryVerification =
   | { ok: true }
-  | { ok: false; code: 'missing_object' | 'digest_mismatch' | 'byte_count_mismatch'; detail: string };
+  | {
+      ok: false;
+      code: 'missing_object' | 'digest_mismatch' | 'byte_count_mismatch' | 'candidate_mismatch';
+      detail: string;
+    };
 
 function bytesOf(value: Uint8Array | string): Uint8Array {
   return typeof value === 'string' ? Buffer.from(value, 'utf8') : value;
@@ -18,6 +22,18 @@ export function sha256Digest(value: Uint8Array | string): string {
   return 'sha256:' + createHash('sha256').update(bytesOf(value)).digest('hex');
 }
 
+export function encodeToolEvidence(stdout: string, stderr: string, exitStatus: number): string {
+  if (!Number.isInteger(exitStatus)) {
+    throw new TypeError('exitStatus must be an integer');
+  }
+  return JSON.stringify({
+    schema: 'anvil.tool-evidence.v0',
+    stdout,
+    stderr,
+    exit_status: exitStatus,
+  });
+}
+
 export function createRecoveryManifest(value: Uint8Array | string, objectID: string): RecoveryManifest {
   const bytes = bytesOf(value);
   return {
@@ -25,6 +41,15 @@ export function createRecoveryManifest(value: Uint8Array | string, objectID: str
     recovery_ref: `cas:${objectID}`,
     byte_count: bytes.byteLength,
   };
+}
+
+export function createToolRecoveryManifest(
+  stdout: string,
+  stderr: string,
+  exitStatus: number,
+  objectID: string,
+): RecoveryManifest {
+  return createRecoveryManifest(encodeToolEvidence(stdout, stderr, exitStatus), objectID);
 }
 
 export function verifyRecoveryObject(
@@ -53,6 +78,28 @@ export function verifyRecoveryObject(
   return { ok: true };
 }
 
+export function verifyToolRecoveryObject(
+  manifest: RecoveryManifest,
+  stdout: string,
+  stderr: string,
+  exitStatus: number,
+  storedValue: Uint8Array | string | undefined,
+): RecoveryVerification {
+  const canonical = encodeToolEvidence(stdout, stderr, exitStatus);
+  const expectedDigest = sha256Digest(canonical);
+  const expectedBytes = Buffer.byteLength(canonical, 'utf8');
+
+  if (manifest.source_digest !== expectedDigest || manifest.byte_count !== expectedBytes) {
+    return {
+      ok: false,
+      code: 'candidate_mismatch',
+      detail: 'candidate fields do not match the recovery manifest identity',
+    };
+  }
+
+  return verifyRecoveryObject(manifest, storedValue);
+}
+
 export class InMemoryCAS {
   private readonly objects = new Map<string, Uint8Array>();
 
@@ -71,6 +118,25 @@ export class InMemoryCAS {
     }
     const objectID = manifest.recovery_ref.slice(4);
     return verifyRecoveryObject(manifest, this.get(objectID));
+  }
+
+  verifyTool(
+    manifest: RecoveryManifest,
+    stdout: string,
+    stderr: string,
+    exitStatus: number,
+  ): RecoveryVerification {
+    if (!manifest.recovery_ref.startsWith('cas:')) {
+      return { ok: false, code: 'missing_object', detail: 'recovery_ref is not CAS-bound' };
+    }
+    const objectID = manifest.recovery_ref.slice(4);
+    return verifyToolRecoveryObject(
+      manifest,
+      stdout,
+      stderr,
+      exitStatus,
+      this.get(objectID),
+    );
   }
 
   snapshotDigest(): string {

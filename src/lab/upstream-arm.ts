@@ -20,7 +20,12 @@ export async function runUpstreamComparator(
 ): Promise<ReplayRun> {
   const presentations = [];
   for (const candidate of trace.candidates) {
-    if (!cas.verify(candidate.recovery).ok) {
+    if (!cas.verifyTool(
+      candidate.recovery,
+      candidate.stdout,
+      candidate.stderr,
+      candidate.exit_status,
+    ).ok) {
       presentations.push(fullPresentation(candidate));
       continue;
     }

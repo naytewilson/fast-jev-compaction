@@ -92,7 +92,14 @@ export function runDeterministicArm(trace: ReplayTrace, cas: InMemoryCAS): Repla
   return {
     arm: 'B',
     presentations: trace.candidates.map((candidate) => {
-      if (!cas.verify(candidate.recovery).ok) return fullPresentation(candidate);
+      if (!cas.verifyTool(
+        candidate.recovery,
+        candidate.stdout,
+        candidate.stderr,
+        candidate.exit_status,
+      ).ok) {
+        return fullPresentation(candidate);
+      }
       return referentialPresentation(candidate);
     }),
   };

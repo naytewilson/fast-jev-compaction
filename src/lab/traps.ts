@@ -1,4 +1,4 @@
-import { createRecoveryManifest } from './recovery.js';
+import { createToolRecoveryManifest } from './recovery.js';
 import type { ReplayTrace } from './replay.js';
 
 function trace(
@@ -8,6 +8,8 @@ function trace(
   options: { stderr?: string; exitStatus?: number } = {},
 ): ReplayTrace {
   const objectID = `${id}-object`;
+  const stderr = options.stderr ?? '';
+  const exitStatus = options.exitStatus ?? 0;
   return {
     trace_id: id,
     source_run_id: `run-${id}`,
@@ -15,12 +17,12 @@ function trace(
     candidates: [{
       candidate_id: 'cand-0001',
       stdout,
-      stderr: options.stderr ?? '',
-      exit_status: options.exitStatus ?? 0,
+      stderr,
+      exit_status: exitStatus,
       head_lines: 1,
       tail_lines: 1,
       presentation_budget_bytes: 4096,
-      recovery: createRecoveryManifest(stdout, objectID),
+      recovery: createToolRecoveryManifest(stdout, stderr, exitStatus, objectID),
       critical_evidence: [critical],
     }],
   };

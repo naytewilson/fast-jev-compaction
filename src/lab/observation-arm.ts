@@ -174,7 +174,12 @@ export async function runObservationOnlyArm(
     if (observation.unresolved_evidence.noul >= thresholds.keepFull) {
       return fullPresentation(candidate);
     }
-    if (!cas.verify(candidate.recovery).ok) {
+    if (!cas.verifyTool(
+      candidate.recovery,
+      candidate.stdout,
+      candidate.stderr,
+      candidate.exit_status,
+    ).ok) {
       return fullPresentation(candidate);
     }
     if (observation.full_content_needed.noul >= thresholds.keepFull) {
