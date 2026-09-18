@@ -8,15 +8,31 @@ import {
 } from 'node:fs';
 import { sha256Digest } from './recovery.js';
 
-export type AuthorityPolicyOutcome =
-  | 'authorized'
-  | 'suppressed'
-  | 'hydrate'
-  | 'fallback'
-  | 'escalate'
-  | 'abstain'
-  | 'unoptimized'
-  | string;
+export const AUTHORITY_POLICY_OUTCOMES = [
+  'authorized',
+  'suppressed',
+  'hydrate',
+  'fallback',
+  'escalate',
+  'abstain',
+  'unoptimized',
+] as const;
+
+export type AuthorityPolicyOutcome = (typeof AUTHORITY_POLICY_OUTCOMES)[number];
+
+export const AUTHORITY_RECEIPT_ROUTES = [
+  'primary',
+  'hydrate',
+  'pristine',
+  'compatible-profile',
+  'alternate-provider',
+  'unoptimized',
+] as const;
+
+export type AuthorityReceiptRoute = (typeof AUTHORITY_RECEIPT_ROUTES)[number];
+
+export const GENESIS_AUTHORITY_RECEIPT_DIGEST =
+  sha256Digest('ANVIL.AuthorityReceiptSpine.Genesis.v2');
 
 export interface AuthorityReceiptSpineInput {
   requestId: string;
@@ -25,57 +41,107 @@ export interface AuthorityReceiptSpineInput {
   compiledProgramDigest: string;
   observationDigest: string;
   calibrationIdentity: string;
-  requestedAuthorityIdentity: string;
-  effectiveAuthorityIdentity: string;
-  authorityRoute: string;
+  requestedAuthorityIdentity: string | null;
+  effectiveAuthorityIdentity: string | null;
+  authorityRoute: AuthorityReceiptRoute;
   authorityGeneration: number;
   policyOutcome: AuthorityPolicyOutcome;
   timestamp: string;
 }
 
 export interface AuthorityReceiptSpine extends AuthorityReceiptSpineInput {
-  receiptSchema: 'anvil.authority-receipt-spine.v1';
+  receiptSchema: 'anvil.authority-receipt-spine.v2';
   receiptId: string;
   sequence: number;
+  previousReceiptDigest: string;
   receiptDigest: string;
 }
 
 type ReceiptCore = Omit<AuthorityReceiptSpine, 'receiptId' | 'receiptDigest'>;
 
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
+const RECEIPT_KEYS = [
+  'receiptSchema',
+  'receiptId',
+  'sequence',
+  'previousReceiptDigest',
+  'requestId',
+  'sourceDigest',
+  'decisionContractDigest',
+  'compiledProgramDigest',
+  'observationDigest',
+  'calibrationIdentity',
+  'requestedAuthorityIdentity',
+  'effectiveAuthorityIdentity',
+  'authorityRoute',
+  'authorityGeneration',
+  'policyOutcome',
+  'timestamp',
+  'receiptDigest',
+] as const;
 
 function canonical(value: unknown): string {
   return JSON.stringify(value);
 }
 
+function isObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function exactKeys(value: Record<string, unknown>, expected: readonly string[]): boolean {
+  const actual = Object.keys(value);
+  return actual.length === expected.length && actual.every((key) => expected.includes(key));
+}
+
+function requireDigest(value: string | null, field: string, nullable = false): void {
+  if (value === null && nullable) return;
+  if (typeof value !== 'string' || !DIGEST.test(value)) {
+    throw new TypeError(`${field} must be canonical sha256${nullable ? ' or null' : ''}`);
+  }
+}
+
 function validateInput(input: AuthorityReceiptSpineInput): void {
-  if (input.requestId.length === 0) throw new TypeError('requestId must be non-empty');
-  for (const [name, value] of [
-    ['sourceDigest', input.sourceDigest],
-    ['decisionContractDigest', input.decisionContractDigest],
-    ['compiledProgramDigest', input.compiledProgramDigest],
-    ['observationDigest', input.observationDigest],
-    ['calibrationIdentity', input.calibrationIdentity],
-    ['requestedAuthorityIdentity', input.requestedAuthorityIdentity],
-    ['effectiveAuthorityIdentity', input.effectiveAuthorityIdentity],
-  ] as const) {
-    if (!DIGEST.test(value)) throw new TypeError(`${name} must be canonical sha256`);
+  if (input.requestId.length === 0 || input.requestId.includes('\0')) {
+    throw new TypeError('requestId must be non-empty and NUL-free');
+  }
+  requireDigest(input.sourceDigest, 'sourceDigest');
+  requireDigest(input.decisionContractDigest, 'decisionContractDigest');
+  requireDigest(input.compiledProgramDigest, 'compiledProgramDigest');
+  requireDigest(input.observationDigest, 'observationDigest');
+  requireDigest(input.calibrationIdentity, 'calibrationIdentity');
+  requireDigest(input.requestedAuthorityIdentity, 'requestedAuthorityIdentity', true);
+  requireDigest(input.effectiveAuthorityIdentity, 'effectiveAuthorityIdentity', true);
+
+  if (!AUTHORITY_RECEIPT_ROUTES.includes(input.authorityRoute)) {
+    throw new TypeError('authorityRoute is not registered');
+  }
+  if (!AUTHORITY_POLICY_OUTCOMES.includes(input.policyOutcome)) {
+    throw new TypeError('policyOutcome is not registered');
   }
   if (!Number.isSafeInteger(input.authorityGeneration) || input.authorityGeneration < 0) {
     throw new TypeError('authorityGeneration must be a non-negative safe integer');
   }
-  if (input.authorityRoute.length === 0) throw new TypeError('authorityRoute must be non-empty');
-  if (String(input.policyOutcome).length === 0) throw new TypeError('policyOutcome must be non-empty');
-  if (input.timestamp.length === 0 || Number.isNaN(Date.parse(input.timestamp))) {
-    throw new TypeError('timestamp must be an ISO-compatible timestamp');
+  const parsed = new Date(input.timestamp);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString() !== input.timestamp) {
+    throw new TypeError('timestamp must be canonical ISO-8601');
   }
 }
 
-function buildReceipt(input: AuthorityReceiptSpineInput, sequence: number): AuthorityReceiptSpine {
+function buildReceipt(
+  input: AuthorityReceiptSpineInput,
+  sequence: number,
+  previousReceiptDigest: string,
+): AuthorityReceiptSpine {
   validateInput(input);
+  if (!Number.isSafeInteger(sequence) || sequence <= 0) {
+    throw new TypeError('receipt sequence must be a positive safe integer');
+  }
+  requireDigest(previousReceiptDigest, 'previousReceiptDigest');
+
   const core: ReceiptCore = {
-    receiptSchema: 'anvil.authority-receipt-spine.v1',
+    receiptSchema: 'anvil.authority-receipt-spine.v2',
     sequence,
+    previousReceiptDigest,
     requestId: input.requestId,
     sourceDigest: input.sourceDigest,
     decisionContractDigest: input.decisionContractDigest,
@@ -95,24 +161,47 @@ function buildReceipt(input: AuthorityReceiptSpineInput, sequence: number): Auth
   return Object.freeze({ ...core, receiptId, receiptDigest });
 }
 
-export function verifyAuthorityReceiptSpine(receipt: AuthorityReceiptSpine): boolean {
-  const { receiptId, receiptDigest, ...core } = receipt;
-  const identity = sha256Digest(canonical(core));
-  const expectedID = `ars-${identity.slice('sha256:'.length, 'sha256:'.length + 24)}`;
-  const expectedDigest = sha256Digest(canonical({ ...core, receiptId }));
-  return receiptId === expectedID && receiptDigest === expectedDigest;
+export function verifyAuthorityReceiptSpine(value: unknown): value is AuthorityReceiptSpine {
+  try {
+    if (!isObject(value) || !exactKeys(value, RECEIPT_KEYS)) return false;
+    const receipt = value as unknown as AuthorityReceiptSpine;
+    if (receipt.receiptSchema !== 'anvil.authority-receipt-spine.v2') return false;
+    if (!Number.isSafeInteger(receipt.sequence) || receipt.sequence <= 0) return false;
+    requireDigest(receipt.previousReceiptDigest, 'previousReceiptDigest');
+    validateInput(receipt);
+    if (typeof receipt.receiptId !== 'string' || typeof receipt.receiptDigest !== 'string') {
+      return false;
+    }
+
+    const {
+      receiptId,
+      receiptDigest,
+      ...core
+    } = receipt;
+    const identity = sha256Digest(canonical(core));
+    const expectedID = `ars-${identity.slice('sha256:'.length, 'sha256:'.length + 24)}`;
+    const expectedDigest = sha256Digest(canonical({ ...core, receiptId }));
+    return receiptId === expectedID && receiptDigest === expectedDigest;
+  } catch {
+    return false;
+  }
 }
 
 export class FileReceiptSpineJournal {
   private nextSequence: number;
+  private tailDigest: string;
 
   constructor(private readonly path: string) {
     const existing = this.readAll();
     this.nextSequence = existing.length + 1;
+    this.tailDigest =
+      existing.length === 0
+        ? GENESIS_AUTHORITY_RECEIPT_DIGEST
+        : existing[existing.length - 1].receiptDigest;
   }
 
   append(input: AuthorityReceiptSpineInput): AuthorityReceiptSpine {
-    const receipt = buildReceipt(input, this.nextSequence);
+    const receipt = buildReceipt(input, this.nextSequence, this.tailDigest);
     const line = canonical(receipt) + '\n';
     const fd = openSync(this.path, 'a', 0o600);
     try {
@@ -122,7 +211,12 @@ export class FileReceiptSpineJournal {
       closeSync(fd);
     }
     this.nextSequence += 1;
+    this.tailDigest = receipt.receiptDigest;
     return receipt;
+  }
+
+  headDigest(): string {
+    return this.tailDigest;
   }
 
   readAll(): AuthorityReceiptSpine[] {
@@ -131,25 +225,43 @@ export class FileReceiptSpineJournal {
     if (raw.length === 0) return [];
 
     const lines = raw.split('\n').filter((line) => line.length > 0);
-    const receipts = lines.map((line, index) => {
-      let receipt: AuthorityReceiptSpine;
+    const parsed: unknown[] = lines.map((line, index) => {
       try {
-        receipt = JSON.parse(line) as AuthorityReceiptSpine;
+        return JSON.parse(line);
       } catch {
         throw new Error(`receipt_parse_failure at line ${index + 1}`);
       }
+    });
+
+    let previousDigest = GENESIS_AUTHORITY_RECEIPT_DIGEST;
+    for (let index = 0; index < parsed.length; index += 1) {
+      const rawReceipt = parsed[index];
+      if (!isObject(rawReceipt)) {
+        throw new Error(`receipt_schema_invalid at line ${index + 1}`);
+      }
       const expectedSequence = index + 1;
-      if (receipt.sequence !== expectedSequence) {
+      if (rawReceipt.sequence !== expectedSequence) {
         throw new Error(
-          `receipt_sequence_gap: expected ${expectedSequence}, got ${receipt.sequence}`,
+          `receipt_sequence_gap: expected ${expectedSequence}, got ${String(rawReceipt.sequence)}`,
         );
       }
-      if (!verifyAuthorityReceiptSpine(receipt)) {
-        throw new Error(`receipt_digest_mismatch at sequence ${expectedSequence}`);
+      if (rawReceipt.previousReceiptDigest !== previousDigest) {
+        throw new Error(
+          `previous_receipt_digest_mismatch at sequence ${expectedSequence}`,
+        );
       }
-      return Object.freeze({ ...receipt });
+      if (typeof rawReceipt.receiptDigest !== 'string') {
+        throw new Error(`receipt_digest_missing at sequence ${expectedSequence}`);
+      }
+      previousDigest = rawReceipt.receiptDigest;
+    }
+
+    return parsed.map((rawReceipt, index) => {
+      if (!verifyAuthorityReceiptSpine(rawReceipt)) {
+        throw new Error(`receipt_digest_mismatch at sequence ${index + 1}`);
+      }
+      return Object.freeze({ ...rawReceipt });
     });
-    return receipts;
   }
 }
 

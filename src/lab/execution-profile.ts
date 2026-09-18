@@ -40,7 +40,21 @@ export interface ExecutionSemanticsInput {
   hardwareSemanticsClass?: string;
 }
 
+export interface ExecutionSemanticsIdentity extends ExecutionSemanticsInput {
+  identityDigest: Digest256;
+}
+
 const DIGEST = /^sha256:[0-9a-f]{64}$/;
+const BACKENDS = new Set<ExecutionBackend>([
+  'coreml-ane',
+  'coreml-auto',
+  'cpu',
+  'remote',
+]);
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
 
 function requireDigest(value: Digest256, field: string): Uint8Array {
   if (!DIGEST.test(value)) {
@@ -97,9 +111,51 @@ export function deriveLocalModelIdentity(
   });
 }
 
-export function deriveExecutionSemanticsDigest(
+export function verifyLocalModelIdentity(value: unknown): value is LocalModelIdentity {
+  try {
+    if (!isObject(value)) return false;
+    const allowed = new Set([
+      'modelName',
+      'packageDigest',
+      'tokenizerDigest',
+      'weightsDigest',
+      'quantization',
+      'releaseId',
+      'assurance',
+      'identityDigest',
+    ]);
+    if (Object.keys(value).some((key) => !allowed.has(key))) return false;
+    if (
+      typeof value.modelName !== 'string' ||
+      typeof value.packageDigest !== 'string' ||
+      typeof value.tokenizerDigest !== 'string' ||
+      typeof value.quantization !== 'string' ||
+      value.assurance !== 'contentVerified' ||
+      typeof value.identityDigest !== 'string'
+    ) return false;
+    if (value.weightsDigest !== undefined && typeof value.weightsDigest !== 'string') return false;
+    if (value.releaseId !== undefined && typeof value.releaseId !== 'string') return false;
+
+    const recomputed = deriveLocalModelIdentity({
+      modelName: value.modelName,
+      packageDigest: value.packageDigest,
+      tokenizerDigest: value.tokenizerDigest,
+      ...(value.weightsDigest !== undefined ? { weightsDigest: value.weightsDigest } : {}),
+      quantization: value.quantization,
+      ...(value.releaseId !== undefined ? { releaseId: value.releaseId } : {}),
+    });
+    return recomputed.identityDigest === value.identityDigest;
+  } catch {
+    return false;
+  }
+}
+
+function computeExecutionSemanticsDigest(
   input: ExecutionSemanticsInput,
 ): Digest256 {
+  if (!BACKENDS.has(input.backend)) {
+    throw new TypeError('backend is not a registered execution backend');
+  }
   if (!Number.isSafeInteger(input.contextWindow) || input.contextWindow <= 0) {
     throw new TypeError('contextWindow must be a positive safe integer');
   }
@@ -117,4 +173,66 @@ export function deriveExecutionSemanticsDigest(
   if (hardware !== undefined) components.push({ tag: 7, data: hardware });
 
   return digestTaggedIdentity('ANVIL.ExecutionSemantics.v1', components);
+}
+
+export function deriveExecutionSemanticsDigest(
+  input: ExecutionSemanticsInput,
+): Digest256 {
+  return computeExecutionSemanticsDigest(input);
+}
+
+export function deriveExecutionSemanticsIdentity(
+  input: ExecutionSemanticsInput,
+): Readonly<ExecutionSemanticsIdentity> {
+  return Object.freeze({
+    ...input,
+    identityDigest: computeExecutionSemanticsDigest(input),
+  });
+}
+
+export function verifyExecutionSemanticsIdentity(
+  value: unknown,
+): value is ExecutionSemanticsIdentity {
+  try {
+    if (!isObject(value)) return false;
+    const allowed = new Set([
+      'backend',
+      'runtimeVersion',
+      'compilerDigest',
+      'contextWindow',
+      'quantization',
+      'samplingDigest',
+      'hardwareSemanticsClass',
+      'identityDigest',
+    ]);
+    if (Object.keys(value).some((key) => !allowed.has(key))) return false;
+    if (
+      typeof value.backend !== 'string' ||
+      typeof value.runtimeVersion !== 'string' ||
+      typeof value.compilerDigest !== 'string' ||
+      typeof value.contextWindow !== 'number' ||
+      typeof value.quantization !== 'string' ||
+      typeof value.samplingDigest !== 'string' ||
+      typeof value.identityDigest !== 'string'
+    ) return false;
+    if (
+      value.hardwareSemanticsClass !== undefined &&
+      typeof value.hardwareSemanticsClass !== 'string'
+    ) return false;
+
+    const recomputed = deriveExecutionSemanticsIdentity({
+      backend: value.backend as ExecutionBackend,
+      runtimeVersion: value.runtimeVersion,
+      compilerDigest: value.compilerDigest,
+      contextWindow: value.contextWindow,
+      quantization: value.quantization,
+      samplingDigest: value.samplingDigest,
+      ...(value.hardwareSemanticsClass !== undefined
+        ? { hardwareSemanticsClass: value.hardwareSemanticsClass }
+        : {}),
+    });
+    return recomputed.identityDigest === value.identityDigest;
+  } catch {
+    return false;
+  }
 }
