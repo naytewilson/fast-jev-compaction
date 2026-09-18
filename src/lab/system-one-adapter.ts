@@ -74,6 +74,22 @@ type SystemOneAnswer = {
   noul?: unknown;
 };
 
+export interface SystemOneQuestion {
+  type: 'noul';
+  instructions: string;
+  criteria: { true: string; false: string };
+}
+
+export interface SystemOneMappedPayload {
+  model: string;
+  state: {
+    schema: typeof SYSTEM_ONE_MAPPED_STATE_SCHEMA;
+    shared_conversation_state: MappedDecisionRequest['shared_conversation_state'];
+    candidate_views: MappedDecisionRequest['candidate_views'];
+  };
+  questions: Record<string, SystemOneQuestion>;
+}
+
 export function systemOneMappedRequestDigest(request: MappedDecisionRequest): string {
   return sha256Digest(JSON.stringify(request));
 }
@@ -105,19 +121,32 @@ function questionKey(candidateID: string, axis: MappedObservationAxis): string {
   return `${candidateID}.${axis}`;
 }
 
-function buildQuestions(request: MappedDecisionRequest): Record<string, {
-  type: 'noul';
-  instructions: string;
-  criteria: { true: string; false: string };
-}> {
-  const questions: Record<string, {
-    type: 'noul';
-    instructions: string;
-    criteria: { true: string; false: string };
-  }> = {};
+function validateAxisSubset(axes: readonly MappedObservationAxis[]): void {
+  if (axes.length === 0) {
+    throw new Error('System One axis subset must not be empty');
+  }
+  const registered = new Set<MappedObservationAxis>(MAPPED_OBSERVATION_AXES);
+  const seen = new Set<MappedObservationAxis>();
+  for (const axis of axes) {
+    if (!registered.has(axis)) {
+      throw new Error(`System One axis subset contains unknown axis ${axis}`);
+    }
+    if (seen.has(axis)) {
+      throw new Error(`System One axis subset contains duplicate axis ${axis}`);
+    }
+    seen.add(axis);
+  }
+}
+
+function buildQuestions(
+  request: MappedDecisionRequest,
+  axes: readonly MappedObservationAxis[],
+): Record<string, SystemOneQuestion> {
+  validateAxisSubset(axes);
+  const questions: Record<string, SystemOneQuestion> = {};
 
   for (const candidate of request.candidate_views) {
-    for (const axis of MAPPED_OBSERVATION_AXES) {
+    for (const axis of axes) {
       questions[questionKey(candidate.candidate_id, axis)] = {
         type: 'noul',
         instructions: `${AXIS_INSTRUCTIONS[axis]} Candidate ID: ${candidate.candidate_id}.`,
@@ -129,6 +158,28 @@ function buildQuestions(request: MappedDecisionRequest): Record<string, {
     }
   }
   return questions;
+}
+
+export function buildSystemOneMappedPayload(
+  request: MappedDecisionRequest,
+  model: string,
+  axes: readonly MappedObservationAxis[] = MAPPED_OBSERVATION_AXES,
+): SystemOneMappedPayload {
+  assertPinnedModel(model);
+  const validation = validateMappedDecisionRequest(request);
+  if (!validation.ok) {
+    throw new Error(`Cannot build System One payload for invalid mapped request: ${validation.code}`);
+  }
+
+  return {
+    model,
+    state: {
+      schema: SYSTEM_ONE_MAPPED_STATE_SCHEMA,
+      shared_conversation_state: request.shared_conversation_state,
+      candidate_views: request.candidate_views,
+    },
+    questions: buildQuestions(request, axes),
+  };
 }
 
 function finiteProbability(answer: SystemOneAnswer | undefined, key: string): number {
@@ -189,18 +240,10 @@ export function createSystemOneMappedProvider(
       throw new Error('System One egress grant does not authorize this exact mapped request');
     }
 
-    const questions = buildQuestions(request);
+    const payload = buildSystemOneMappedPayload(request, options.model);
+    const questions = payload.questions;
     const expectedKeys = Object.keys(questions);
-
-    const body = JSON.stringify({
-      model: options.model,
-      state: {
-        schema: SYSTEM_ONE_MAPPED_STATE_SCHEMA,
-        shared_conversation_state: request.shared_conversation_state,
-        candidate_views: request.candidate_views,
-      },
-      questions,
-    });
+    const body = JSON.stringify(payload);
 
     const response = await fetcher(endpoint, {
       method: 'POST',

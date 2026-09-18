@@ -1,7 +1,12 @@
 import {
   MAPPED_OBSERVATION_AXES,
+  type MappedDecisionRequest,
   type MappedObservationAxis,
 } from './types.js';
+import {
+  buildSystemOneMappedPayload,
+  type SystemOneMappedPayload,
+} from './system-one-adapter.js';
 
 export const FIVE_AXIS_EXPERIMENT_AXES =
   Object.freeze([...MAPPED_OBSERVATION_AXES]) as readonly MappedObservationAxis[];
@@ -138,19 +143,7 @@ export function compareSharedAxisObservations(
 }
 
 
-export interface SystemOneAxisExperimentPayload {
-  model: string;
-  state: {
-    schema: string;
-    shared_conversation_state: unknown;
-    candidate_views: unknown;
-  };
-  questions: Record<string, {
-    type: 'noul';
-    instructions: string;
-    criteria: { true: string; false: string };
-  }>;
-}
+export type SystemOneAxisExperimentPayload = SystemOneMappedPayload;
 
 export interface SystemOneAxisExperimentResult {
   observations: readonly AxisExperimentObservation[];
@@ -164,18 +157,83 @@ export interface SystemOneAxisExperimentResult {
 }
 
 export function buildSystemOneAxisExperimentPayload(
-  _request: import('./types.js').MappedDecisionRequest,
-  _model: string,
-  _axes: readonly MappedObservationAxis[],
+  request: MappedDecisionRequest,
+  model: string,
+  axes: readonly MappedObservationAxis[],
 ): SystemOneAxisExperimentPayload {
-  throw new Error('RED: buildSystemOneAxisExperimentPayload is not implemented');
+  assertAxisSet(axes);
+  return buildSystemOneMappedPayload(request, model, axes);
+}
+
+function optionalUsage(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
+    ? value
+    : null;
 }
 
 export function parseSystemOneAxisExperimentResponse(
-  _request: import('./types.js').MappedDecisionRequest,
-  _model: string,
-  _axes: readonly MappedObservationAxis[],
-  _responseText: string,
+  request: MappedDecisionRequest,
+  model: string,
+  axes: readonly MappedObservationAxis[],
+  responseText: string,
 ): SystemOneAxisExperimentResult {
-  throw new Error('RED: parseSystemOneAxisExperimentResponse is not implemented');
+  assertAxisSet(axes);
+  const payload = buildSystemOneMappedPayload(request, model, axes);
+  const expectedKeys = Object.keys(payload.questions);
+
+  let parsed: any;
+  try {
+    parsed = JSON.parse(responseText);
+  } catch {
+    throw new Error('System One axis experiment returned malformed JSON');
+  }
+
+  if (
+    parsed === null ||
+    typeof parsed !== 'object' ||
+    parsed.answers === null ||
+    typeof parsed.answers !== 'object' ||
+    Array.isArray(parsed.answers)
+  ) {
+    throw new Error('System One axis experiment response is missing answers');
+  }
+
+  if (typeof parsed.model === 'string' && parsed.model !== model) {
+    throw new Error('System One axis experiment effective model does not match the pinned model');
+  }
+
+  const actualKeys = Object.keys(parsed.answers);
+  if (
+    actualKeys.length !== expectedKeys.length ||
+    actualKeys.some((key) => !Object.prototype.hasOwnProperty.call(payload.questions, key))
+  ) {
+    throw new Error('System One axis experiment answer key set does not exactly match the requested axes');
+  }
+
+  const observations: AxisExperimentObservation[] = request.candidate_views.map((candidate) => {
+    const values: Partial<Record<MappedObservationAxis, number>> = {};
+    for (const axis of axes) {
+      const key = `${candidate.candidate_id}.${axis}`;
+      values[axis] = probability(
+        parsed.answers[key]?.noul,
+        axis,
+        candidate.candidate_id,
+      );
+    }
+    return {
+      candidateId: candidate.candidate_id,
+      values: Object.freeze(values),
+    };
+  });
+
+  return {
+    observations: Object.freeze(observations),
+    providerMetadata: {
+      requested_model: model,
+      effective_model: typeof parsed.model === 'string' ? parsed.model : model,
+      input_tokens: optionalUsage(parsed.usage?.input_tokens),
+      output_tokens: optionalUsage(parsed.usage?.output_tokens),
+      cost_usd: null,
+    },
+  };
 }
