@@ -42,3 +42,6 @@ export * from './calibration-evidence-compiler.js';
 export * from './provider-safety-trial.js';
 export * from './promotion-evidence.js';
 export * from './provider-shadow-replay.js';
+
+export * from './semantic-abi-experiment.js';
+export * from './ranking-metrics.js';
