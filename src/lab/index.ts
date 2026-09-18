@@ -36,4 +36,5 @@ export * from './calibration-promotion.js';
 export * from './provider-profile.js';
 export * from './promotion-credential.js';
 export * from './provider-comparison.js';
-export * from './calibration-artifact.js';\nexport * from './calibration-artifact-promotion.js';\n
+export * from './calibration-artifact.js';
+export * from './calibration-artifact-promotion.js';
