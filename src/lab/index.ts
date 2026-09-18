@@ -42,3 +42,4 @@ export * from './calibration-evidence-compiler.js';
 export * from './provider-safety-trial.js';
 export * from './promotion-evidence.js';
 export * from './provider-shadow-replay.js';
+export * from './calibrated-policy-replay.js';
