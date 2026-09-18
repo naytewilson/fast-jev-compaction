@@ -1,0 +1,81 @@
+{
+  "schema": "anvil.neo-drift-report.v1",
+  "evidenceClass": "synthetic-fixture",
+  "originalProfileDigest": "sha256:54791b7fb4da1a842d8c52b645ce0c2aad0cf3c2ed6ce5a5f439205f0141f458",
+  "driftedProfileDigest": "sha256:dbff27f3949faea5faf40d8ae225b4773beb9c579df3cb21e076011ced53306a",
+  "driftKind": "model-release-bump (releaseId -> new profile digest)",
+  "timingsMs": {
+    "T_detect_ms": 0.0547,
+    "T_route_ms": 0.22,
+    "T_replay_ms": 11.8152,
+    "T_fit_ms": 2.3396,
+    "T_validate_ms": 0.4882,
+    "T_canary_ms": 1.3325,
+    "T_promote_ms": 0.0957,
+    "T_rollback_ms": 0.0285,
+    "T_singleflight_ms": 0.0685
+  },
+  "canaryPassed": true,
+  "checks": [
+    {
+      "name": "drift-changes-profile-digest",
+      "passed": true,
+      "detail": "sha256:dbff27f3949faea5f…"
+    },
+    {
+      "name": "drifted-profile-shadow-only",
+      "passed": true,
+      "detail": "no credential exists for the bumped release -> resolution fails closed"
+    },
+    {
+      "name": "drifted-route-conservative",
+      "passed": true,
+      "detail": "route=pristine"
+    },
+    {
+      "name": "drifted-replay-verifies",
+      "passed": true,
+      "detail": "train=90 holdout=40"
+    },
+    {
+      "name": "drifted-build-compiles",
+      "passed": true,
+      "detail": "build=sha256:a2e37b136e10813fd…"
+    },
+    {
+      "name": "drifted-build-verifies",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "drifted-selective-nonzero-coverage",
+      "passed": true,
+      "detail": "coverage=1 risk=0"
+    },
+    {
+      "name": "promote-atomic-new-generation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "rollback-restores-prior-generation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "rollback-rejects-unknown-generation",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "duplicate-recalibration-single-flight",
+      "passed": true,
+      "detail": "inFlight=0"
+    },
+    {
+      "name": "illegal-transition-fails",
+      "passed": true,
+      "detail": ""
+    }
+  ]
+}

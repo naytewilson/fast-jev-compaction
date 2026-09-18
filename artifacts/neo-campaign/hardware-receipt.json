@@ -1,0 +1,66 @@
+{
+  "schema": "anvil.local-hardware-receipt.v2",
+  "repository": "naytewilson/fast-jev-compaction",
+  "branch": "worker/semantic-fabric-v1-overnight-neo-20260918",
+  "commitSha": "6e51a969e8d1ec8fc80ae23285388763fc537fe4",
+  "timestamp": "2026-09-18T05:38:16.277Z",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "osVersion": "27.2",
+    "hardwareClass": "a18pro",
+    "accelerator": "ane",
+    "backend": "coreml-auto",
+    "runtimeVersion": "CoreML/macOS-27.2-26B5086k"
+  },
+  "modelIdentity": {
+    "modelName": "lfm2.5-2.6b-kvio-d1p1",
+    "packageDigest": "sha256:3c2879b715b6a6e16e3357dce0a29f7ecb59bb20c0685c9f3c99def822699079",
+    "tokenizerDigest": "sha256:695be7802a0e4b8a81048f0ff5ebb7fc811a0ba5a6be63dbb24deb5a81096f41",
+    "weightsDigest": "sha256:b5365ec220f6518fada497f7fb45631e6d7844114718a7ede1f5c897bf4db93c",
+    "quantization": "fp16",
+    "releaseId": "lfm25-2p6b-d1p1",
+    "assurance": "contentVerified",
+    "identityDigest": "sha256:b0f1885154bae8c2e6e3e1bd907618e281fd9fc80ddb658a4a7230b77b8e5087"
+  },
+  "executionSemantics": {
+    "backend": "coreml-auto",
+    "runtimeVersion": "CoreML/macOS-27.2-26B5086k",
+    "compilerDigest": "sha256:7b3f47be3da86847d02c1e312c202268717e950d8c92f0eb6c1c5706aa793050",
+    "contextWindow": 512,
+    "quantization": "fp16",
+    "samplingDigest": "sha256:614aa2d35df975f5f30158203357915edf45836c7975964ab00ed1943df7843f",
+    "hardwareSemanticsClass": "a18pro-arm64",
+    "identityDigest": "sha256:c2b535a3543f4be8796188f19889ad52325b0c620aab043732615df3772ef29f"
+  },
+  "timingEvidence": "synthetic",
+  "routeLatencyMs": {
+    "p50": 0.050242000000025655,
+    "p95": 1.2092109999998684,
+    "p99": 1.4051569999999742,
+    "sampleCount": 10000
+  },
+  "observerLatencyMs": {
+    "p50": 0,
+    "p95": 0,
+    "p99": 0,
+    "sampleCount": 1
+  },
+  "shapeBuckets": [
+    {
+      "tokenBucket": 1024,
+      "batchSize": 8,
+      "sampleCount": 4,
+      "latencyMs": {
+        "p50": 3.895,
+        "p95": 12.376,
+        "p99": 12.376
+      },
+      "itemsPerSecond": 188458.8
+    }
+  ],
+  "peakRSSBytes": null,
+  "productionAuthorityGranted": false,
+  "receiptId": "lhr-964439674e1dcb5781f8a4c5",
+  "receiptDigest": "sha256:789797ffae6c661d7a0ffe15a34d15734ed39010e8cdb7c5b5a3d24f0a7a8a16"
+}

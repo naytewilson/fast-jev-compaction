@@ -26,18 +26,6 @@ for (const line of lines) {
     cur._probes.push(JSON.parse(line.slice('PROBE_JSON '.length)));
   } else if (line.startsWith('SCORE_END ') && cur) {
     const end = JSON.parse(line.slice('SCORE_END '.length));
-    if (cur._probes.length !== 1) {
-      console.error(`row ${cur.row}: expected 1 PROBE_JSON got ${cur._probes.length} — skipped`);
-      cur = null; continue;
-    }
-    const probs = cur._probes[0].probs;
-    const abs = cur._probes[0].abs;
-    let yes = 0, no = 0, absYes = 0;
-    for (const [id, p] of Object.entries(probs)) {
-      if (YES.has(id)) yes += p;
-      if (NO.has(id)) no += p;
-    }
-    for (const [id, p] of Object.entries(abs)) if (YES.has(id)) absYes += p;
     const key = `${cur.requestId}:${cur.candidateId}`;
     if (!rows.has(key)) {
       rows.set(key, {
@@ -51,14 +39,38 @@ for (const line of lines) {
         noTokenIds: [...NO].map(Number),
         promptDigests: {},
         timingsMs: { prefill: 0, decode: 0 },
-        _absYes: absYes,
         _ms: {},
       });
     }
     const rec = rows.get(key);
-    rec.axisProbabilities[cur.axis] = Number(yes.toFixed(8));
-    rec.promptDigests[cur.axis] = cur.promptDigest;
-    rec._ms[cur.axis] = end.ms;
+    // v2: SCORE_BEGIN.probes maps each probe offset to an axis; v1: cur.axis
+    const probeAxes = new Map();
+    for (const p of cur.probes ?? []) {
+      // Manifest probes carry GLOBAL prompt offsets; PROBE_JSON emits the
+      // in-window slot (offset % 16 when prompt length is 16-aligned).
+      if (typeof p.offset === 'number' && p.axis) {
+        probeAxes.set(p.offset % 16, p.axis);
+      }
+    }
+    const expected = probeAxes.size > 0 ? probeAxes.size : 1;
+    if (cur._probes.length !== expected) {
+      console.error(`row ${cur.row}: expected ${expected} PROBE_JSON got ${cur._probes.length} — axis data for this row may be partial`);
+    }
+    for (const probe of cur._probes) {
+      const axis = probeAxes.size > 0 ? probeAxes.get(probe.offset) : cur.axis;
+      if (!axis) {
+        console.error(`row ${cur.row}: PROBE_JSON offset=${probe.offset} has no mapped axis — skipped`);
+        continue;
+      }
+      let yes = 0, no = 0;
+      for (const [id, p] of Object.entries(probe.probs ?? {})) {
+        if (YES.has(id)) yes += p;
+        if (NO.has(id)) no += p;
+      }
+      rec.axisProbabilities[axis] = Number(yes.toFixed(8));
+      rec.promptDigests[axis] = cur.promptDigest;
+      rec._ms[axis] = end.ms;
+    }
     cur = null;
   }
 }
