@@ -3,7 +3,7 @@ import { exportedFunction, exportedValue } from './lab-test-helpers.js';
 
 function conservativeProvider(request: any) {
   return {
-    schema: 'anvil.mapped-decision-response.v0',
+    schema: 'anvil.mapped-decision-response.v1',
     request_id: request.request_id,
     observations: request.candidate_views.map((candidate: any) => ({
       candidate_id: candidate.candidate_id,
@@ -11,7 +11,6 @@ function conservativeProvider(request: any) {
       still_needed: { noul: 0.9 },
       full_content_needed: { noul: 0.95 },
       unresolved_evidence: { noul: 0.95 },
-      recoverable: { noul: 0.99 },
     })),
   };
 }
@@ -90,7 +89,7 @@ function matrixDependencies(cas: any, observationProvider: any) {
 
 function abstainingProvider(request: any) {
   return {
-    schema: 'anvil.mapped-decision-response.v0',
+    schema: 'anvil.mapped-decision-response.v1',
     request_id: request.request_id,
     observations: request.candidate_views.map((candidate: any) => ({
       candidate_id: candidate.candidate_id,
@@ -98,7 +97,6 @@ function abstainingProvider(request: any) {
       still_needed: { noul: 0.9 },
       full_content_needed: { noul: 0.95 },
       unresolved_evidence: { noul: 0.95 },
-      recoverable: { noul: 0.99 },
     })),
   };
 }
