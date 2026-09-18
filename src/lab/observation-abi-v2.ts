@@ -1,3 +1,5 @@
+import { sha256Digest } from './recovery.js';
+
 export const SEMANTIC_SENSOR_ABI_V2_SCHEMA =
   'anvil.semantic-observation-abi.v2' as const;
 export const MECHANICAL_RECOVERY_ATTESTATION_SCHEMA =
@@ -12,6 +14,13 @@ export const SEMANTIC_SENSOR_AXES_V2 = [
 
 export type SemanticSensorAxisV2 =
   (typeof SEMANTIC_SENSOR_AXES_V2)[number];
+
+export const SEMANTIC_SENSOR_ABI_V2_DIGEST = sha256Digest(JSON.stringify({
+  schema: SEMANTIC_SENSOR_ABI_V2_SCHEMA,
+  modeledAxes: SEMANTIC_SENSOR_AXES_V2,
+  recoverability: 'mechanical-only',
+  unresolvedEvidenceSemantics: 'conservative-review-advisory',
+}));
 
 export interface SemanticSensorLaneIdentity {
   candidateId: string;
