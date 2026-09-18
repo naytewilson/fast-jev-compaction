@@ -94,4 +94,28 @@ describe('replay baselines', () => {
       'trap-recovery-mismatch',
     ]));
   });
+
+  it('uses realistic long synthetic fixtures with critical evidence away from head/tail roots', () => {
+    const corpus = exportedFunction('dependencyTrapCorpus')();
+    expect(corpus).toHaveLength(8);
+
+    for (const trace of corpus) {
+      expect(trace.source_run_id).toMatch(/^fixture-/);
+      const candidate = trace.candidates[0];
+      expect(Buffer.byteLength(candidate.stdout, 'utf8')).toBeGreaterThan(8_000);
+
+      const lines = candidate.stdout.split('\n');
+      expect(lines.length).toBeGreaterThan(250);
+      const rootText = [
+        ...lines.slice(0, candidate.head_lines),
+        ...lines.slice(-candidate.tail_lines),
+      ].join('\n');
+
+      for (const critical of candidate.critical_evidence) {
+        if (candidate.stderr.includes(critical)) continue;
+        expect(candidate.stdout).toContain(critical);
+        expect(rootText).not.toContain(critical);
+      }
+    }
+  });
 });
