@@ -24,3 +24,4 @@ export * from './authority-router.js';
 export * from './regret-ledger.js';
 export * from './calibration-metrics.js';
 export * from './degraded-trial.js';
+export * from './fault-campaign.js';
