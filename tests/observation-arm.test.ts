@@ -90,7 +90,9 @@ describe('observation-only SIEVE candidate arm', () => {
     );
     const result = await run(t, cas, profiles(), thresholds, async (request: any) =>
       response(request, { evidence_sufficient: 0.2, full_content_needed: 0.1 }));
-    expect(result.presentations[0]).toMatchObject({ disposition: 'FULL' });
+    expect(result.presentations[0]).toMatchObject({ disposition: 'ABSTAIN' });
+    expect(result.presentations[0].visible_text).toContain('CRITICAL-MIDDLE');
+    expect(result.presentations[0].recovery_required).toBe(false);
   });
 
   it('keeps full content for unresolved evidence', async () => {

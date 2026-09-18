@@ -39,7 +39,27 @@ describe('replay metrics and scoreboard', () => {
       }],
     });
     expect(metrics.criticalEvidenceFalseEvictions).toBe(1);
+    expect(metrics.criticalEvidenceOpportunities).toBe(1);
+    expect(metrics.falseEvictionRate).toBe(1);
     expect(metrics.recoveryNeeds).toBe(1);
+  });
+
+  it('reports a zero false-eviction rate when every labeled opportunity survives', () => {
+    const evaluate = exportedFunction('evaluateReplay');
+    const metrics = evaluate(trace(), {
+      arm: 'A',
+      presentations: [{
+        candidate_id: 'cand-0001',
+        disposition: 'FULL',
+        visible_text: 'head\ncritical-token\ntail',
+        source_digest: 'sha256:' + 'a'.repeat(64),
+        omitted_bytes: 0,
+        recovery_required: false,
+      }],
+    });
+    expect(metrics.criticalEvidenceFalseEvictions).toBe(0);
+    expect(metrics.criticalEvidenceOpportunities).toBe(1);
+    expect(metrics.falseEvictionRate).toBe(0);
   });
 
   it('implements approved token economics', () => {
