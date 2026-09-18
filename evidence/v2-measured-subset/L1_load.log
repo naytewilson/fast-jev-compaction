@@ -1,0 +1,252 @@
+CONFIG compute_units=all oracle=none
+LOAD_OK final_head_s1_2p6b  11383.8ms  rss +23 MB  in=1 out=1
+  IN  lfm_h_in [1, 1, 2048] 65552
+  OUT logits [1, 1, 128000]
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 15s rss=265MB
+load_wait segment_0_s16_ctx512_kvio_prefill.mlmodelc 30s rss=265MB
+LOAD_OK segment_0_s16_ctx512_kvio_prefill  36055.6ms  rss +239 MB  in=17 out=14
+  IN  cache_mask_in [1, 1, 1, 512] 65552
+  IN  conv_in_l0 [1, 2, 2048] 65552
+  IN  conv_in_l1 [1, 2, 2048] 65552
+  IN  conv_in_l3 [1, 2, 2048] 65552
+  IN  conv_in_l4 [1, 2, 2048] 65552
+  IN  conv_in_l6 [1, 2, 2048] 65552
+  IN  conv_in_l7 [1, 2, 2048] 65552
+  IN  conv_in_l8 [1, 2, 2048] 65552
+  IN  cos_in [1, 16, 64] 65552
+  IN  hidden_states [1, 16, 2048] 65552
+  IN  kv_in_l2_K [1, 8, 512, 64] 65552
+  IN  kv_in_l2_V [1, 8, 512, 64] 65552
+  IN  kv_in_l5_K [1, 8, 512, 64] 65552
+  IN  kv_in_l5_V [1, 8, 512, 64] 65552
+  IN  kv_in_l9_K [1, 8, 512, 64] 65552
+  IN  kv_in_l9_V [1, 8, 512, 64] 65552
+  IN  sin_in [1, 16, 64] 65552
+  OUT layer_0_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_1_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_2_attn_kv_out_K [1, 8, 512, 64]
+  OUT layer_2_attn_kv_out_V [1, 8, 512, 64]
+  OUT layer_3_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_4_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_5_attn_kv_out_K [1, 8, 512, 64]
+  OUT layer_5_attn_kv_out_V [1, 8, 512, 64]
+  OUT layer_6_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_7_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_8_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_9_attn_kv_out_K [1, 8, 512, 64]
+  OUT layer_9_attn_kv_out_V [1, 8, 512, 64]
+  OUT out [1, 16, 2048]
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 15s rss=266MB
+load_wait segment_1_s16_ctx512_kvio_prefill.mlmodelc 30s rss=266MB
+LOAD_OK segment_1_s16_ctx512_kvio_prefill  37405.4ms  rss +0 MB  in=16 out=13
+  IN  cache_mask_in [1, 1, 1, 512] 65552
+  IN  conv_in_l10 [1, 2, 2048] 65552
+  IN  conv_in_l11 [1, 2, 2048] 65552
+  IN  conv_in_l12 [1, 2, 2048] 65552
+  IN  conv_in_l14 [1, 2, 2048] 65552
+  IN  conv_in_l15 [1, 2, 2048] 65552
+  IN  conv_in_l16 [1, 2, 2048] 65552
+  IN  conv_in_l18 [1, 2, 2048] 65552
+  IN  conv_in_l19 [1, 2, 2048] 65552
+  IN  cos_in [1, 16, 64] 65552
+  IN  hidden_states [1, 16, 2048] 65552
+  IN  kv_in_l13_K [1, 8, 512, 64] 65552
+  IN  kv_in_l13_V [1, 8, 512, 64] 65552
+  IN  kv_in_l17_K [1, 8, 512, 64] 65552
+  IN  kv_in_l17_V [1, 8, 512, 64] 65552
+  IN  sin_in [1, 16, 64] 65552
+  OUT layer_10_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_11_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_12_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_13_attn_kv_out_K [1, 8, 512, 64]
+  OUT layer_13_attn_kv_out_V [1, 8, 512, 64]
+  OUT layer_14_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_15_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_16_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_17_attn_kv_out_K [1, 8, 512, 64]
+  OUT layer_17_attn_kv_out_V [1, 8, 512, 64]
+  OUT layer_18_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_19_liv_conv_cache_out [1, 2, 2048]
+  OUT out [1, 16, 2048]
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 15s rss=265MB
+load_wait segment_2_s16_ctx512_kvio_prefill.mlmodelc 30s rss=265MB
+LOAD_OK segment_2_s16_ctx512_kvio_prefill  37952.3ms  rss +0 MB  in=17 out=14
+  IN  cache_mask_in [1, 1, 1, 512] 65552
+  IN  conv_in_l20 [1, 2, 2048] 65552
+  IN  conv_in_l22 [1, 2, 2048] 65552
+  IN  conv_in_l23 [1, 2, 2048] 65552
+  IN  conv_in_l25 [1, 2, 2048] 65552
+  IN  conv_in_l26 [1, 2, 2048] 65552
+  IN  conv_in_l28 [1, 2, 2048] 65552
+  IN  conv_in_l29 [1, 2, 2048] 65552
+  IN  cos_in [1, 16, 64] 65552
+  IN  hidden_states [1, 16, 2048] 65552
+  IN  kv_in_l21_K [1, 8, 512, 64] 65552
+  IN  kv_in_l21_V [1, 8, 512, 64] 65552
+  IN  kv_in_l24_K [1, 8, 512, 64] 65552
+  IN  kv_in_l24_V [1, 8, 512, 64] 65552
+  IN  kv_in_l27_K [1, 8, 512, 64] 65552
+  IN  kv_in_l27_V [1, 8, 512, 64] 65552
+  IN  sin_in [1, 16, 64] 65552
+  OUT layer_20_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_21_attn_kv_out_K [1, 8, 512, 64]
+  OUT layer_21_attn_kv_out_V [1, 8, 512, 64]
+  OUT layer_22_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_23_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_24_attn_kv_out_K [1, 8, 512, 64]
+  OUT layer_24_attn_kv_out_V [1, 8, 512, 64]
+  OUT layer_25_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_26_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_27_attn_kv_out_K [1, 8, 512, 64]
+  OUT layer_27_attn_kv_out_V [1, 8, 512, 64]
+  OUT layer_28_liv_conv_cache_out [1, 2, 2048]
+  OUT layer_29_liv_conv_cache_out [1, 2, 2048]
+  OUT out [1, 16, 2048]
+WARM_RELOAD final_head_s1_2p6b 356.0ms
+[
+  {
+    "input_names" : [
+      "lfm_h_in"
+    ],
+    "package" : "final_head_s1_2p6b",
+    "rss_delta_bytes" : 24133800,
+    "load_ms" : 11383.757041999999,
+    "inputs" : 1,
+    "ok" : true,
+    "rss_after_bytes" : 26165944,
+    "output_names" : [
+      "logits"
+    ],
+    "outputs" : 1
+  },
+  {
+    "output_names" : [
+      "layer_0_liv_conv_cache_out",
+      "layer_1_liv_conv_cache_out",
+      "layer_2_attn_kv_out_K",
+      "layer_2_attn_kv_out_V",
+      "layer_3_liv_conv_cache_out",
+      "layer_4_liv_conv_cache_out",
+      "layer_5_attn_kv_out_K",
+      "layer_5_attn_kv_out_V",
+      "layer_6_liv_conv_cache_out",
+      "layer_7_liv_conv_cache_out",
+      "layer_8_liv_conv_cache_out",
+      "layer_9_attn_kv_out_K",
+      "layer_9_attn_kv_out_V",
+      "out"
+    ],
+    "ok" : true,
+    "load_ms" : 36055.625375000003,
+    "package" : "segment_0_s16_ctx512_kvio_prefill",
+    "rss_after_bytes" : 277758816,
+    "rss_delta_bytes" : 251543720,
+    "outputs" : 14,
+    "input_names" : [
+      "cache_mask_in",
+      "conv_in_l0",
+      "conv_in_l1",
+      "conv_in_l3",
+      "conv_in_l4",
+      "conv_in_l6",
+      "conv_in_l7",
+      "conv_in_l8",
+      "cos_in",
+      "hidden_states",
+      "kv_in_l2_K",
+      "kv_in_l2_V",
+      "kv_in_l5_K",
+      "kv_in_l5_V",
+      "kv_in_l9_K",
+      "kv_in_l9_V",
+      "sin_in"
+    ],
+    "inputs" : 17
+  },
+  {
+    "outputs" : 13,
+    "rss_after_bytes" : 278627168,
+    "rss_delta_bytes" : 835584,
+    "package" : "segment_1_s16_ctx512_kvio_prefill",
+    "output_names" : [
+      "layer_10_liv_conv_cache_out",
+      "layer_11_liv_conv_cache_out",
+      "layer_12_liv_conv_cache_out",
+      "layer_13_attn_kv_out_K",
+      "layer_13_attn_kv_out_V",
+      "layer_14_liv_conv_cache_out",
+      "layer_15_liv_conv_cache_out",
+      "layer_16_liv_conv_cache_out",
+      "layer_17_attn_kv_out_K",
+      "layer_17_attn_kv_out_V",
+      "layer_18_liv_conv_cache_out",
+      "layer_19_liv_conv_cache_out",
+      "out"
+    ],
+    "ok" : true,
+    "input_names" : [
+      "cache_mask_in",
+      "conv_in_l10",
+      "conv_in_l11",
+      "conv_in_l12",
+      "conv_in_l14",
+      "conv_in_l15",
+      "conv_in_l16",
+      "conv_in_l18",
+      "conv_in_l19",
+      "cos_in",
+      "hidden_states",
+      "kv_in_l13_K",
+      "kv_in_l13_V",
+      "kv_in_l17_K",
+      "kv_in_l17_V",
+      "sin_in"
+    ],
+    "inputs" : 16,
+    "load_ms" : 37405.384917000003
+  },
+  {
+    "output_names" : [
+      "layer_20_liv_conv_cache_out",
+      "layer_21_attn_kv_out_K",
+      "layer_21_attn_kv_out_V",
+      "layer_22_liv_conv_cache_out",
+      "layer_23_liv_conv_cache_out",
+      "layer_24_attn_kv_out_K",
+      "layer_24_attn_kv_out_V",
+      "layer_25_liv_conv_cache_out",
+      "layer_26_liv_conv_cache_out",
+      "layer_27_attn_kv_out_K",
+      "layer_27_attn_kv_out_V",
+      "layer_28_liv_conv_cache_out",
+      "layer_29_liv_conv_cache_out",
+      "out"
+    ],
+    "package" : "segment_2_s16_ctx512_kvio_prefill",
+    "outputs" : 14,
+    "rss_delta_bytes" : 573440,
+    "input_names" : [
+      "cache_mask_in",
+      "conv_in_l20",
+      "conv_in_l22",
+      "conv_in_l23",
+      "conv_in_l25",
+      "conv_in_l26",
+      "conv_in_l28",
+      "conv_in_l29",
+      "cos_in",
+      "hidden_states",
+      "kv_in_l21_K",
+      "kv_in_l21_V",
+      "kv_in_l24_K",
+      "kv_in_l24_V",
+      "kv_in_l27_K",
+      "kv_in_l27_V",
+      "sin_in"
+    ],
+    "rss_after_bytes" : 279184224,
+    "ok" : true,
+    "inputs" : 17,
+    "load_ms" : 37952.271083
+  }
+]

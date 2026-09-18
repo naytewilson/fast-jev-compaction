@@ -1,0 +1,8 @@
+binary	/Users/nayte/ane-hot/workspace/lfm-family-neo-validation/tools/causal-stepper/.build/debug/CausalStepperMac	24ed6aacb0e8883ea5f2011b64158e7b92b667bb0b05b15fcd878dd5c0e6d41c
+model	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_0_s16_ctx512_kvio_prefill.mlmodelc	bdaec5dc87b3557b929b7006bafc2d6cb88725ec52eb6838afe9c1dd2e9e8bf7
+model	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_1_s16_ctx512_kvio_prefill.mlmodelc	2c600410323c2638a3fcfe89576ca32cc4c45be988202fd770d8f3c6f6683114
+model	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_2_s16_ctx512_kvio_prefill.mlmodelc	f665327eb057d8b7080354b729624e372b783a1418b8b2f55d996740f83a31fa
+model	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/final_head_s1_2p6b.mlmodelc	fa65e8aeb7473bccd71de6779fcc6db98b39a1f2dd4a920702a7dc72d7002332
+fixture	/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/embed_weight.bin	b5365ec220f6518fada497f7fb45631e6d7844114718a7ede1f5c897bf4db93c
+fixture	/Users/nayte/semantic-fabric/noul-ids-v3.jsonl	ed7e86520a1b18fbb5a2b35570e71df28e8859799d99991e385e2b554bceee73
+fixture	/Users/nayte/semantic-fabric/noul-ids-v3-smoke.jsonl	39ec3f00d80c30ad3c8709c90e1f0a049a119c866b6311e77c3c557563f8e95a
