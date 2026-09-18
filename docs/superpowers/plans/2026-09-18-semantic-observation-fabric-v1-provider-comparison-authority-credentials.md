@@ -380,7 +380,7 @@ Tests must prove:
 2. every arm executes the same trace count and exact candidate corpus.
 3. one provider throwing returns pristine fallback for that provider only; the other provider remains normal.
 4. duplicate provider IDs or duplicate provider-profile digests reject before execution.
-5. an arm whose `observationProfiles.execution_profile.digest` does not equal `profile.executionSemanticsDigest` rejects.
+5. an arm whose `observationProfiles.execution_profile.digest` does not equal `profile.providerProfileDigest` rejects.
 6. observation ABI digest mismatch rejects before provider execution.
 7. no result contains `authorized`, credential, route grant, or production authority fields.
 8. token usage sums only when all receipts report the relevant metric; otherwise the aggregate is null instead of fake zero.
