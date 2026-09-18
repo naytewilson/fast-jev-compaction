@@ -19,7 +19,7 @@ const thresholds = {
 };
 
 function trace() {
-  const create = exportedFunction('createRecoveryManifest');
+  const create = exportedFunction('createToolRecoveryManifest');
   const stdout = 'head\nCRITICAL-MIDDLE\ntail';
   return {
     trace_id: 'observation-trace',
@@ -33,7 +33,7 @@ function trace() {
       head_lines: 1,
       tail_lines: 1,
       presentation_budget_bytes: 1000,
-      recovery: create(stdout, 'observation-cand-1'),
+      recovery: create(stdout, '', 0, 'observation-cand-1'),
       critical_evidence: ['CRITICAL-MIDDLE'],
     }],
   };
@@ -60,7 +60,11 @@ describe('observation-only SIEVE candidate arm', () => {
     const run = exportedFunction('runObservationOnlyArm');
     const t = trace();
     const cas = new CAS();
-    cas.put('observation-cand-1', t.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'observation-cand-1',
+      encode(t.candidates[0].stdout, t.candidates[0].stderr, t.candidates[0].exit_status),
+    );
 
     const result = await run(t, cas, profiles(), thresholds, async (request: any) => ({
       ...response(request),
@@ -75,7 +79,11 @@ describe('observation-only SIEVE candidate arm', () => {
     const run = exportedFunction('runObservationOnlyArm');
     const t = trace();
     const cas = new CAS();
-    cas.put('observation-cand-1', t.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'observation-cand-1',
+      encode(t.candidates[0].stdout, t.candidates[0].stderr, t.candidates[0].exit_status),
+    );
     const result = await run(t, cas, profiles(), thresholds, async (request: any) =>
       response(request, { evidence_sufficient: 0.2, full_content_needed: 0.1 }));
     expect(result.presentations[0]).toMatchObject({ disposition: 'FULL' });
@@ -86,7 +94,11 @@ describe('observation-only SIEVE candidate arm', () => {
     const run = exportedFunction('runObservationOnlyArm');
     const t = trace();
     const cas = new CAS();
-    cas.put('observation-cand-1', t.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'observation-cand-1',
+      encode(t.candidates[0].stdout, t.candidates[0].stderr, t.candidates[0].exit_status),
+    );
     const result = await run(t, cas, profiles(), thresholds, async (request: any) =>
       response(request, { unresolved_evidence: 0.95, full_content_needed: 0.1 }));
     expect(result.presentations[0]).toMatchObject({ disposition: 'FULL' });
@@ -111,7 +123,11 @@ describe('observation-only SIEVE candidate arm', () => {
     const run = exportedFunction('runObservationOnlyArm');
     const t = trace();
     const cas = new CAS();
-    cas.put('observation-cand-1', t.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'observation-cand-1',
+      encode(t.candidates[0].stdout, t.candidates[0].stderr, t.candidates[0].exit_status),
+    );
     const result = await run(t, cas, profiles(), thresholds, async (request: any) =>
       response(request, {
         full_content_needed: 0.1,
@@ -151,7 +167,11 @@ describe('observation-only SIEVE candidate arm', () => {
     const verifyReceipt = exportedFunction('verifyReplayReceipt');
     const t = trace();
     const cas = new CAS();
-    cas.put('observation-cand-1', t.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'observation-cand-1',
+      encode(t.candidates[0].stdout, t.candidates[0].stderr, t.candidates[0].exit_status),
+    );
 
     const result = await run(t, cas, profiles(), thresholds, async (request: any) =>
       response(request, {

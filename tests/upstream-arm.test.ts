@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { exportedFunction, exportedValue } from './lab-test-helpers.js';
 
 function makeTrace() {
-  const create = exportedFunction('createRecoveryManifest');
+  const create = exportedFunction('createToolRecoveryManifest');
   const stdout = 'head\nCRITICAL-MIDDLE\ntail';
   return {
     trace_id: 'upstream-trace',
@@ -16,7 +16,7 @@ function makeTrace() {
       head_lines: 1,
       tail_lines: 1,
       presentation_budget_bytes: 1000,
-      recovery: create(stdout, 'upstream-cand-1'),
+      recovery: create(stdout, '', 0, 'upstream-cand-1'),
       critical_evidence: ['CRITICAL-MIDDLE'],
     }],
   };
@@ -29,7 +29,11 @@ describe('upstream semantics comparator', () => {
     const evaluate = exportedFunction('evaluateReplay');
     const trace = makeTrace();
     const cas = new CAS();
-    cas.put('upstream-cand-1', trace.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'upstream-cand-1',
+      encode(trace.candidates[0].stdout, trace.candidates[0].stderr, trace.candidates[0].exit_status),
+    );
 
     const seenStates: any[] = [];
     const observer = async (state: unknown) => {
@@ -48,7 +52,11 @@ describe('upstream semantics comparator', () => {
     const run = exportedFunction('runUpstreamComparator');
     const trace = makeTrace();
     const cas = new CAS();
-    cas.put('upstream-cand-1', trace.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'upstream-cand-1',
+      encode(trace.candidates[0].stdout, trace.candidates[0].stderr, trace.candidates[0].exit_status),
+    );
     const result = await run(trace, cas, async () => {
       throw new Error('provider unavailable');
     }, 0.5);

@@ -22,14 +22,21 @@ describe('offline replay matrix', () => {
     const runMatrix = exportedFunction('runReplayMatrix');
     const CAS = exportedValue('InMemoryCAS');
     const cas = new CAS();
+    const encode = exportedFunction('encodeToolEvidence');
 
     for (const trace of corpus) {
       for (const candidate of trace.candidates) {
         const objectID = candidate.recovery.recovery_ref.slice(4);
         if (trace.trace_id === 'trap-recovery-mismatch') {
-          cas.put(objectID, candidate.stdout + '-tampered');
+          cas.put(
+            objectID,
+            encode(candidate.stdout, candidate.stderr, candidate.exit_status) + '-tampered',
+          );
         } else {
-          cas.put(objectID, candidate.stdout);
+          cas.put(
+            objectID,
+            encode(candidate.stdout, candidate.stderr, candidate.exit_status),
+          );
         }
       }
     }

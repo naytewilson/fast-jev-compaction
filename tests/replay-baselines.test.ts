@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { exportedFunction, exportedValue } from './lab-test-helpers.js';
 
 function traceWith(source: string, critical = 'needle') {
-  const create = exportedFunction('createRecoveryManifest');
+  const create = exportedFunction('createToolRecoveryManifest');
   return {
     trace_id: 'trace-1',
     source_run_id: 'run-1',
@@ -15,7 +15,7 @@ function traceWith(source: string, critical = 'needle') {
       head_lines: 1,
       tail_lines: 1,
       presentation_budget_bytes: 1000,
-      recovery: create(source, 'trace-1-cand-1'),
+      recovery: create(source, '', 0, 'trace-1-cand-1'),
       critical_evidence: [critical],
     }],
   };
@@ -27,7 +27,11 @@ describe('replay baselines', () => {
     const arm = exportedFunction('runPristineArm');
     const trace = traceWith('head\nneedle\ntail');
     const cas = new CAS();
-    cas.put('trace-1-cand-1', trace.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'trace-1-cand-1',
+      encode(trace.candidates[0].stdout, trace.candidates[0].stderr, trace.candidates[0].exit_status),
+    );
     const run = arm(trace, cas);
     expect(run.presentations[0]).toMatchObject({ disposition: 'FULL' });
     expect(run.presentations[0].visible_text).toContain('needle');
@@ -38,11 +42,30 @@ describe('replay baselines', () => {
     const arm = exportedFunction('runDeterministicArm');
     const trace = traceWith('head\nneedle\ntail');
     const cas = new CAS();
-    cas.put('trace-1-cand-1', trace.candidates[0].stdout);
+    const encode = exportedFunction('encodeToolEvidence');
+    cas.put(
+      'trace-1-cand-1',
+      encode(trace.candidates[0].stdout, trace.candidates[0].stderr, trace.candidates[0].exit_status),
+    );
     const run = arm(trace, cas);
     expect(run.presentations[0].disposition).toBe('REFERENTIAL');
     expect(run.presentations[0].visible_text).toContain('[sieve-evidence source=sha256:');
     expect(run.presentations[0].visible_text).toContain('recovery=cas:trace-1-cand-1');
+  });
+
+  it('Arm B refuses referential compression when candidate stderr no longer matches the bound evidence', () => {
+    const CAS = exportedValue('InMemoryCAS');
+    const arm = exportedFunction('runDeterministicArm');
+    const encode = exportedFunction('encodeToolEvidence');
+    const trace = traceWith('head\nneedle\ntail');
+    const cas = new CAS();
+    cas.put(
+      'trace-1-cand-1',
+      encode(trace.candidates[0].stdout, trace.candidates[0].stderr, trace.candidates[0].exit_status),
+    );
+    trace.candidates[0].stderr = 'late unbound warning';
+    const run = arm(trace, cas);
+    expect(run.presentations[0]).toMatchObject({ disposition: 'FULL' });
   });
 
   it('Arm B keeps full content if exact recovery is unavailable', () => {
