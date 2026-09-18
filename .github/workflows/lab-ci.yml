@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - north/anvil-sieve-semantic-retention-v0
+      - north/authority-preserving-semantic-fabric-v1
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig*.json"
+      - ".github/workflows/lab-ci.yml"
   pull_request:
     paths:
       - "src/**"
