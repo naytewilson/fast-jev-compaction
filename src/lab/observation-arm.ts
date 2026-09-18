@@ -47,6 +47,76 @@ export type MappedObservationProvider = (
   request: MappedDecisionRequest,
 ) => Promise<unknown> | unknown;
 
+type ProviderEnvelope = {
+  mapped_response: unknown;
+  provider_metadata: ObservationProviderMetadata;
+};
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function optionalMetric(value: unknown): value is number | null | undefined {
+  return value === undefined ||
+    value === null ||
+    (typeof value === 'number' && Number.isFinite(value) && value >= 0);
+}
+
+function parseProviderEnvelope(value: unknown):
+  | { kind: 'bare'; response: unknown }
+  | { kind: 'envelope'; envelope: ProviderEnvelope }
+  | { kind: 'invalid' } {
+  if (!isObject(value) || !Object.prototype.hasOwnProperty.call(value, 'mapped_response')) {
+    return { kind: 'bare', response: value };
+  }
+
+  const keys = Object.keys(value);
+  if (
+    keys.length !== 2 ||
+    !keys.includes('mapped_response') ||
+    !keys.includes('provider_metadata') ||
+    !isObject(value.provider_metadata)
+  ) {
+    return { kind: 'invalid' };
+  }
+
+  const metadata = value.provider_metadata;
+  const metadataKeys = Object.keys(metadata);
+  const allowed = [
+    'requested_model',
+    'effective_model',
+    'input_tokens',
+    'output_tokens',
+    'cost_usd',
+  ];
+  if (
+    metadataKeys.some((key) => !allowed.includes(key)) ||
+    typeof metadata.requested_model !== 'string' ||
+    metadata.requested_model.length === 0 ||
+    typeof metadata.effective_model !== 'string' ||
+    metadata.effective_model.length === 0 ||
+    !optionalMetric(metadata.input_tokens) ||
+    !optionalMetric(metadata.output_tokens) ||
+    !optionalMetric(metadata.cost_usd)
+  ) {
+    return { kind: 'invalid' };
+  }
+
+  return {
+    kind: 'envelope',
+    envelope: {
+      mapped_response: value.mapped_response,
+      provider_metadata: {
+        requested_model: metadata.requested_model,
+        effective_model: metadata.effective_model,
+        input_tokens: metadata.input_tokens ?? null,
+        output_tokens: metadata.output_tokens ?? null,
+        cost_usd: metadata.cost_usd ?? null,
+      },
+    },
+  };
+}
+
 export type ObservationReplayRun = ReplayRun & {
   receipts: ReplayReceipt[];
 };
@@ -299,10 +369,10 @@ export async function runObservationOnlyArm(
     });
   }
 
-  let raw: unknown;
+  let providerResult: unknown;
   const providerStart = Date.now();
   try {
-    raw = await provider(request);
+    providerResult = await provider(request);
   } catch {
     return fallbackRun(trace, profiles, 'provider_exception', {
       request,
@@ -312,6 +382,23 @@ export async function runObservationOnlyArm(
   }
   const latencyMs = Date.now() - providerStart;
 
+  const parsedProviderResult = parseProviderEnvelope(providerResult);
+  if (parsedProviderResult.kind === 'invalid') {
+    return fallbackRun(trace, profiles, 'provider_envelope_invalid', {
+      request,
+      rawResponse: providerResult,
+      latencyMs,
+      providerMetadata,
+    });
+  }
+
+  const raw = parsedProviderResult.kind === 'envelope'
+    ? parsedProviderResult.envelope.mapped_response
+    : parsedProviderResult.response;
+  const effectiveProviderMetadata = parsedProviderResult.kind === 'envelope'
+    ? parsedProviderResult.envelope.provider_metadata
+    : providerMetadata;
+
   const reassembled = reassembleMappedObservations(
     request.request_id,
     request.candidate_views.map((candidate) => candidate.candidate_id),
@@ -320,9 +407,9 @@ export async function runObservationOnlyArm(
   if (reassembled.kind === 'PRISTINE_FALLBACK') {
     return fallbackRun(trace, profiles, `reassembly:${reassembled.code}`, {
       request,
-      rawResponse: raw,
+      rawResponse: providerResult,
       latencyMs,
-      providerMetadata,
+      providerMetadata: effectiveProviderMetadata,
     });
   }
 
@@ -370,13 +457,13 @@ export async function runObservationOnlyArm(
     receipts: [
       makeReceipt(trace, profiles, {
         request,
-        rawResponse: raw,
+        rawResponse: providerResult,
         observationDigest,
         dispositions,
         errorCode: null,
         pristineFallback: false,
         latencyMs,
-        providerMetadata,
+        providerMetadata: effectiveProviderMetadata,
       }),
     ],
   };
