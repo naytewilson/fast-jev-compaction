@@ -6,11 +6,11 @@ import {
 import { makeArtifact, makeCalibrators, makeProviderProfile, d } from './provider-authority-fixtures.js';
 
 describe('ProviderCalibrationArtifact', () => {
-  it('registers a complete five-predicate provider-bound artifact', () => {
+  it('registers a complete four-predicate provider-bound artifact', () => {
     const { artifact, providerProfile } = makeArtifact();
     expect(artifact.schema).toBe('anvil.provider-calibration-artifact.v1');
     expect(artifact.providerProfileDigest).toBe(providerProfile.providerProfileDigest);
-    expect(artifact.calibrators).toHaveLength(5);
+    expect(artifact.calibrators).toHaveLength(4);
     expect(artifact.calibrationIdentity).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(verifyProviderCalibrationArtifact(artifact)).toBe(true);
   });
@@ -34,12 +34,12 @@ describe('ProviderCalibrationArtifact', () => {
 
     expect(() => new ProviderCalibrationArtifactRegistry().register({
       ...base,
-      calibrators: calibrators.slice(0, 4),
-    })).toThrow(/five|predicate/i);
+      calibrators: calibrators.slice(0, 3),
+    })).toThrow(/four|predicate/i);
 
     expect(() => new ProviderCalibrationArtifactRegistry().register({
       ...base,
-      calibrators: [...calibrators.slice(0, 4), calibrators[0]],
+      calibrators: [...calibrators.slice(0, 3), calibrators[0]],
     })).toThrow(/duplicate|predicate/i);
   });
 
