@@ -77,9 +77,11 @@ describe('System One mapped execution adapter', () => {
     const request = mappedRequest();
     let body: any;
 
+    const authorize = exportedFunction('authorizeSyntheticFixtureEgress');
     const provider = create({
       apiKey: 'test-key',
       model: 'jev-1.13.0',
+      egressGrants: [authorize(request)],
       fetch: async (_url: string, init: any) => {
         body = JSON.parse(init.body);
         const answers = Object.fromEntries(
@@ -148,9 +150,11 @@ describe('System One mapped execution adapter', () => {
         'cand-0001.recoverable': { noul: 0.9 },
       },
     ]) {
+      const authorize = exportedFunction('authorizeSyntheticFixtureEgress');
       const provider = create({
         apiKey: 'test-key',
         model: 'jev-1.13.0',
+        egressGrants: [authorize(request)],
         fetch: async () => ({
           ok: true,
           status: 200,
@@ -161,18 +165,49 @@ describe('System One mapped execution adapter', () => {
     }
   });
 
-  it('sanitizes HTTP failure text instead of echoing provider bodies', async () => {
+  it('denies remote egress when the exact mapped request digest is not granted', async () => {
     const create = exportedFunction('createSystemOneMappedProvider');
+    const authorize = exportedFunction('authorizeSyntheticFixtureEgress');
+    const request = mappedRequest();
+    const changed = { ...request, request_id: 'mdr-not-granted' };
+    let calls = 0;
+
     const provider = create({
       apiKey: 'test-key',
       model: 'jev-1.13.0',
+      egressGrants: [authorize(request)],
+      fetch: async () => {
+        calls += 1;
+        throw new Error('transport must remain unreachable');
+      },
+    });
+
+    await expect(provider(changed as any)).rejects.toThrow(/egress grant/i);
+    expect(calls).toBe(0);
+  });
+
+  it('refuses to mint synthetic egress grants for non-fixture run identities', () => {
+    const authorize = exportedFunction('authorizeSyntheticFixtureEgress');
+    const request = mappedRequest();
+    request.source_run_id = 'runtime-live-session';
+    expect(() => authorize(request)).toThrow(/synthetic fixture/i);
+  });
+
+  it('sanitizes HTTP failure text instead of echoing provider bodies', async () => {
+    const create = exportedFunction('createSystemOneMappedProvider');
+    const request = mappedRequest();
+    const authorize = exportedFunction('authorizeSyntheticFixtureEgress');
+    const provider = create({
+      apiKey: 'test-key',
+      model: 'jev-1.13.0',
+      egressGrants: [authorize(request)],
       fetch: async () => ({
         ok: false,
         status: 401,
         text: async () => 'secret-token-should-not-escape',
       }),
     });
-    await expect(provider(mappedRequest() as any)).rejects.toThrow('System One request failed (401)');
-    await expect(provider(mappedRequest() as any)).rejects.not.toThrow(/secret-token/);
+    await expect(provider(request as any)).rejects.toThrow('System One request failed (401)');
+    await expect(provider(request as any)).rejects.not.toThrow(/secret-token/);
   });
 });
