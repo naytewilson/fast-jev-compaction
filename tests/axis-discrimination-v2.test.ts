@@ -69,6 +69,16 @@ describe('V2 axis-discrimination anchor corpus', () => {
       expect(coverage[axis].negative).toBeGreaterThanOrEqual(2);
       expect(anchors.filter((anchor) => anchor.primaryAxis === axis && anchor.primaryTarget === 1)).toHaveLength(2);
       expect(anchors.filter((anchor) => anchor.primaryAxis === axis && anchor.primaryTarget === 0)).toHaveLength(2);
+
+      const positiveMissions = anchors
+        .filter((anchor) => anchor.primaryAxis === axis && anchor.primaryTarget === 1)
+        .map((anchor) => traces.find((trace) => trace.trace_id === anchor.id)!.shared_state)
+        .sort();
+      const negativeMissions = anchors
+        .filter((anchor) => anchor.primaryAxis === axis && anchor.primaryTarget === 0)
+        .map((anchor) => traces.find((trace) => trace.trace_id === anchor.id)!.shared_state)
+        .sort();
+      expect(positiveMissions).toEqual(negativeMissions);
     }
   });
 
