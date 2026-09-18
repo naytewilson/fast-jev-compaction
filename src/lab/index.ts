@@ -16,6 +16,7 @@ export * from './evidence-view.js';
 export * from './authority-mask.js';
 export * from './semantic-program.js';
 export * from './observation-abi.js';
+export * from './legacy-v1.js';
 export * from './lane-planner.js';
 export * from './receipt-spine.js';
 export * from './calibration-data.js';
