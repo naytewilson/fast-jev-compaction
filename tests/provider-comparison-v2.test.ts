@@ -242,6 +242,10 @@ describe('provider-neutral semantic comparison V2', () => {
     expect(jevResult.providerFailures).toBe(1);
     expect(jevResult.pristineFallbacks).toBe(1);
     expect(jevResult.modeledObservationCount).toBe(0);
+    expect(jevResult.mechanicalRecovery).toEqual({
+      verified: 1,
+      unavailable: 0,
+    });
     expect(qwenResult.providerFailures).toBe(0);
     expect(qwenResult.modeledObservationCount).toBe(1);
   });
