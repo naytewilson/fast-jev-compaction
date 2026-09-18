@@ -21,6 +21,7 @@ import {
 } from './experiment-corpus.js';
 import { captureCanonicalRequest, mergedTrace, permuteCandidateIds } from './requests.js';
 import { executeLiveAxisCall, loadApiKey, JEV_MODEL, type LiveCallResult } from './live-jev.js';
+import { executeMercuryAxisCall, loadMercuryBearer, MERCURY_MODEL } from './live-mercury.js';
 import {
   FIVE_AXIS_EXPERIMENT_AXES,
   FOUR_AXIS_EXPERIMENT_AXES,
@@ -41,6 +42,8 @@ import {
 } from '../../src/lab/types.js';
 
 const FOUR_AXIS_ABI_ID = 'anvil.semantic-observation-abi.v2-candidate';
+
+export type BatteryProvider = 'jev' | 'mercury';
 
 // ---------------------------------------------------------------------------
 // Identity
@@ -96,6 +99,53 @@ function jevProfile(abiDigest: Digest256) {
   });
 }
 
+function mercuryProfile(abiDigest: Digest256) {
+  return deriveProviderExecutionProfile({
+    providerId: 'local-agent-gateway-rune/inception-mercury-2',
+    providerKind: 'custom',
+    modelIdentityDigest: sha256Digest(JSON.stringify({
+      schema: 'anvil.provider-model-identity.v1',
+      provider: 'inception-via-local-agent-gateway-rune',
+      model: MERCURY_MODEL,
+      assurance: 'opaqueVersioned',
+    })) as Digest256,
+    modelAssurance: 'opaqueVersioned',
+    executionSemanticsDigest: sha256Digest(JSON.stringify({
+      schema: 'anvil.remote-execution-semantics.v1',
+      provider: 'local-agent-gateway-rune',
+      endpointHost: '127.0.0.1:8903',
+      wireContract: 'openai-chat-completions-json-elicitation.v0',
+      retryPolicy: '429-529-only-max4-backoff-retry-after',
+    })) as Digest256,
+    normalizerDigest: sha256Digest(JSON.stringify({
+      schema: 'anvil.provider-normalizer.v1',
+      id: 'mercury-selfreport-json',
+      rule: 'self-reported probability in [0,1] elicited via strict JSON schema; NOT provider-internal noul',
+    })) as Digest256,
+    observationABIDigest: abiDigest,
+  });
+}
+
+const PROVIDER_PROFILE_FNS: Record<BatteryProvider, (abiDigest: Digest256) => ReturnType<typeof jevProfile>> = {
+  jev: jevProfile,
+  mercury: mercuryProfile,
+};
+
+const PROVIDER_META: Record<BatteryProvider, { endpoint: string; model: string; credentialRef: string; boundary: string }> = {
+  jev: {
+    endpoint: 'https://api.typesafe.ai/v1/systemone',
+    model: JEV_MODEL,
+    credentialRef: 'TYPESAFE_API_KEY_FILE (~/.local/share/anvil-jev-decisiond/typesafe-api-key)',
+    boundary: 'anvil.system-one-egress-grant.v0 scope=synthetic_fixture per exact request digest',
+  },
+  mercury: {
+    endpoint: 'http://127.0.0.1:8903/v1/chat/completions',
+    model: MERCURY_MODEL,
+    credentialRef: 'MERCURY_GATEWAY_BEARER_FILE (~/.local/share/local-agent-gateway/rune/gateway-bearer)',
+    boundary: 'fixture- source_run_id scope assertion; bearer via rune gateway; no SIEVE ingress required on this route',
+  },
+};
+
 function profilesFor(execDigest: Digest256, execId: string, decisionContract: { id: string; version: string; digest: Digest256 }): ObservationProfiles {
   return {
     decision_contract: decisionContract,
@@ -117,7 +167,7 @@ function gitSha(): string {
   }
 }
 
-export async function mint(outdir: string): Promise<void> {
+export async function mint(outdir: string, provider: BatteryProvider = 'jev'): Promise<void> {
   mkdirSync(outdir, { recursive: true });
   const entries = buildExperimentCorpus();
   const traces = entries.map((entry) => entry.trace);
@@ -134,8 +184,10 @@ export async function mint(outdir: string): Promise<void> {
 
   const abi5 = deriveObservationABIDigest();
   const abi4 = fourAxisAbiDigest();
-  const profile5 = jevProfile(abi5);
-  const profile4 = jevProfile(abi4);
+  const profileFn = PROVIDER_PROFILE_FNS[provider];
+  const meta = PROVIDER_META[provider];
+  const profile5 = profileFn(abi5);
+  const profile4 = profileFn(abi4);
 
   const corpusDoc = {
     schema: 'anvil.abi-battery-corpus.v1',
@@ -162,10 +214,11 @@ export async function mint(outdir: string): Promise<void> {
     verifierIdentity: EXPERIMENT_VERIFIER_ID,
     labelAuthority: 'STRONG (mechanical construction truth; synthetic-fixture scope)',
     provider: {
-      endpoint: 'https://api.typesafe.ai/v1/systemone',
-      model: JEV_MODEL,
-      credentialPath: 'TYPESAFE_API_KEY_FILE (~/.local/share/anvil-jev-decisiond/typesafe-api-key)',
-      egressBoundary: 'anvil.system-one-egress-grant.v0 scope=synthetic_fixture per exact request digest',
+      id: provider,
+      endpoint: meta.endpoint,
+      model: meta.model,
+      credentialPath: meta.credentialRef,
+      egressBoundary: meta.boundary,
     },
     arms: {
       five_axis: {
@@ -387,6 +440,7 @@ interface CallRecord extends LiveCallResult {
   arm: string;
   traceId: string;
   requestId: string;
+  provider: BatteryProvider;
   axes: readonly string[];
   axesOrderTag: string;
   batchTag: string;
@@ -409,9 +463,11 @@ function completedCallIds(outdir: string): Set<string> {
   return done;
 }
 
-export async function run(outdir: string, phaseFilter?: string): Promise<void> {
+export async function run(outdir: string, phaseFilter?: string, provider: BatteryProvider = 'jev'): Promise<void> {
   const exp = loadExperiment(outdir);
-  const apiKey = loadApiKey();
+  const apiKey = provider === 'mercury' ? loadMercuryBearer() : loadApiKey();
+  const execute = provider === 'mercury' ? executeMercuryAxisCall : executeLiveAxisCall;
+  const model = provider === 'mercury' ? MERCURY_MODEL : JEV_MODEL;
   const all = await planCalls(exp);
   const PERMUTE_PURPOSES = ['axis-order', 'batch', 'batch-alt', 'candidate-order'];
   const wanted = !phaseFilter || phaseFilter === 'all'
@@ -432,7 +488,7 @@ export async function run(outdir: string, phaseFilter?: string): Promise<void> {
   async function worker(): Promise<void> {
     while (cursor < pending.length) {
       const spec = pending[cursor++];
-      const result = await executeLiveAxisCall(spec.request, JEV_MODEL, spec.axes, apiKey);
+      const result = await execute(spec.request, model, spec.axes, apiKey);
       const record: CallRecord = {
         ...result,
         responseText: result.responseText,
@@ -442,6 +498,7 @@ export async function run(outdir: string, phaseFilter?: string): Promise<void> {
         arm: spec.arm,
         traceId: spec.traceId,
         requestId: spec.request.request_id,
+        provider,
         axes: spec.axes,
         axesOrderTag: spec.axesOrderTag,
         batchTag: spec.batchTag,
@@ -472,18 +529,25 @@ const invokedAsMain =
   import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (invokedAsMain) {
-  const [cmd, outdir, phase] = process.argv.slice(2);
+  const [cmd, outdir, phaseOrProvider, providerArg] = process.argv.slice(2);
   if (!cmd || !outdir) {
-    console.error('usage: tsx tools/abi-battery/battery.ts <mint|run|report> <outdir> [phase]');
+    console.error('usage: tsx tools/abi-battery/battery.ts <mint|run|report> <outdir> [phase] [provider]');
     process.exit(2);
   }
+  const provider: BatteryProvider =
+    providerArg === 'mercury' || phaseOrProvider === 'mercury' ? 'mercury'
+    : providerArg === 'jev' || phaseOrProvider === 'jev' ? 'jev'
+    : 'jev';
+  const phase = providerArg === undefined && (phaseOrProvider === 'jev' || phaseOrProvider === 'mercury')
+    ? undefined
+    : phaseOrProvider;
   if (cmd === 'mint') {
-    await mint(outdir);
+    await mint(outdir, provider);
   } else if (cmd === 'run') {
-    await run(outdir, phase);
+    await run(outdir, phase, provider);
   } else if (cmd === 'report') {
     const { report } = await import('./report.js');
-    await report(outdir);
+    await report(outdir, phaseOrProvider);
   } else {
     console.error(`unknown command ${cmd}`);
     process.exit(2);

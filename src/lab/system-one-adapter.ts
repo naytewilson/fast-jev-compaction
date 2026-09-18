@@ -14,7 +14,7 @@ export const SYSTEM_ONE_MAPPED_STATE_SCHEMA = 'anvil.system-one-mapped-state.v0'
 
 const PINNED_JEV_MODEL = /^jev-\d+\.\d+\.\d+$/;
 
-const AXIS_INSTRUCTIONS: Record<MappedObservationAxis, string> = {
+export const AXIS_INSTRUCTIONS: Record<MappedObservationAxis, string> = {
   evidence_sufficient:
     'Estimate whether the bounded candidate view and shared conversation state are sufficient to make a retention judgment for the candidate identified by this question.',
   still_needed:

@@ -121,7 +121,7 @@ function metricBundle(samples: readonly BinaryCalibrationSample[]) {
   };
 }
 
-export async function report(outdir: string): Promise<void> {
+export async function report(outdir: string, compareOutdir?: string): Promise<void> {
   const exp = loadExperiment(outdir);
   const calls = loadCalls(outdir);
   const byCallId = new Map(calls.map((record) => [record.callId, record]));
@@ -561,15 +561,22 @@ export async function report(outdir: string): Promise<void> {
   const waveF = { repeatability, axisOrder, batchSensitivity, candOrder, temporal };
 
   // ------------------------------------------------------------------
-  // Wave G: provider comparison — availability probe evidence.
-  // No authorized local route to Qwen/ANE or Mavis exists: ~/ANVIL/providers/
-  // holds adapter SPECS only, mavis-harness is a work-claim supervisor (no
-  // noul-question interface), and no local LLM endpoint listens. Recorded as
-  // BLOCKED rather than silently skipped.
+  // Wave G: provider comparison.
+  // Route status: gemini-flash via fazm gateway :8877 is BLOCKED by SIEVE
+  // ingress attestation (x-sieve-ingress-attestation/signature required;
+  // no client-side minting route found — production boundary not bypassed).
+  // qwen-ane and mavis have no authorized local runtime. Inception
+  // Mercury 2 via the rune gateway :8903 (bearer auth, no ingress
+  // requirement) executed the identical frozen corpus under its own
+  // ProviderExecutionProfile — compared below when compareOutdir is set.
   // ------------------------------------------------------------------
-  const waveG = {
+  let waveG: Record<string, unknown> = {
     status: 'BLOCKED',
     providers: {
+      'gemini-flash-fazm-gateway': {
+        available: false,
+        evidence: 'SIEVE ingress attestation rejected (sieve_attestation_missing) on POST /v1/chat/completions @127.0.0.1:8877; required headers x-sieve-ingress-attestation/x-sieve-ingress-signature are minted by a proposal handshake with no client-accessible mint route; boundary not bypassed',
+      },
       'qwen-ane': {
         available: false,
         evidence: 'no qwen binary on PATH or ~/.local/bin; no .mlpackage qwen artifact under ~/ANVIL; LOCAL_QWEN_MAVIS_ADAPTER_SPEC.md is a design spec, not a runtime; no local inference endpoint listening',
@@ -581,6 +588,175 @@ export async function report(outdir: string): Promise<void> {
     },
     conclusion: 'provider comparison could not run; JEV findings are provider-specific until a second provider execution profile exists',
   };
+
+  if (compareOutdir) {
+    const expB = loadExperiment(compareOutdir);
+    const callsB = loadCalls(compareOutdir);
+    const byCallIdB = new Map(callsB.map((record) => [record.callId, record]));
+    if (expB.identity.corpusDigest !== exp.identity.corpusDigest) {
+      throw new Error(`compareOutdir corpus digest mismatch: ${expB.identity.corpusDigest} != ${exp.identity.corpusDigest}`);
+    }
+    const okB = callsB.filter((r) => r.ok);
+    const primary5B = callsB.filter((r) => r.purpose === 'primary' && r.arm === 'five-axis' && r.ok);
+    const primary4B = callsB.filter((r) => r.purpose === 'primary' && r.arm === 'four-axis' && r.ok);
+
+    // B Wave A: paired shared-axis deltas five vs four arm.
+    const p5ByTrace = new Map(primary5B.map((r) => [r.traceId, r]));
+    const deltasB: Record<string, number[]> = {};
+    for (const record of primary4B) {
+      const base = p5ByTrace.get(record.traceId);
+      if (!base) continue;
+      const a = probsByCandidate(base);
+      const b = probsByCandidate(record);
+      for (const [cand, vb] of b) {
+        const va = a.get(cand);
+        if (!va) continue;
+        for (const axis of FOUR_AXIS_EXPERIMENT_AXES) {
+          const x = va[axis]; const y = vb[axis];
+          if (typeof x === 'number' && typeof y === 'number') {
+            (deltasB[axis] ??= []).push(Math.abs(x - y));
+          }
+        }
+      }
+    }
+    const waveA_B = Object.fromEntries(Object.entries(deltasB).map(([axis, ds]) => [
+      axis, { meanAbsDelta: mean(ds), maxAbsDelta: Math.max(...ds, 0), n: ds.length },
+    ]));
+
+    // B Wave B: per-axis threshold-free metrics on primary (same corpus labels).
+    const samplesB = (arm: 'five-axis' | 'four-axis', axis: MappedObservationAxis): BinaryCalibrationSample[] => {
+      const out: BinaryCalibrationSample[] = [];
+      for (const record of callsB.filter((r) => r.purpose === 'primary' && r.arm === arm && r.ok)) {
+        for (const [cand, values] of probsByCandidate(record)) {
+          const entry = candById.get(cand);
+          if (!entry) continue;
+          const p = values[axis];
+          if (typeof p === 'number') out.push({ probability: p, outcome: entry.targets[axis] });
+        }
+      }
+      return out;
+    };
+    const waveB_B: Record<string, unknown> = {};
+    for (const axis of MAPPED_OBSERVATION_AXES) {
+      waveB_B[axis] = {
+        five_axis: metricBundle(samplesB('five-axis', axis)),
+        four_axis: FOUR_AXIS_EXPERIMENT_AXES.includes(axis as never)
+          ? metricBundle(samplesB('four-axis', axis))
+          : 'not-modeled',
+      };
+    }
+
+    // B invariance: batch sensitivity, candidate-order, repeatability, temporal.
+    const batchB: Record<string, unknown> = {};
+    for (const arm of ['five-axis', 'four-axis'] as const) {
+      for (const purpose of ['batch', 'batch-alt']) {
+        const perAxis: Record<string, number[]> = {};
+        for (const record of callsB.filter((r) => r.purpose === purpose && r.arm === arm && r.ok)) {
+          for (const [cand, values] of probsByCandidate(record)) {
+            const entry = candById.get(cand);
+            if (!entry) continue;
+            const primary = byCallIdB.get(`primary/${entry.trace.trace_id}/${arm}`);
+            if (!primary) continue;
+            for (const axis of (arm === 'five-axis' ? MAPPED_OBSERVATION_AXES : FOUR_AXIS_EXPERIMENT_AXES)) {
+              const pb = values[axis];
+              const pp = probsByCandidate(primary).get(cand)?.[axis];
+              if (typeof pb === 'number' && typeof pp === 'number') {
+                (perAxis[axis] ??= []).push(Math.abs(pb - pp));
+              }
+            }
+          }
+        }
+        batchB[`${purpose}:${arm}`] = Object.fromEntries(Object.entries(perAxis).map(([axis, ds]) => [
+          axis, { meanAbsDelta: mean(ds), maxAbsDelta: Math.max(...ds, 0), n: ds.length },
+        ]));
+      }
+    }
+    const candOrderB: Record<string, unknown> = {};
+    for (const perm of ['revpos', 'oddsfirst']) {
+      const perAxis: Record<string, number[]> = {};
+      for (const record of callsB.filter((r) => r.purpose === 'candidate-order' && r.callId.endsWith(`/${perm}/five-axis`) && r.ok)) {
+        const layoutTag = record.traceId.replace(/-\d+$/, '');
+        const batchPrimary = byCallIdB.get(`${layoutTag}/${record.traceId}/five-axis`);
+        if (!batchPrimary) continue;
+        const baseProbs = probsByCandidate(batchPrimary);
+        for (const [origId, values] of probsByCandidate(record)) {
+          for (const axis of MAPPED_OBSERVATION_AXES) {
+            const pPerm = values[axis];
+            const pBase = baseProbs.get(origId)?.[axis];
+            if (typeof pPerm === 'number' && typeof pBase === 'number') {
+              (perAxis[axis] ??= []).push(Math.abs(pPerm - pBase));
+            }
+          }
+        }
+      }
+      candOrderB[perm] = Object.fromEntries(Object.entries(perAxis).map(([axis, ds]) => [
+        axis, { meanAbsDelta: mean(ds), maxAbsDelta: Math.max(...ds, 0), n: ds.length },
+      ]));
+    }
+    const repeatB: Record<string, unknown> = {};
+    for (const arm of ['five-axis', 'four-axis'] as const) {
+      for (const axis of (arm === 'five-axis' ? MAPPED_OBSERVATION_AXES : FOUR_AXIS_EXPERIMENT_AXES)) {
+        const sds: number[] = [];
+        for (const entry of controlled) {
+          const cand = entry.trace.candidates[0].candidate_id;
+          const probs: number[] = [];
+          for (let i = 0; i < 8; i++) {
+            const record = byCallIdB.get(`repeat/${entry.trace.trace_id}/${arm}/${i}`);
+            if (!record) continue;
+            const p = probsByCandidate(record).get(cand)?.[axis];
+            if (typeof p === 'number') probs.push(p);
+          }
+          if (probs.length >= 2) sds.push(sd(probs));
+        }
+        repeatB[`${arm}:${axis}`] = { meanSd: mean(sds), maxSd: Math.max(...sds, 0), n: sds.length };
+      }
+    }
+
+    waveG = {
+      status: 'EXECUTED',
+      providerA: {
+        id: exp.identity.provider?.id ?? `${exp.identity.provider?.endpoint ?? 'unknown'}/${exp.identity.provider?.model ?? 'unknown'}`,
+        profileDigest5: exp.identity.arms.five_axis.providerProfile.providerProfileDigest,
+        wireContract: 'systemone-mapped-payload.v0 (provider-internal noul)',
+      },
+      providerB: {
+        id: expB.identity.provider?.id ?? 'unknown',
+        endpoint: expB.identity.provider?.endpoint ?? null,
+        model: expB.identity.provider?.model ?? null,
+        profileDigest5: expB.identity.arms.five_axis.providerProfile.providerProfileDigest,
+        profileDigest4: expB.identity.arms.four_axis.providerProfile.providerProfileDigest,
+        wireContract: 'openai-chat-completions-json-elicitation.v0 (self-reported probability)',
+        calls: {
+          total: callsB.length,
+          ok: okB.length,
+          failed: callsB.length - okB.length,
+          malformed: callsB.filter((r) => !r.ok && r.errorCode === 'malformed_response').length,
+          retried: callsB.filter((r) => r.attempts > 1).length,
+          latencyMs: { mean: mean(callsB.map((r) => r.latencyMs)), median: median(callsB.map((r) => r.latencyMs)) },
+          tokensObserved: okB.some((r) => r.metadata?.input_tokens !== null && r.metadata?.input_tokens !== undefined),
+        },
+      },
+      sharedAxisDeltas_B: waveA_B,
+      waveB_B,
+      invariance_B: {
+        batchSensitivity: batchB,
+        candidateOrder: candOrderB,
+        repeatability: repeatB,
+      },
+      reference_A: {
+        sharedAxisDeltas: waveA.perAxis,
+        waveB,
+        batchSensitivity: waveF.batchSensitivity,
+        candidateOrder: waveF.candOrder,
+        repeatability: waveF.repeatability,
+        latencyMs: {
+          mean: mean(waveA.latencyMs.five_axis),
+          median: median(waveA.latencyMs.five_axis),
+        },
+      },
+      note: 'Provider B probabilities are model self-reports under strict-JSON elicitation — a different execution semantic than provider-internal noul. Cross-provider deltas therefore conflate model quality with elicitation semantics; both are recorded as distinct ProviderExecutionProfiles.',
+    };
+  }
 
   // ------------------------------------------------------------------
   // Mechanical recovery plane (recovery truth from CAS, not semantics)

@@ -1,0 +1,1876 @@
+{
+  "schema": "anvil.abi-battery-report.v1",
+  "generatedAt": "2026-09-18T10:26:37.816Z",
+  "evidenceClass": "live-provider-on-synthetic-fixture-corpus",
+  "sourceSha": "a6245d61883d4258c5460af03c1215dddf661e6b",
+  "corpusDigest": "sha256:db7ee7c98f3e08fc17c1e11bffe05877db09f6a87fbc62952f891df06eb811ab",
+  "labelBindingDigest": "sha256:3e91ab7210b48a0d96d395e85f07769b4c97793b97687f1a37e805f1d22de118",
+  "callCount": 2256,
+  "callCountOk": 2256,
+  "waveA": {
+    "pairs": 164,
+    "perAxis": {
+      "evidence_sufficient": {
+        "meanAbsDelta": 0.24945121951219507,
+        "maxAbsDelta": 0.72,
+        "fracDeltaGt005": 0.6097560975609756,
+        "fracDeltaGt010": 0.4817073170731707
+      },
+      "still_needed": {
+        "meanAbsDelta": 0.06859756097560978,
+        "maxAbsDelta": 0.7,
+        "fracDeltaGt005": 0.2865853658536585,
+        "fracDeltaGt010": 0.12804878048780488
+      },
+      "full_content_needed": {
+        "meanAbsDelta": 0.1467073170731708,
+        "maxAbsDelta": 0.65,
+        "fracDeltaGt005": 0.5975609756097561,
+        "fracDeltaGt010": 0.39634146341463417
+      },
+      "unresolved_evidence": {
+        "meanAbsDelta": 0.0740853658536586,
+        "maxAbsDelta": 0.8,
+        "fracDeltaGt005": 0.21951219512195122,
+        "fracDeltaGt010": 0.1524390243902439
+      }
+    },
+    "tokens": {
+      "five_axis": {
+        "inputMean": null,
+        "inputTotal": null,
+        "outputMean": null,
+        "outputTotal": null
+      },
+      "four_axis": {
+        "inputMean": null,
+        "inputTotal": null,
+        "outputMean": null,
+        "outputTotal": null
+      }
+    },
+    "latencyMs": {
+      "five_axis": {
+        "mean": 2068.981707317073,
+        "median": 1537.5,
+        "max": 5194
+      },
+      "four_axis": {
+        "mean": 2035.0365853658536,
+        "median": 1437.5,
+        "max": 5216
+      }
+    },
+    "questionCount": {
+      "five_axis": 5,
+      "four_axis": 4
+    },
+    "malformedResponses": 0,
+    "failedCalls": 0,
+    "retriedCalls": 0,
+    "effectiveModels": [
+      "mercury-2"
+    ]
+  },
+  "waveB": {
+    "evidence_sufficient": {
+      "five_axis": {
+        "n": 164,
+        "positives": 103,
+        "negatives": 61,
+        "auroc": 0.5256247015756804,
+        "auprc": 0.651868643189459,
+        "brier": 0.29309329268292633,
+        "ece10": 0.24262195121951208,
+        "nll": 0.8468691801530358,
+        "positiveMeanProbability": 0.7433980582524274,
+        "negativeMeanProbability": 0.7134426229508197
+      },
+      "four_axis": {
+        "n": 164,
+        "positives": 103,
+        "negatives": 61,
+        "auroc": 0.5241922648416362,
+        "auprc": 0.6636222457975529,
+        "brier": 0.3082829268292677,
+        "ece10": 0.2684146341463416,
+        "nll": 0.8795740290698949,
+        "positiveMeanProbability": 0.7173786407766995,
+        "negativeMeanProbability": 0.7119672131147541
+      }
+    },
+    "still_needed": {
+      "five_axis": {
+        "n": 164,
+        "positives": 104,
+        "negatives": 60,
+        "auroc": 0.47652243589743587,
+        "auprc": 0.6320908925646129,
+        "brier": 0.27778597560975615,
+        "ece10": 0.2039634146341455,
+        "nll": 0.8073494364974302,
+        "positiveMeanProbability": 0.8297115384615382,
+        "negativeMeanProbability": 0.8293333333333334
+      },
+      "four_axis": {
+        "n": 164,
+        "positives": 104,
+        "negatives": 60,
+        "auroc": 0.49238782051282054,
+        "auprc": 0.6386478551216991,
+        "brier": 0.27972439024390217,
+        "ece10": 0.21999999999999903,
+        "nll": 0.8081954672533349,
+        "positiveMeanProbability": 0.8383653846153847,
+        "negativeMeanProbability": 0.8381666666666667
+      }
+    },
+    "full_content_needed": {
+      "five_axis": {
+        "n": 164,
+        "positives": 61,
+        "negatives": 103,
+        "auroc": 0.5482253700461563,
+        "auprc": 0.4109661447316664,
+        "brier": 0.37344695121951205,
+        "ece10": 0.3605487804878048,
+        "nll": 1.001119139197628,
+        "positiveMeanProbability": 0.7283606557377054,
+        "negativeMeanProbability": 0.712621359223301
+      },
+      "four_axis": {
+        "n": 164,
+        "positives": 61,
+        "negatives": 103,
+        "auroc": 0.5319910870603215,
+        "auprc": 0.3875296234848026,
+        "brier": 0.366485975609756,
+        "ece10": 0.35103658536585336,
+        "nll": 0.9951198520345022,
+        "positiveMeanProbability": 0.7467213114754098,
+        "negativeMeanProbability": 0.7089320388349508
+      }
+    },
+    "unresolved_evidence": {
+      "five_axis": {
+        "n": 164,
+        "positives": 71,
+        "negatives": 93,
+        "auroc": 0.9323792215659549,
+        "auprc": 0.91526142288906,
+        "brier": 0.07351829268292676,
+        "ece10": 0.0990243902439025,
+        "nll": 0.28277027561242807,
+        "positiveMeanProbability": 0.7309859154929578,
+        "negativeMeanProbability": 0.10387096774193537
+      },
+      "four_axis": {
+        "n": 164,
+        "positives": 71,
+        "negatives": 93,
+        "auroc": 0.9335907920642132,
+        "auprc": 0.918685768275736,
+        "brier": 0.08628597560975602,
+        "ece10": 0.07542682926829275,
+        "nll": 0.3086312058262009,
+        "positiveMeanProbability": 0.7073239436619722,
+        "negativeMeanProbability": 0.09903225806451599
+      }
+    },
+    "recoverable": {
+      "five_axis": {
+        "n": 164,
+        "positives": 162,
+        "negatives": 2,
+        "auroc": 0.5,
+        "auprc": 0.9883264073831123,
+        "brier": 0.02279329268292671,
+        "ece10": 0.09347560975609605,
+        "nll": 0.13971073926203842,
+        "positiveMeanProbability": 0.8942592592592602,
+        "negativeMeanProbability": 0.9
+      },
+      "four_axis": "not-modeled"
+    }
+  },
+  "waveC": {
+    "five-axis": {
+      "train": {
+        "n": 83,
+        "positives": 50,
+        "negatives": 33,
+        "auroc": 0.5415151515151515,
+        "auprc": 0.630839111743688,
+        "brier": 0.29048915662650643,
+        "ece10": 0.24674698795180708,
+        "nll": 0.842302985618585,
+        "positiveMeanProbability": 0.7371999999999997,
+        "negativeMeanProbability": 0.6793939393939392
+      },
+      "holdout_raw": {
+        "n": 81,
+        "positives": 53,
+        "negatives": 28,
+        "auroc": 0.5090970350404312,
+        "auprc": 0.6713051193395484,
+        "brier": 0.295761728395062,
+        "ece10": 0.2630864197530864,
+        "nll": 0.851548120231547,
+        "positiveMeanProbability": 0.749245283018868,
+        "negativeMeanProbability": 0.7535714285714288
+      },
+      "holdout_calibrated": {
+        "n": 81,
+        "positives": 53,
+        "negatives": 28,
+        "auroc": 0.543800539083558,
+        "auprc": 0.6851395538033105,
+        "brier": 0.2289945595312829,
+        "ece10": 0.05802469135802424,
+        "nll": 0.6491401331934112,
+        "positiveMeanProbability": 0.6251039334825711,
+        "negativeMeanProbability": 0.6131961259079902
+      },
+      "es_gate_raw": {
+        "selected": 62,
+        "leaks": 22,
+        "coverage": 0.7654320987654321
+      },
+      "es_gate_calibrated": {
+        "selected": 0,
+        "leaks": 0,
+        "coverage": 0
+      },
+      "isotonicBlocks": 3,
+      "split": {
+        "training": 83,
+        "holdout": 81
+      }
+    },
+    "four-axis": {
+      "train": {
+        "n": 83,
+        "positives": 50,
+        "negatives": 33,
+        "auroc": 0.5254545454545455,
+        "auprc": 0.6481821218278435,
+        "brier": 0.3356265060240968,
+        "ece10": 0.30602409638554184,
+        "nll": 0.9499472391811669,
+        "positiveMeanProbability": 0.7147999999999999,
+        "negativeMeanProbability": 0.7351515151515152
+      },
+      "holdout_raw": {
+        "n": 81,
+        "positives": 53,
+        "negatives": 28,
+        "auroc": 0.5320080862533693,
+        "auprc": 0.6852020215707818,
+        "brier": 0.28026419753086457,
+        "ece10": 0.24098765432098734,
+        "nll": 0.8074632088324211,
+        "positiveMeanProbability": 0.7198113207547168,
+        "negativeMeanProbability": 0.6846428571428573
+      },
+      "holdout_calibrated": {
+        "n": 81,
+        "positives": 53,
+        "negatives": 28,
+        "auroc": 0.5296495956873315,
+        "auprc": 0.6766326074502175,
+        "brier": 0.22773538713610764,
+        "ece10": 0.06189986282578849,
+        "nll": 0.6466368851740881,
+        "positiveMeanProbability": 0.5961740041928724,
+        "negativeMeanProbability": 0.5853174603174602
+      },
+      "es_gate_raw": {
+        "selected": 52,
+        "leaks": 18,
+        "coverage": 0.6419753086419753
+      },
+      "es_gate_calibrated": {
+        "selected": 2,
+        "leaks": 0,
+        "coverage": 0.024691358024691357
+      },
+      "isotonicBlocks": 3,
+      "split": {
+        "training": 83,
+        "holdout": 81
+      }
+    }
+  },
+  "canonical": {
+    "five_axis": {
+      "trainReplayDigest": "sha256:83e9c4f5966b674f121f491dc63e79c902339471ab738341b0e003143dea5704",
+      "holdoutReplayDigest": "sha256:9fadbd0bfbd68948a8110fdb9c2a707e269a2f2eb4f8f7616d3d7de6919f7d90",
+      "buildDigest": "sha256:5ef34c9e2f19988fe67bdd9997e3079f5037407eb2b371626163488461b5bcc6",
+      "calibrationArtifactDigest": "sha256:d55323505e57377d36e18111008e905643a303774e37eae95846ce61415b6d1f",
+      "holdoutMetrics": {
+        "ece": 0.040136616479400304,
+        "brier": 0.15464186022521564,
+        "nll": 0.6070992270759352,
+        "selectiveRisk": 0.037037037037037035,
+        "coverage": 0.4,
+        "sampleCount": 405
+      },
+      "predictions": {
+        "train": 415,
+        "holdout": 405
+      }
+    },
+    "four_axis": "canonical compile requires all five registered predicates — experiment-scoped isotonic reported in waveC.four_axis (architecture finding)"
+  },
+  "waveD": {
+    "cells": {
+      "complete=true|contradiction=true": {
+        "mean": 0.923333333333333,
+        "sd": 0.026062334565784134,
+        "n": 54,
+        "labelMean": 1
+      },
+      "complete=true|contradiction=false": {
+        "mean": 0.08999999999999998,
+        "sd": 0.019425717247145292,
+        "n": 54,
+        "labelMean": 0
+      },
+      "complete=false|contradiction=true": {
+        "mean": 0.9351851851851852,
+        "sd": 0.02515917183302241,
+        "n": 54,
+        "labelMean": 1
+      },
+      "complete=false|contradiction=false": {
+        "mean": 0.0948148148148148,
+        "sd": 0.01723760049194134,
+        "n": 54,
+        "labelMean": 0
+      }
+    },
+    "kinds": {
+      "warning": {
+        "mean": 0.6861111111111112,
+        "sd": 0.16052196605854788,
+        "n": 36,
+        "labelMean": 1
+      },
+      "dependency": {
+        "mean": 0.7688888888888887,
+        "sd": 0.18375103930167153,
+        "n": 36,
+        "labelMean": 1
+      },
+      "verification": {
+        "mean": 0.856111111111111,
+        "sd": 0.11097690307389652,
+        "n": 36,
+        "labelMean": 1
+      },
+      "resolved-historical": {
+        "mean": 0.10333333333333337,
+        "sd": 0.01985662897587891,
+        "n": 36,
+        "labelMean": 0
+      }
+    },
+    "fourAxisCells": {
+      "complete=true|contradiction=true": {
+        "mean": 0.9257407407407405,
+        "sd": 0.025223667521090853,
+        "n": 54
+      },
+      "complete=true|contradiction=false": {
+        "mean": 0.09314814814814812,
+        "sd": 0.02417109407864629,
+        "n": 54
+      },
+      "complete=false|contradiction=true": {
+        "mean": 0.9237037037037039,
+        "sd": 0.026299888535261023,
+        "n": 54
+      },
+      "complete=false|contradiction=false": {
+        "mean": 0.08870370370370369,
+        "sd": 0.020285350815844254,
+        "n": 54
+      }
+    }
+  },
+  "waveE": {
+    "five_axis": {
+      "n": 146,
+      "positives": 104,
+      "negatives": 42,
+      "auroc": 0.421474358974359,
+      "auprc": 0.6852039841822717,
+      "brier": 0.2312657534246575,
+      "ece10": 0.16260273972602673,
+      "nll": 0.6973381329160441,
+      "positiveMeanProbability": 0.8297115384615382,
+      "negativeMeanProbability": 0.839285714285714
+    },
+    "four_axis": {
+      "n": 146,
+      "positives": 104,
+      "negatives": 42,
+      "auroc": 0.4680631868131868,
+      "auprc": 0.6989100823252855,
+      "brier": 0.2279308219178082,
+      "ece10": 0.16089041095890344,
+      "nll": 0.6811045525736327,
+      "positiveMeanProbability": 0.8383653846153847,
+      "negativeMeanProbability": 0.8395238095238098
+    },
+    "perKind": {
+      "obsolete-log": {
+        "five": {
+          "mean": 0.8138888888888893,
+          "sd": 0.0806908067211388,
+          "n": 54
+        },
+        "four": {
+          "mean": 0.8131481481481484,
+          "sd": 0.0835040180724364,
+          "n": 54
+        },
+        "labelMean": 0
+      },
+      "completed-task": {
+        "five": {
+          "mean": 0.8592592592592594,
+          "sd": 0.05251601200036121,
+          "n": 54
+        },
+        "four": {
+          "mean": 0.8574074074074075,
+          "sd": 0.03787692009879513,
+          "n": 54
+        },
+        "labelMean": 0
+      },
+      "superseded-config": {
+        "five": {
+          "mean": 0.8475925925925926,
+          "sd": 0.05659972615392068,
+          "n": 54
+        },
+        "four": {
+          "mean": 0.8618518518518519,
+          "sd": 0.037065677256300125,
+          "n": 54
+        },
+        "labelMean": 0
+      },
+      "unrelated-plausible": {
+        "five": {
+          "mean": 0.8744444444444441,
+          "sd": 0.03160288180474656,
+          "n": 54
+        },
+        "four": {
+          "mean": 0.8688888888888889,
+          "sd": 0.02898709320244176,
+          "n": 54
+        },
+        "labelMean": 0
+      },
+      "stale-generation": {
+        "five": {
+          "mean": 0.8424074074074075,
+          "sd": 0.05729549968119381,
+          "n": 54
+        },
+        "four": {
+          "mean": 0.8477777777777781,
+          "sd": 0.028527819369650754,
+          "n": 54
+        },
+        "labelMean": 0
+      },
+      "earlier-mission": {
+        "five": {
+          "mean": 0.6829629629629633,
+          "sd": 0.2691750474125447,
+          "n": 54
+        },
+        "four": {
+          "mean": 0.7737037037037039,
+          "sd": 0.18155820623198146,
+          "n": 54
+        },
+        "labelMean": 0
+      },
+      "resolved-historical": {
+        "five": {
+          "mean": 0.8525925925925927,
+          "sd": 0.034267823357779004,
+          "n": 54
+        },
+        "four": {
+          "mean": 0.8581481481481483,
+          "sd": 0.03132748953043516,
+          "n": 54
+        },
+        "labelMean": 0
+      },
+      "duplicate": {
+        "five": {
+          "mean": 0.8111111111111109,
+          "sd": 0.07583952786593615,
+          "n": 18
+        },
+        "four": {
+          "mean": 0.8138888888888888,
+          "sd": 0.07632275806529015,
+          "n": 18
+        },
+        "labelMean": 1
+      }
+    },
+    "negativesInSet": 44
+  },
+  "waveF": {
+    "repeatability": {
+      "five-axis": {
+        "evidence_sufficient": {
+          "meanSd": 0.19563364345711864,
+          "maxSd": 0.3588249672791139,
+          "meanMaxDev": 0.4979761904761906,
+          "maxDev": 0.75,
+          "candidatesMeasured": 84
+        },
+        "still_needed": {
+          "meanSd": 0.07702714697929076,
+          "maxSd": 0.3138670100536213,
+          "meanMaxDev": 0.2113095238095238,
+          "maxDev": 0.8,
+          "candidatesMeasured": 84
+        },
+        "full_content_needed": {
+          "meanSd": 0.150107584979567,
+          "maxSd": 0.29970223317724637,
+          "meanMaxDev": 0.41464285714285704,
+          "maxDev": 0.74,
+          "candidatesMeasured": 84
+        },
+        "unresolved_evidence": {
+          "meanSd": 0.03621599731822438,
+          "maxSd": 0.26040833319999573,
+          "meanMaxDev": 0.09738095238095228,
+          "maxDev": 0.8,
+          "candidatesMeasured": 84
+        },
+        "recoverable": {
+          "meanSd": 0.02902366634060333,
+          "maxSd": 0.08451542547285164,
+          "meanMaxDev": 0.08166666666666661,
+          "maxDev": 0.19999999999999996,
+          "candidatesMeasured": 84
+        }
+      },
+      "four-axis": {
+        "evidence_sufficient": {
+          "meanSd": 0.1798009779603865,
+          "maxSd": 0.34062704783132786,
+          "meanMaxDev": 0.4665476190476191,
+          "maxDev": 0.77,
+          "candidatesMeasured": 84
+        },
+        "still_needed": {
+          "meanSd": 0.0610926153899382,
+          "maxSd": 0.2903200204700225,
+          "meanMaxDev": 0.1726190476190476,
+          "maxDev": 0.7,
+          "candidatesMeasured": 84
+        },
+        "full_content_needed": {
+          "meanSd": 0.13385584881603216,
+          "maxSd": 0.2699206232527312,
+          "meanMaxDev": 0.37178571428571405,
+          "maxDev": 0.7,
+          "candidatesMeasured": 84
+        },
+        "unresolved_evidence": {
+          "meanSd": 0.03532711314337852,
+          "maxSd": 0.2098128417695842,
+          "meanMaxDev": 0.09345238095238084,
+          "maxDev": 0.7,
+          "candidatesMeasured": 84
+        }
+      }
+    },
+    "axisOrder": {
+      "reversed": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.1946428571428572,
+          "maxAbsDelta": 0.7,
+          "n": 84
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.08321428571428567,
+          "maxAbsDelta": 0.7,
+          "n": 84
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.23499999999999993,
+          "maxAbsDelta": 0.76,
+          "n": 84
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.04999999999999995,
+          "maxAbsDelta": 0.5,
+          "n": 84
+        },
+        "recoverable": {
+          "meanAbsDelta": 0.04166666666666662,
+          "maxAbsDelta": 0.24,
+          "n": 84
+        }
+      },
+      "es-last": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.15916666666666673,
+          "maxAbsDelta": 0.7,
+          "n": 84
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.09178571428571423,
+          "maxAbsDelta": 0.7,
+          "n": 84
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.1783333333333333,
+          "maxAbsDelta": 0.7,
+          "n": 84
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.05202380952380949,
+          "maxAbsDelta": 0.68,
+          "n": 84
+        },
+        "recoverable": {
+          "meanAbsDelta": 0.03488095238095236,
+          "maxAbsDelta": 0.20000000000000007,
+          "n": 84
+        }
+      }
+    },
+    "batchSensitivity": {
+      "batch:five-axis": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.21071428571428574,
+          "maxAbsDelta": 0.8,
+          "n": 84
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.19809523809523805,
+          "maxAbsDelta": 0.86,
+          "n": 84
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.2119047619047619,
+          "maxAbsDelta": 0.81,
+          "n": 84
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.14000000000000007,
+          "maxAbsDelta": 0.8300000000000001,
+          "n": 84
+        },
+        "recoverable": {
+          "meanAbsDelta": 0.07476190476190471,
+          "maxAbsDelta": 0.25,
+          "n": 84
+        }
+      },
+      "batch-alt:five-axis": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.2366666666666667,
+          "maxAbsDelta": 0.76,
+          "n": 84
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.0676190476190476,
+          "maxAbsDelta": 0.6000000000000001,
+          "n": 84
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.17416666666666672,
+          "maxAbsDelta": 0.6000000000000001,
+          "n": 84
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.0879761904761904,
+          "maxAbsDelta": 0.72,
+          "n": 84
+        },
+        "recoverable": {
+          "meanAbsDelta": 0.04226190476190473,
+          "maxAbsDelta": 0.13,
+          "n": 84
+        }
+      },
+      "batch:four-axis": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.18750000000000008,
+          "maxAbsDelta": 0.78,
+          "n": 84
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.08595238095238092,
+          "maxAbsDelta": 0.49999999999999994,
+          "n": 84
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.25202380952380965,
+          "maxAbsDelta": 0.78,
+          "n": 84
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.12214285714285714,
+          "maxAbsDelta": 0.85,
+          "n": 84
+        }
+      },
+      "batch-alt:four-axis": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.16857142857142862,
+          "maxAbsDelta": 0.76,
+          "n": 84
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.08321428571428567,
+          "maxAbsDelta": 0.4,
+          "n": 84
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.3103571428571429,
+          "maxAbsDelta": 0.85,
+          "n": 84
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.10964285714285708,
+          "maxAbsDelta": 0.92,
+          "n": 84
+        }
+      }
+    },
+    "candOrder": {
+      "revpos": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.06892857142857144,
+          "maxAbsDelta": 0.75,
+          "n": 168
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.15422619047619063,
+          "maxAbsDelta": 1,
+          "n": 168
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.27577380952380953,
+          "maxAbsDelta": 1,
+          "n": 168
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.15190476190476201,
+          "maxAbsDelta": 0.9099999999999999,
+          "n": 168
+        },
+        "recoverable": {
+          "meanAbsDelta": 0.030952380952380894,
+          "maxAbsDelta": 0.08999999999999997,
+          "n": 168
+        }
+      },
+      "oddsfirst": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.045297619047619024,
+          "maxAbsDelta": 0.13,
+          "n": 168
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.12351190476190473,
+          "maxAbsDelta": 0.7000000000000001,
+          "n": 168
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.2733333333333335,
+          "maxAbsDelta": 0.78,
+          "n": 168
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.11380952380952382,
+          "maxAbsDelta": 0.91,
+          "n": 168
+        },
+        "recoverable": {
+          "meanAbsDelta": 0.03761904761904761,
+          "maxAbsDelta": 0.26,
+          "n": 168
+        }
+      }
+    },
+    "temporal": {
+      "five-axis": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.1956707317073172,
+          "maxAbsDelta": 0.8,
+          "n": 164
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.07286585365853655,
+          "maxAbsDelta": 0.7,
+          "n": 164
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.15182926829268303,
+          "maxAbsDelta": 0.7,
+          "n": 164
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.06847560975609761,
+          "maxAbsDelta": 0.65,
+          "n": 164
+        },
+        "recoverable": {
+          "meanAbsDelta": 0.03445121951219508,
+          "maxAbsDelta": 0.20000000000000007,
+          "n": 164
+        }
+      },
+      "four-axis": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.20914634146341474,
+          "maxAbsDelta": 0.75,
+          "n": 164
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.07286585365853657,
+          "maxAbsDelta": 0.75,
+          "n": 164
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.18396341463414637,
+          "maxAbsDelta": 0.78,
+          "n": 164
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.07109756097560983,
+          "maxAbsDelta": 0.7000000000000001,
+          "n": 164
+        }
+      }
+    }
+  },
+  "waveG": {
+    "status": "BLOCKED",
+    "providers": {
+      "gemini-flash-fazm-gateway": {
+        "available": false,
+        "evidence": "SIEVE ingress attestation rejected (sieve_attestation_missing) on POST /v1/chat/completions @127.0.0.1:8877; required headers x-sieve-ingress-attestation/x-sieve-ingress-signature are minted by a proposal handshake with no client-accessible mint route; boundary not bypassed"
+      },
+      "qwen-ane": {
+        "available": false,
+        "evidence": "no qwen binary on PATH or ~/.local/bin; no .mlpackage qwen artifact under ~/ANVIL; LOCAL_QWEN_MAVIS_ADAPTER_SPEC.md is a design spec, not a runtime; no local inference endpoint listening"
+      },
+      "mavis": {
+        "available": false,
+        "evidence": "tools/mavis-harness is a bootstrap/claim/supervise binary for the Mavis Microcortex contract — it has no questions/answers semantic interface; no mavis model runtime found"
+      }
+    },
+    "conclusion": "provider comparison could not run; JEV findings are provider-specific until a second provider execution profile exists"
+  },
+  "recoveryPlane": {
+    "mechanicallyVerified": 162,
+    "mechanicallyRejected": 2,
+    "details": [
+      {
+        "traceId": "ab-000",
+        "candidateId": "cand-ab-000",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-001",
+        "candidateId": "cand-ab-001",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-002",
+        "candidateId": "cand-ab-002",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-003",
+        "candidateId": "cand-ab-003",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-004",
+        "candidateId": "cand-ab-004",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-005",
+        "candidateId": "cand-ab-005",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-006",
+        "candidateId": "cand-ab-006",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-007",
+        "candidateId": "cand-ab-007",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-008",
+        "candidateId": "cand-ab-008",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-009",
+        "candidateId": "cand-ab-009",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-010",
+        "candidateId": "cand-ab-010",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-011",
+        "candidateId": "cand-ab-011",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-012",
+        "candidateId": "cand-ab-012",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-013",
+        "candidateId": "cand-ab-013",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-014",
+        "candidateId": "cand-ab-014",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-015",
+        "candidateId": "cand-ab-015",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-016",
+        "candidateId": "cand-ab-016",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-017",
+        "candidateId": "cand-ab-017",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-018",
+        "candidateId": "cand-ab-018",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-019",
+        "candidateId": "cand-ab-019",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-020",
+        "candidateId": "cand-ab-020",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-021",
+        "candidateId": "cand-ab-021",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-022",
+        "candidateId": "cand-ab-022",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-023",
+        "candidateId": "cand-ab-023",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-024",
+        "candidateId": "cand-ab-024",
+        "mechanicalVerifyOk": false,
+        "semanticRecoverableLabel": 0
+      },
+      {
+        "traceId": "ab-025",
+        "candidateId": "cand-ab-025",
+        "mechanicalVerifyOk": false,
+        "semanticRecoverableLabel": 0
+      },
+      {
+        "traceId": "ab-026",
+        "candidateId": "cand-ab-026",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-027",
+        "candidateId": "cand-ab-027",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-028",
+        "candidateId": "cand-ab-028",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-029",
+        "candidateId": "cand-ab-029",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-030",
+        "candidateId": "cand-ab-030",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-031",
+        "candidateId": "cand-ab-031",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-032",
+        "candidateId": "cand-ab-032",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-033",
+        "candidateId": "cand-ab-033",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-034",
+        "candidateId": "cand-ab-034",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-035",
+        "candidateId": "cand-ab-035",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-036",
+        "candidateId": "cand-ab-036",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-037",
+        "candidateId": "cand-ab-037",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-038",
+        "candidateId": "cand-ab-038",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-039",
+        "candidateId": "cand-ab-039",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-040",
+        "candidateId": "cand-ab-040",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-041",
+        "candidateId": "cand-ab-041",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-042",
+        "candidateId": "cand-ab-042",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-043",
+        "candidateId": "cand-ab-043",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-044",
+        "candidateId": "cand-ab-044",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-045",
+        "candidateId": "cand-ab-045",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-046",
+        "candidateId": "cand-ab-046",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-047",
+        "candidateId": "cand-ab-047",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-048",
+        "candidateId": "cand-ab-048",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-049",
+        "candidateId": "cand-ab-049",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-050",
+        "candidateId": "cand-ab-050",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-051",
+        "candidateId": "cand-ab-051",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-052",
+        "candidateId": "cand-ab-052",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-053",
+        "candidateId": "cand-ab-053",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-054",
+        "candidateId": "cand-ab-054",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-055",
+        "candidateId": "cand-ab-055",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-056",
+        "candidateId": "cand-ab-056",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-057",
+        "candidateId": "cand-ab-057",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-058",
+        "candidateId": "cand-ab-058",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-059",
+        "candidateId": "cand-ab-059",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-060",
+        "candidateId": "cand-ab-060",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-061",
+        "candidateId": "cand-ab-061",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-062",
+        "candidateId": "cand-ab-062",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-063",
+        "candidateId": "cand-ab-063",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-064",
+        "candidateId": "cand-ab-064",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-065",
+        "candidateId": "cand-ab-065",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-066",
+        "candidateId": "cand-ab-066",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-067",
+        "candidateId": "cand-ab-067",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-068",
+        "candidateId": "cand-ab-068",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-069",
+        "candidateId": "cand-ab-069",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-070",
+        "candidateId": "cand-ab-070",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-071",
+        "candidateId": "cand-ab-071",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-072",
+        "candidateId": "cand-ab-072",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-073",
+        "candidateId": "cand-ab-073",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-074",
+        "candidateId": "cand-ab-074",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-075",
+        "candidateId": "cand-ab-075",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-076",
+        "candidateId": "cand-ab-076",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-077",
+        "candidateId": "cand-ab-077",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-078",
+        "candidateId": "cand-ab-078",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "ab-079",
+        "candidateId": "cand-ab-079",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-080",
+        "candidateId": "cand-fd-080",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-081",
+        "candidateId": "cand-fd-081",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-082",
+        "candidateId": "cand-fd-082",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-083",
+        "candidateId": "cand-fd-083",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-084",
+        "candidateId": "cand-fd-084",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-085",
+        "candidateId": "cand-fd-085",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-086",
+        "candidateId": "cand-fd-086",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-087",
+        "candidateId": "cand-fd-087",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-088",
+        "candidateId": "cand-fd-088",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-089",
+        "candidateId": "cand-fd-089",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-090",
+        "candidateId": "cand-fd-090",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-091",
+        "candidateId": "cand-fd-091",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-092",
+        "candidateId": "cand-fd-092",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-093",
+        "candidateId": "cand-fd-093",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-094",
+        "candidateId": "cand-fd-094",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-095",
+        "candidateId": "cand-fd-095",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-096",
+        "candidateId": "cand-fd-096",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-097",
+        "candidateId": "cand-fd-097",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-098",
+        "candidateId": "cand-fd-098",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-099",
+        "candidateId": "cand-fd-099",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-100",
+        "candidateId": "cand-fd-100",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-101",
+        "candidateId": "cand-fd-101",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-102",
+        "candidateId": "cand-fd-102",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-103",
+        "candidateId": "cand-fd-103",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-104",
+        "candidateId": "cand-fd-104",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-105",
+        "candidateId": "cand-fd-105",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-106",
+        "candidateId": "cand-fd-106",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-107",
+        "candidateId": "cand-fd-107",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-108",
+        "candidateId": "cand-fd-108",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-109",
+        "candidateId": "cand-fd-109",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-110",
+        "candidateId": "cand-fd-110",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-111",
+        "candidateId": "cand-fd-111",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-112",
+        "candidateId": "cand-fd-112",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-113",
+        "candidateId": "cand-fd-113",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-114",
+        "candidateId": "cand-fd-114",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-115",
+        "candidateId": "cand-fd-115",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-116",
+        "candidateId": "cand-fd-116",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-117",
+        "candidateId": "cand-fd-117",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-118",
+        "candidateId": "cand-fd-118",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "fd-119",
+        "candidateId": "cand-fd-119",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-120",
+        "candidateId": "cand-hn-120",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-121",
+        "candidateId": "cand-hn-121",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-122",
+        "candidateId": "cand-hn-122",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-123",
+        "candidateId": "cand-hn-123",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-124",
+        "candidateId": "cand-hn-124",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-125",
+        "candidateId": "cand-hn-125",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-126",
+        "candidateId": "cand-hn-126",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-127",
+        "candidateId": "cand-hn-127",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-128",
+        "candidateId": "cand-hn-128",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-129",
+        "candidateId": "cand-hn-129",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-130",
+        "candidateId": "cand-hn-130",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-131",
+        "candidateId": "cand-hn-131",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-132",
+        "candidateId": "cand-hn-132",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-133",
+        "candidateId": "cand-hn-133",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-134",
+        "candidateId": "cand-hn-134",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-135",
+        "candidateId": "cand-hn-135",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-136",
+        "candidateId": "cand-hn-136",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-137",
+        "candidateId": "cand-hn-137",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-138",
+        "candidateId": "cand-hn-138",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-139",
+        "candidateId": "cand-hn-139",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-140",
+        "candidateId": "cand-hn-140",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-141",
+        "candidateId": "cand-hn-141",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-142",
+        "candidateId": "cand-hn-142",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-143",
+        "candidateId": "cand-hn-143",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-144",
+        "candidateId": "cand-hn-144",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-145",
+        "candidateId": "cand-hn-145",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-146",
+        "candidateId": "cand-hn-146",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-147",
+        "candidateId": "cand-hn-147",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-148",
+        "candidateId": "cand-hn-148",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-149",
+        "candidateId": "cand-hn-149",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-150",
+        "candidateId": "cand-hn-150",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-151",
+        "candidateId": "cand-hn-151",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-152",
+        "candidateId": "cand-hn-152",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-153",
+        "candidateId": "cand-hn-153",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-154",
+        "candidateId": "cand-hn-154",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-155",
+        "candidateId": "cand-hn-155",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-156",
+        "candidateId": "cand-hn-156",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-157",
+        "candidateId": "cand-hn-157",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-158",
+        "candidateId": "cand-hn-158",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-159",
+        "candidateId": "cand-hn-159",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-160",
+        "candidateId": "cand-hn-160",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-161",
+        "candidateId": "cand-hn-161",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-162",
+        "candidateId": "cand-hn-162",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      },
+      {
+        "traceId": "hn-163",
+        "candidateId": "cand-hn-163",
+        "mechanicalVerifyOk": true,
+        "semanticRecoverableLabel": 1
+      }
+    ]
+  }
+}

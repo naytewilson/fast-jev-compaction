@@ -1,0 +1,77 @@
+{
+  "schema": "anvil.abi-battery-identity.v1",
+  "mintedAt": "2026-09-18T10:06:47.746Z",
+  "sourceSha": "a6245d61883d4258c5460af03c1215dddf661e6b",
+  "decisionContract": {
+    "id": "anvil.context-retention.v1",
+    "version": "1.0.0",
+    "digest": "sha256:77c4bd370c065f806c3c44f63f6aee4c711bf35800dbb0c344b2894268d450b4"
+  },
+  "corpusId": "anvil.abi-battery-corpus.v1",
+  "corpusDigest": "sha256:db7ee7c98f3e08fc17c1e11bffe05877db09f6a87fbc62952f891df06eb811ab",
+  "labelBindingDigest": "sha256:3e91ab7210b48a0d96d395e85f07769b4c97793b97687f1a37e805f1d22de118",
+  "verifierIdentity": "anvil.mechanical-experiment-constructor.v1",
+  "labelAuthority": "STRONG (mechanical construction truth; synthetic-fixture scope)",
+  "provider": {
+    "id": "mercury",
+    "endpoint": "http://127.0.0.1:8903/v1/chat/completions",
+    "model": "mercury-2",
+    "credentialPath": "MERCURY_GATEWAY_BEARER_FILE (~/.local/share/local-agent-gateway/rune/gateway-bearer)",
+    "egressBoundary": "fixture- source_run_id scope assertion; bearer via rune gateway; no SIEVE ingress required on this route"
+  },
+  "arms": {
+    "five_axis": {
+      "axes": [
+        "evidence_sufficient",
+        "still_needed",
+        "full_content_needed",
+        "unresolved_evidence",
+        "recoverable"
+      ],
+      "abiVersion": "anvil.semantic-observation-abi.v1",
+      "observationABIDigest": "sha256:41e1e3f1fc4be86125b650c164b4f5b9e5d10b746fb7707cd1b8d264ac837119",
+      "providerProfile": {
+        "schema": "anvil.provider-execution-profile.v1",
+        "providerId": "local-agent-gateway-rune/inception-mercury-2",
+        "providerKind": "custom",
+        "modelIdentityDigest": "sha256:48cfb4acf3a9ca36444b4afd018cdf369780e6fe912ceb865d9af82dd4ac2a12",
+        "modelAssurance": "opaqueVersioned",
+        "executionSemanticsDigest": "sha256:2b4c39524416e730d34dd7823882be82c186dd4abf1ee4b16f44dcc084fd08d1",
+        "normalizerDigest": "sha256:836f2f0535604074d9f44d1abc28c1d9ed81e72e9cceebf5212e73d76d5b5ff6",
+        "observationABIDigest": "sha256:41e1e3f1fc4be86125b650c164b4f5b9e5d10b746fb7707cd1b8d264ac837119",
+        "providerProfileDigest": "sha256:ca03a2f3b9dfaef5669fc4e494eefd8a20e772398d2a20e4f261bdcbfeacff0f"
+      }
+    },
+    "four_axis": {
+      "axes": [
+        "evidence_sufficient",
+        "still_needed",
+        "full_content_needed",
+        "unresolved_evidence"
+      ],
+      "abiVersion": "anvil.semantic-observation-abi.v2-candidate",
+      "observationABIDigest": "sha256:eca12639f02602a56f6a0443eb41d3ccada4ab17d252c02fd88c70d4a43825fa",
+      "providerProfile": {
+        "schema": "anvil.provider-execution-profile.v1",
+        "providerId": "local-agent-gateway-rune/inception-mercury-2",
+        "providerKind": "custom",
+        "modelIdentityDigest": "sha256:48cfb4acf3a9ca36444b4afd018cdf369780e6fe912ceb865d9af82dd4ac2a12",
+        "modelAssurance": "opaqueVersioned",
+        "executionSemanticsDigest": "sha256:2b4c39524416e730d34dd7823882be82c186dd4abf1ee4b16f44dcc084fd08d1",
+        "normalizerDigest": "sha256:836f2f0535604074d9f44d1abc28c1d9ed81e72e9cceebf5212e73d76d5b5ff6",
+        "observationABIDigest": "sha256:eca12639f02602a56f6a0443eb41d3ccada4ab17d252c02fd88c70d4a43825fa",
+        "providerProfileDigest": "sha256:30123f03891568be21bb9f621466a1bff96f70f78eb3f34786bf67e5e6e980d9"
+      }
+    }
+  },
+  "thresholds": {
+    "evidenceSufficientFloor": 0.8,
+    "keepFull": 0.8,
+    "retain": 0.5
+  },
+  "repeatCount": 8,
+  "counts": {
+    "traces": 164,
+    "labels": 820
+  }
+}

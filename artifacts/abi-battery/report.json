@@ -1,6 +1,6 @@
 {
   "schema": "anvil.abi-battery-report.v1",
-  "generatedAt": "2026-09-18T09:41:07.323Z",
+  "generatedAt": "2026-09-18T10:26:54.985Z",
   "evidenceClass": "live-provider-on-synthetic-fixture-corpus",
   "sourceSha": "0e8ee3411e86ed8645716deacc09c4ee32f72235",
   "corpusDigest": "sha256:db7ee7c98f3e08fc17c1e11bffe05877db09f6a87fbc62952f891df06eb811ab",
@@ -866,18 +866,759 @@
     }
   },
   "waveG": {
-    "status": "BLOCKED",
-    "providers": {
-      "qwen-ane": {
-        "available": false,
-        "evidence": "no qwen binary on PATH or ~/.local/bin; no .mlpackage qwen artifact under ~/ANVIL; LOCAL_QWEN_MAVIS_ADAPTER_SPEC.md is a design spec, not a runtime; no local inference endpoint listening"
-      },
-      "mavis": {
-        "available": false,
-        "evidence": "tools/mavis-harness is a bootstrap/claim/supervise binary for the Mavis Microcortex contract — it has no questions/answers semantic interface; no mavis model runtime found"
+    "status": "EXECUTED",
+    "providerA": {
+      "id": "https://api.typesafe.ai/v1/systemone/jev-1.13.0",
+      "profileDigest5": "sha256:85b367a22a4a9eacbcbf5b244e355cf394f5d8bf480a3e88c1ebb2997729b819",
+      "wireContract": "systemone-mapped-payload.v0 (provider-internal noul)"
+    },
+    "providerB": {
+      "id": "mercury",
+      "endpoint": "http://127.0.0.1:8903/v1/chat/completions",
+      "model": "mercury-2",
+      "profileDigest5": "sha256:ca03a2f3b9dfaef5669fc4e494eefd8a20e772398d2a20e4f261bdcbfeacff0f",
+      "profileDigest4": "sha256:30123f03891568be21bb9f621466a1bff96f70f78eb3f34786bf67e5e6e980d9",
+      "wireContract": "openai-chat-completions-json-elicitation.v0 (self-reported probability)",
+      "calls": {
+        "total": 2256,
+        "ok": 2256,
+        "failed": 0,
+        "malformed": 0,
+        "retried": 0,
+        "latencyMs": {
+          "mean": 2635.9534574468084,
+          "median": 1985.5
+        },
+        "tokensObserved": false
       }
     },
-    "conclusion": "provider comparison could not run; JEV findings are provider-specific until a second provider execution profile exists"
+    "sharedAxisDeltas_B": {
+      "evidence_sufficient": {
+        "meanAbsDelta": 0.249451219512195,
+        "maxAbsDelta": 0.72,
+        "n": 164
+      },
+      "still_needed": {
+        "meanAbsDelta": 0.0685975609756098,
+        "maxAbsDelta": 0.7,
+        "n": 164
+      },
+      "full_content_needed": {
+        "meanAbsDelta": 0.1467073170731708,
+        "maxAbsDelta": 0.6499999999999999,
+        "n": 164
+      },
+      "unresolved_evidence": {
+        "meanAbsDelta": 0.0740853658536586,
+        "maxAbsDelta": 0.8,
+        "n": 164
+      }
+    },
+    "waveB_B": {
+      "evidence_sufficient": {
+        "five_axis": {
+          "n": 164,
+          "positives": 103,
+          "negatives": 61,
+          "auroc": 0.5256247015756804,
+          "auprc": 0.651868643189459,
+          "brier": 0.29309329268292633,
+          "ece10": 0.24262195121951208,
+          "nll": 0.8468691801530358,
+          "positiveMeanProbability": 0.7433980582524274,
+          "negativeMeanProbability": 0.7134426229508197
+        },
+        "four_axis": {
+          "n": 164,
+          "positives": 103,
+          "negatives": 61,
+          "auroc": 0.5241922648416362,
+          "auprc": 0.6636222457975529,
+          "brier": 0.3082829268292677,
+          "ece10": 0.2684146341463416,
+          "nll": 0.8795740290698949,
+          "positiveMeanProbability": 0.7173786407766995,
+          "negativeMeanProbability": 0.7119672131147541
+        }
+      },
+      "still_needed": {
+        "five_axis": {
+          "n": 164,
+          "positives": 104,
+          "negatives": 60,
+          "auroc": 0.47652243589743587,
+          "auprc": 0.6320908925646129,
+          "brier": 0.27778597560975615,
+          "ece10": 0.2039634146341455,
+          "nll": 0.8073494364974302,
+          "positiveMeanProbability": 0.8297115384615382,
+          "negativeMeanProbability": 0.8293333333333334
+        },
+        "four_axis": {
+          "n": 164,
+          "positives": 104,
+          "negatives": 60,
+          "auroc": 0.49238782051282054,
+          "auprc": 0.6386478551216991,
+          "brier": 0.27972439024390217,
+          "ece10": 0.21999999999999903,
+          "nll": 0.8081954672533349,
+          "positiveMeanProbability": 0.8383653846153847,
+          "negativeMeanProbability": 0.8381666666666667
+        }
+      },
+      "full_content_needed": {
+        "five_axis": {
+          "n": 164,
+          "positives": 61,
+          "negatives": 103,
+          "auroc": 0.5482253700461563,
+          "auprc": 0.4109661447316664,
+          "brier": 0.37344695121951205,
+          "ece10": 0.3605487804878048,
+          "nll": 1.001119139197628,
+          "positiveMeanProbability": 0.7283606557377054,
+          "negativeMeanProbability": 0.712621359223301
+        },
+        "four_axis": {
+          "n": 164,
+          "positives": 61,
+          "negatives": 103,
+          "auroc": 0.5319910870603215,
+          "auprc": 0.3875296234848026,
+          "brier": 0.366485975609756,
+          "ece10": 0.35103658536585336,
+          "nll": 0.9951198520345022,
+          "positiveMeanProbability": 0.7467213114754098,
+          "negativeMeanProbability": 0.7089320388349508
+        }
+      },
+      "unresolved_evidence": {
+        "five_axis": {
+          "n": 164,
+          "positives": 71,
+          "negatives": 93,
+          "auroc": 0.9323792215659549,
+          "auprc": 0.91526142288906,
+          "brier": 0.07351829268292676,
+          "ece10": 0.0990243902439025,
+          "nll": 0.28277027561242807,
+          "positiveMeanProbability": 0.7309859154929578,
+          "negativeMeanProbability": 0.10387096774193537
+        },
+        "four_axis": {
+          "n": 164,
+          "positives": 71,
+          "negatives": 93,
+          "auroc": 0.9335907920642132,
+          "auprc": 0.918685768275736,
+          "brier": 0.08628597560975602,
+          "ece10": 0.07542682926829275,
+          "nll": 0.3086312058262009,
+          "positiveMeanProbability": 0.7073239436619722,
+          "negativeMeanProbability": 0.09903225806451599
+        }
+      },
+      "recoverable": {
+        "five_axis": {
+          "n": 164,
+          "positives": 162,
+          "negatives": 2,
+          "auroc": 0.5,
+          "auprc": 0.9883264073831123,
+          "brier": 0.02279329268292671,
+          "ece10": 0.09347560975609605,
+          "nll": 0.13971073926203842,
+          "positiveMeanProbability": 0.8942592592592602,
+          "negativeMeanProbability": 0.9
+        },
+        "four_axis": "not-modeled"
+      }
+    },
+    "invariance_B": {
+      "batchSensitivity": {
+        "batch:five-axis": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.21071428571428574,
+            "maxAbsDelta": 0.8,
+            "n": 84
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.19809523809523805,
+            "maxAbsDelta": 0.86,
+            "n": 84
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.2119047619047619,
+            "maxAbsDelta": 0.81,
+            "n": 84
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.14000000000000007,
+            "maxAbsDelta": 0.8300000000000001,
+            "n": 84
+          },
+          "recoverable": {
+            "meanAbsDelta": 0.07476190476190471,
+            "maxAbsDelta": 0.25,
+            "n": 84
+          }
+        },
+        "batch-alt:five-axis": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.2366666666666667,
+            "maxAbsDelta": 0.76,
+            "n": 84
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.0676190476190476,
+            "maxAbsDelta": 0.6000000000000001,
+            "n": 84
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.17416666666666672,
+            "maxAbsDelta": 0.6000000000000001,
+            "n": 84
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.0879761904761904,
+            "maxAbsDelta": 0.72,
+            "n": 84
+          },
+          "recoverable": {
+            "meanAbsDelta": 0.04226190476190473,
+            "maxAbsDelta": 0.13,
+            "n": 84
+          }
+        },
+        "batch:four-axis": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.18750000000000008,
+            "maxAbsDelta": 0.78,
+            "n": 84
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.08595238095238092,
+            "maxAbsDelta": 0.49999999999999994,
+            "n": 84
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.25202380952380965,
+            "maxAbsDelta": 0.78,
+            "n": 84
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.12214285714285714,
+            "maxAbsDelta": 0.85,
+            "n": 84
+          }
+        },
+        "batch-alt:four-axis": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.16857142857142862,
+            "maxAbsDelta": 0.76,
+            "n": 84
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.08321428571428567,
+            "maxAbsDelta": 0.4,
+            "n": 84
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.3103571428571429,
+            "maxAbsDelta": 0.85,
+            "n": 84
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.10964285714285708,
+            "maxAbsDelta": 0.92,
+            "n": 84
+          }
+        }
+      },
+      "candidateOrder": {
+        "revpos": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.06892857142857144,
+            "maxAbsDelta": 0.75,
+            "n": 168
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.15422619047619063,
+            "maxAbsDelta": 1,
+            "n": 168
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.27577380952380953,
+            "maxAbsDelta": 1,
+            "n": 168
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.15190476190476201,
+            "maxAbsDelta": 0.9099999999999999,
+            "n": 168
+          },
+          "recoverable": {
+            "meanAbsDelta": 0.030952380952380894,
+            "maxAbsDelta": 0.08999999999999997,
+            "n": 168
+          }
+        },
+        "oddsfirst": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.045297619047619024,
+            "maxAbsDelta": 0.13,
+            "n": 168
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.12351190476190473,
+            "maxAbsDelta": 0.7000000000000001,
+            "n": 168
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.2733333333333335,
+            "maxAbsDelta": 0.78,
+            "n": 168
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.11380952380952382,
+            "maxAbsDelta": 0.91,
+            "n": 168
+          },
+          "recoverable": {
+            "meanAbsDelta": 0.03761904761904761,
+            "maxAbsDelta": 0.26,
+            "n": 168
+          }
+        }
+      },
+      "repeatability": {
+        "five-axis:evidence_sufficient": {
+          "meanSd": 0.19563364345711864,
+          "maxSd": 0.3588249672791139,
+          "n": 84
+        },
+        "five-axis:still_needed": {
+          "meanSd": 0.07702714697929076,
+          "maxSd": 0.3138670100536213,
+          "n": 84
+        },
+        "five-axis:full_content_needed": {
+          "meanSd": 0.150107584979567,
+          "maxSd": 0.29970223317724637,
+          "n": 84
+        },
+        "five-axis:unresolved_evidence": {
+          "meanSd": 0.03621599731822438,
+          "maxSd": 0.26040833319999573,
+          "n": 84
+        },
+        "five-axis:recoverable": {
+          "meanSd": 0.02902366634060333,
+          "maxSd": 0.08451542547285164,
+          "n": 84
+        },
+        "four-axis:evidence_sufficient": {
+          "meanSd": 0.1798009779603865,
+          "maxSd": 0.34062704783132786,
+          "n": 84
+        },
+        "four-axis:still_needed": {
+          "meanSd": 0.0610926153899382,
+          "maxSd": 0.2903200204700225,
+          "n": 84
+        },
+        "four-axis:full_content_needed": {
+          "meanSd": 0.13385584881603216,
+          "maxSd": 0.2699206232527312,
+          "n": 84
+        },
+        "four-axis:unresolved_evidence": {
+          "meanSd": 0.03532711314337852,
+          "maxSd": 0.2098128417695842,
+          "n": 84
+        }
+      }
+    },
+    "reference_A": {
+      "sharedAxisDeltas": {
+        "evidence_sufficient": {
+          "meanAbsDelta": 0.01682926829268291,
+          "maxAbsDelta": 0.05,
+          "fracDeltaGt005": 0,
+          "fracDeltaGt010": 0
+        },
+        "still_needed": {
+          "meanAbsDelta": 0.01664634146341462,
+          "maxAbsDelta": 0.07,
+          "fracDeltaGt005": 0.018292682926829267,
+          "fracDeltaGt010": 0
+        },
+        "full_content_needed": {
+          "meanAbsDelta": 0.016158536585365833,
+          "maxAbsDelta": 0.09,
+          "fracDeltaGt005": 0.006097560975609756,
+          "fracDeltaGt010": 0
+        },
+        "unresolved_evidence": {
+          "meanAbsDelta": 0.01219512195121952,
+          "maxAbsDelta": 0.2,
+          "fracDeltaGt005": 0.04878048780487805,
+          "fracDeltaGt010": 0.012195121951219513
+        }
+      },
+      "waveB": {
+        "evidence_sufficient": {
+          "five_axis": {
+            "n": 164,
+            "positives": 103,
+            "negatives": 61,
+            "auroc": 0.5827630113003343,
+            "auprc": 0.7338110105752181,
+            "brier": 0.24816707317073164,
+            "ece10": 0.13573170731707312,
+            "nll": 0.689466108131218,
+            "positiveMeanProbability": 0.4961165048543688,
+            "negativeMeanProbability": 0.4859016393442623
+          },
+          "four_axis": {
+            "n": 164,
+            "positives": 103,
+            "negatives": 61,
+            "auroc": 0.6021009072099316,
+            "auprc": 0.7536902305830685,
+            "brier": 0.24777682926829267,
+            "ece10": 0.1374390243902439,
+            "nll": 0.6886943017762346,
+            "positiveMeanProbability": 0.4951456310679612,
+            "negativeMeanProbability": 0.4829508196721312
+          }
+        },
+        "still_needed": {
+          "five_axis": {
+            "n": 164,
+            "positives": 104,
+            "negatives": 60,
+            "auroc": 0.740224358974359,
+            "auprc": 0.8417394216060563,
+            "brier": 0.20529024390243902,
+            "ece10": 0.10634146341463407,
+            "nll": 0.5963378363171814,
+            "positiveMeanProbability": 0.7112499999999999,
+            "negativeMeanProbability": 0.6341666666666669
+          },
+          "four_axis": {
+            "n": 164,
+            "positives": 104,
+            "negatives": 60,
+            "auroc": 0.7078525641025641,
+            "auprc": 0.8224704342176272,
+            "brier": 0.20657500000000006,
+            "ece10": 0.07981707317073161,
+            "nll": 0.5990999293223532,
+            "positiveMeanProbability": 0.7089423076923076,
+            "negativeMeanProbability": 0.6346666666666667
+          }
+        },
+        "full_content_needed": {
+          "five_axis": {
+            "n": 164,
+            "positives": 61,
+            "negatives": 103,
+            "auroc": 0.4778768104408722,
+            "auprc": 0.37920171541355996,
+            "brier": 0.23509695121951224,
+            "ece10": 0.006280487804877824,
+            "nll": 0.6633239966563477,
+            "positiveMeanProbability": 0.36475409836065553,
+            "negativeMeanProbability": 0.36621359223300975
+          },
+          "four_axis": {
+            "n": 164,
+            "positives": 61,
+            "negatives": 103,
+            "auroc": 0.5454400763966258,
+            "auprc": 0.4026416691762158,
+            "brier": 0.23272073170731705,
+            "ece10": 0.013658536585365722,
+            "nll": 0.6580230199434413,
+            "positiveMeanProbability": 0.36737704918032804,
+            "negativeMeanProbability": 0.36339805825242727
+          }
+        },
+        "unresolved_evidence": {
+          "five_axis": {
+            "n": 164,
+            "positives": 71,
+            "negatives": 93,
+            "auroc": 0.9882629107981221,
+            "auprc": 0.986525225989443,
+            "brier": 0.062234146341463396,
+            "ece10": 0.16243902439024402,
+            "nll": 0.22975930208317447,
+            "positiveMeanProbability": 0.8745070422535208,
+            "negativeMeanProbability": 0.2065591397849462
+          },
+          "four_axis": {
+            "n": 164,
+            "positives": 71,
+            "negatives": 93,
+            "auroc": 0.9889444192033924,
+            "auprc": 0.9871349740042911,
+            "brier": 0.061535365853658534,
+            "ece10": 0.16475609756097576,
+            "nll": 0.22849664338650127,
+            "positiveMeanProbability": 0.8766197183098586,
+            "negativeMeanProbability": 0.20666666666666667
+          }
+        },
+        "recoverable": {
+          "five_axis": {
+            "n": 164,
+            "positives": 162,
+            "negatives": 2,
+            "auroc": 0.7222222222222222,
+            "auprc": 0.9955395673377406,
+            "brier": 0.05121158536585368,
+            "ece10": 0.1945731707317077,
+            "nll": 0.24896189052050757,
+            "positiveMeanProbability": 0.7932716049382714,
+            "negativeMeanProbability": 0.79
+          },
+          "four_axis": "not-modeled"
+        }
+      },
+      "batchSensitivity": {
+        "batch:five-axis": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.038928571428571423,
+            "maxAbsDelta": 0.13,
+            "n": 84
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.13952380952380955,
+            "maxAbsDelta": 0.30000000000000004,
+            "n": 84
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.026904761904761917,
+            "maxAbsDelta": 0.08000000000000002,
+            "n": 84
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.07535714285714283,
+            "maxAbsDelta": 0.6699999999999999,
+            "n": 84
+          },
+          "recoverable": {
+            "meanAbsDelta": 0.029285714285714255,
+            "maxAbsDelta": 0.07999999999999996,
+            "n": 84
+          }
+        },
+        "batch-alt:five-axis": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.07190476190476193,
+            "maxAbsDelta": 0.15999999999999998,
+            "n": 84
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.15047619047619049,
+            "maxAbsDelta": 0.37,
+            "n": 84
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.029523809523809535,
+            "maxAbsDelta": 0.12,
+            "n": 84
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.13690476190476186,
+            "maxAbsDelta": 0.59,
+            "n": 84
+          },
+          "recoverable": {
+            "meanAbsDelta": 0.02880952380952377,
+            "maxAbsDelta": 0.10999999999999999,
+            "n": 84
+          }
+        },
+        "batch:four-axis": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.04226190476190475,
+            "maxAbsDelta": 0.15999999999999992,
+            "n": 84
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.1464285714285715,
+            "maxAbsDelta": 0.28,
+            "n": 84
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.030833333333333338,
+            "maxAbsDelta": 0.10999999999999999,
+            "n": 84
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.07559523809523805,
+            "maxAbsDelta": 0.66,
+            "n": 84
+          }
+        },
+        "batch-alt:four-axis": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.07452380952380955,
+            "maxAbsDelta": 0.15000000000000002,
+            "n": 84
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.14940476190476187,
+            "maxAbsDelta": 0.33000000000000007,
+            "n": 84
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.029761904761904767,
+            "maxAbsDelta": 0.09999999999999998,
+            "n": 84
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.14083333333333328,
+            "maxAbsDelta": 0.6,
+            "n": 84
+          }
+        }
+      },
+      "candidateOrder": {
+        "revpos": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.03607142857142857,
+            "maxAbsDelta": 0.13,
+            "n": 168
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.06327380952380947,
+            "maxAbsDelta": 0.25,
+            "n": 168
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.025238095238095233,
+            "maxAbsDelta": 0.08999999999999997,
+            "n": 168
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.09886904761904758,
+            "maxAbsDelta": 0.6299999999999999,
+            "n": 168
+          },
+          "recoverable": {
+            "meanAbsDelta": 0.022857142857142833,
+            "maxAbsDelta": 0.08000000000000007,
+            "n": 168
+          }
+        },
+        "oddsfirst": {
+          "evidence_sufficient": {
+            "meanAbsDelta": 0.04375,
+            "maxAbsDelta": 0.12000000000000005,
+            "n": 168
+          },
+          "still_needed": {
+            "meanAbsDelta": 0.04773809523809521,
+            "maxAbsDelta": 0.2,
+            "n": 168
+          },
+          "full_content_needed": {
+            "meanAbsDelta": 0.0269642857142857,
+            "maxAbsDelta": 0.09999999999999998,
+            "n": 168
+          },
+          "unresolved_evidence": {
+            "meanAbsDelta": 0.072797619047619,
+            "maxAbsDelta": 0.63,
+            "n": 168
+          },
+          "recoverable": {
+            "meanAbsDelta": 0.020059523809523788,
+            "maxAbsDelta": 0.08000000000000007,
+            "n": 168
+          }
+        }
+      },
+      "repeatability": {
+        "five-axis": {
+          "evidence_sufficient": {
+            "meanSd": 0.0131940735028061,
+            "maxSd": 0.022519832529192086,
+            "meanMaxDev": 0.03750000000000001,
+            "maxDev": 0.06000000000000005,
+            "candidatesMeasured": 84
+          },
+          "still_needed": {
+            "meanSd": 0.01442887256094775,
+            "maxSd": 0.031167748898959187,
+            "meanMaxDev": 0.041071428571428585,
+            "maxDev": 0.08000000000000002,
+            "candidatesMeasured": 84
+          },
+          "full_content_needed": {
+            "meanSd": 0.014913231559783397,
+            "maxSd": 0.03338091841585122,
+            "meanMaxDev": 0.04297619047619046,
+            "maxDev": 0.10000000000000003,
+            "candidatesMeasured": 84
+          },
+          "unresolved_evidence": {
+            "meanSd": 0.01193245051110928,
+            "maxSd": 0.08070006195784486,
+            "meanMaxDev": 0.03238095238095237,
+            "maxDev": 0.18000000000000002,
+            "candidatesMeasured": 84
+          },
+          "recoverable": {
+            "meanSd": 0.008652496028203912,
+            "maxSd": 0.017525491637693277,
+            "meanMaxDev": 0.024047619047619023,
+            "maxDev": 0.04999999999999993,
+            "candidatesMeasured": 84
+          }
+        },
+        "four-axis": {
+          "evidence_sufficient": {
+            "meanSd": 0.0135413399914144,
+            "maxSd": 0.03011881234615431,
+            "meanMaxDev": 0.03892857142857146,
+            "maxDev": 0.08000000000000002,
+            "candidatesMeasured": 84
+          },
+          "still_needed": {
+            "meanSd": 0.014321034448181587,
+            "maxSd": 0.03522884370187913,
+            "meanMaxDev": 0.04130952380952382,
+            "maxDev": 0.09999999999999998,
+            "candidatesMeasured": 84
+          },
+          "full_content_needed": {
+            "meanSd": 0.01431534358518956,
+            "maxSd": 0.027483761439387126,
+            "meanMaxDev": 0.04095238095238095,
+            "maxDev": 0.08999999999999997,
+            "candidatesMeasured": 84
+          },
+          "unresolved_evidence": {
+            "meanSd": 0.011819458499368296,
+            "maxSd": 0.0495695759225642,
+            "meanMaxDev": 0.03333333333333333,
+            "maxDev": 0.14,
+            "candidatesMeasured": 84
+          }
+        }
+      },
+      "latencyMs": {
+        "mean": 321.4939024390244,
+        "median": 215
+      }
+    },
+    "note": "Provider B probabilities are model self-reports under strict-JSON elicitation — a different execution semantic than provider-internal noul. Cross-provider deltas therefore conflate model quality with elicitation semantics; both are recorded as distinct ProviderExecutionProfiles."
   },
   "recoveryPlane": {
     "mechanicallyVerified": 162,
