@@ -11,10 +11,16 @@ import {
   type MechanicalRecoveryEvidence,
 } from './mechanical-recovery.js';
 import {
+  decideSemanticPolicyV2,
+  type ObservationPolicyThresholdsV2,
+  type SemanticPolicyDecisionV2,
+} from './semantic-policy-v2.js';
+export type {
+  ObservationPolicyThresholdsV2,
+  SemanticPolicyDecisionV2,
+} from './semantic-policy-v2.js';
+import {
   fullPresentation,
-  referentialPresentation,
-  type ReplayDisposition,
-  type ReplayPresentation,
   type ReplayRun,
   type ReplayTrace,
 } from './replay.js';
@@ -36,13 +42,6 @@ export interface ObservationProfilesV2 {
   policy_profile: ProfileIdentity;
 }
 
-export interface ObservationPolicyThresholdsV2 {
-  evidenceSufficientFloor: number;
-  retain: number;
-  keepFull: number;
-  reviewFloor: number;
-}
-
 export interface ObservationProviderMetadataV2 {
   requested_model?: string;
   effective_model?: string;
@@ -59,22 +58,6 @@ type ProviderEnvelope = {
   mapped_response: unknown;
   provider_metadata: ObservationProviderMetadataV2;
 };
-
-export type SemanticPolicyReasonV2 =
-  | 'insufficient_evidence'
-  | 'not_still_needed'
-  | 'full_content_needed'
-  | 'review_advisory'
-  | 'reversible_reference'
-  | 'mechanical_recovery_unavailable';
-
-export interface SemanticPolicyDecisionV2 {
-  candidate_id: string;
-  disposition: ReplayDisposition;
-  semantic_authority_used: boolean;
-  review_advisory: boolean;
-  reason: SemanticPolicyReasonV2;
-}
 
 export type ObservationReplayRunV2 = ReplayRun & {
   receipts: ReplayReceipt[];
@@ -286,124 +269,6 @@ function recoveryManifestDigest(trace: ReplayTrace): string {
       })),
     'invalid-recovery-manifest-v2',
   );
-}
-
-function decide(
-  observation: SemanticCandidateObservationV2,
-  recovery: MechanicalRecoveryEvidence,
-  thresholds: ObservationPolicyThresholdsV2,
-): Readonly<SemanticPolicyDecisionV2> {
-  if (observation.evidence_sufficient.noul < thresholds.evidenceSufficientFloor) {
-    return Object.freeze({
-      candidate_id: observation.candidate_id,
-      disposition: 'ABSTAIN' as const,
-      semantic_authority_used: false,
-      review_advisory: false,
-      reason: 'insufficient_evidence' as const,
-    });
-  }
-
-  if (observation.still_needed.noul < thresholds.retain) {
-    if (observation.unresolved_evidence.noul >= thresholds.reviewFloor) {
-      return Object.freeze({
-        candidate_id: observation.candidate_id,
-        disposition: 'FULL' as const,
-        semantic_authority_used: true,
-        review_advisory: true,
-        reason: 'review_advisory' as const,
-      });
-    }
-    if (recovery.status !== 'VERIFIED') {
-      return Object.freeze({
-        candidate_id: observation.candidate_id,
-        disposition: 'FULL' as const,
-        semantic_authority_used: true,
-        review_advisory: false,
-        reason: 'mechanical_recovery_unavailable' as const,
-      });
-    }
-    return Object.freeze({
-      candidate_id: observation.candidate_id,
-      disposition: 'EVICTED' as const,
-      semantic_authority_used: true,
-      review_advisory: false,
-      reason: 'not_still_needed' as const,
-    });
-  }
-
-  if (observation.full_content_needed.noul >= thresholds.keepFull) {
-    return Object.freeze({
-      candidate_id: observation.candidate_id,
-      disposition: 'FULL' as const,
-      semantic_authority_used: true,
-      review_advisory: false,
-      reason: 'full_content_needed' as const,
-    });
-  }
-
-  if (observation.unresolved_evidence.noul >= thresholds.reviewFloor) {
-    return Object.freeze({
-      candidate_id: observation.candidate_id,
-      disposition: 'FULL' as const,
-      semantic_authority_used: true,
-      review_advisory: true,
-      reason: 'review_advisory' as const,
-    });
-  }
-
-  if (recovery.status !== 'VERIFIED') {
-    return Object.freeze({
-      candidate_id: observation.candidate_id,
-      disposition: 'FULL' as const,
-      semantic_authority_used: true,
-      review_advisory: false,
-      reason: 'mechanical_recovery_unavailable' as const,
-    });
-  }
-
-  return Object.freeze({
-    candidate_id: observation.candidate_id,
-    disposition: 'REFERENTIAL' as const,
-    semantic_authority_used: true,
-    review_advisory: false,
-    reason: 'reversible_reference' as const,
-  });
-}
-
-function presentationFor(
-  trace: ReplayTrace,
-  decisions: readonly SemanticPolicyDecisionV2[],
-): ReplayPresentation[] {
-  const byID = new Map(decisions.map((decision) => [
-    decision.candidate_id,
-    decision,
-  ]));
-  return trace.candidates.map((candidate) => {
-    const decision = byID.get(candidate.candidate_id);
-    if (decision === undefined) {
-      throw new Error(`missing v2 policy decision for ${candidate.candidate_id}`);
-    }
-    if (decision.disposition === 'ABSTAIN') {
-      return fullPresentation(candidate, 'ABSTAIN');
-    }
-    if (decision.disposition === 'FULL') {
-      return fullPresentation(candidate);
-    }
-    if (decision.disposition === 'REFERENTIAL') {
-      return referentialPresentation(candidate);
-    }
-    if (decision.disposition === 'EVICTED') {
-      return {
-        candidate_id: candidate.candidate_id,
-        disposition: 'EVICTED',
-        visible_text: '',
-        source_digest: candidate.recovery.source_digest,
-        omitted_bytes: candidate.recovery.byte_count,
-        recovery_required: true,
-      };
-    }
-    return fullPresentation(candidate, 'PRISTINE_FALLBACK');
-  });
 }
 
 type ReceiptContext = {
@@ -645,7 +510,7 @@ export async function runObservationOnlyArmV2(
     ]),
   );
 
-  const policy = Object.freeze(
+  const policyResults = Object.freeze(
     trace.candidates.map((candidate) => {
       const observation = byID.get(candidate.candidate_id);
       const recovery = recoveryByID.get(candidate.candidate_id);
@@ -654,11 +519,19 @@ export async function runObservationOnlyArmV2(
           `missing v2 observation/recovery evidence for ${candidate.candidate_id}`,
         );
       }
-      return decide(observation, recovery, thresholds);
+      return decideSemanticPolicyV2({
+        candidate,
+        observation,
+        recovery,
+        thresholds,
+      });
     }),
   );
 
-  const presentations = presentationFor(trace, policy);
+  const policy = Object.freeze(
+    policyResults.map((result) => result.decision),
+  );
+  const presentations = policyResults.map((result) => result.presentation);
   const frozenObservations = freezeObservations(reassembled.observations);
   const observationDigest = sha256Digest(JSON.stringify({
     schema: 'anvil.semantic-fabric-v2-decision-evidence.v0',
