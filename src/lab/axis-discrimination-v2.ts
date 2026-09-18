@@ -234,7 +234,9 @@ function anchorTrace(spec: AnchorSpec, ordinal: number): ReplayTrace {
     lines[Math.floor(lineCount / 2)] = `CRITICAL ${marker}`;
   }
   if (spec.includeUnresolvedMarker) {
-    lines[6] = 'verification mismatch: expected digest differs from observed digest';
+    // Keep this positive discriminator inside the bounded head. A hidden
+    // contradiction would test unavailable source knowledge, not the axis.
+    lines[2] = 'verification mismatch: expected digest differs from observed digest';
   }
 
   const stdout = lines.join('\n');
