@@ -136,3 +136,46 @@ export function compareSharedAxisObservations(
 
   return Object.freeze(deltas);
 }
+
+
+export interface SystemOneAxisExperimentPayload {
+  model: string;
+  state: {
+    schema: string;
+    shared_conversation_state: unknown;
+    candidate_views: unknown;
+  };
+  questions: Record<string, {
+    type: 'noul';
+    instructions: string;
+    criteria: { true: string; false: string };
+  }>;
+}
+
+export interface SystemOneAxisExperimentResult {
+  observations: readonly AxisExperimentObservation[];
+  providerMetadata: {
+    requested_model: string;
+    effective_model: string;
+    input_tokens: number | null;
+    output_tokens: number | null;
+    cost_usd: null;
+  };
+}
+
+export function buildSystemOneAxisExperimentPayload(
+  _request: import('./types.js').MappedDecisionRequest,
+  _model: string,
+  _axes: readonly MappedObservationAxis[],
+): SystemOneAxisExperimentPayload {
+  throw new Error('RED: buildSystemOneAxisExperimentPayload is not implemented');
+}
+
+export function parseSystemOneAxisExperimentResponse(
+  _request: import('./types.js').MappedDecisionRequest,
+  _model: string,
+  _axes: readonly MappedObservationAxis[],
+  _responseText: string,
+): SystemOneAxisExperimentResult {
+  throw new Error('RED: parseSystemOneAxisExperimentResponse is not implemented');
+}

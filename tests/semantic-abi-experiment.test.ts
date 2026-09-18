@@ -103,3 +103,165 @@ describe('semantic ABI experiment harness', () => {
     )).toThrow(/axis/i);
   });
 });
+
+
+function experimentMappedRequest() {
+  const digest = (c: string) => 'sha256:' + c.repeat(64);
+  return {
+    schema: 'anvil.mapped-decision-request.v0',
+    request_id: 'mdr-axis-experiment',
+    source_run_id: 'fixture-axis-experiment',
+    decision_contract: {
+      id: 'anvil.context-retention.v1',
+      version: '0.1.0',
+      digest: digest('a'),
+    },
+    execution_profile: {
+      id: 'typesafe-systemone-jev-1.13.0',
+      version: '0.1.0',
+      digest: digest('b'),
+    },
+    calibration_profile: {
+      id: 'fixture-calibration',
+      version: '0.1.0',
+      digest: digest('c'),
+    },
+    policy_profile: {
+      id: 'fixture-policy',
+      version: '0.1.0',
+      digest: digest('d'),
+    },
+    shared_conversation_state: {
+      mission: 'measure axis ablation',
+      recent_turns: [],
+      active_constraints: ['lab only'],
+      unresolved_failures: [],
+      source_refs: [digest('e')],
+    },
+    candidate_views: [{
+      candidate_id: 'cand-0001',
+      source_digest: digest('e'),
+      source_kind: 'tool_result',
+      recovery_ref: 'cas:fixture-axis-1',
+      byte_count: 100,
+      hard_roots: {
+        exit_status: 0,
+        stderr: [],
+        first_lines: ['head'],
+        last_lines: ['tail'],
+      },
+      semantic_view: {
+        head: 'head',
+        tail: 'tail',
+        selected_chunks: [],
+        omitted_bytes: 80,
+      },
+    }],
+  };
+}
+
+describe('System One axis experiment payload', () => {
+  it('holds state and shared question text constant while removing only recoverable', async () => {
+    const module = await import('../src/lab/semantic-abi-experiment.js');
+    const request = experimentMappedRequest() as any;
+    const five = module.buildSystemOneAxisExperimentPayload(
+      request,
+      'jev-1.13.0',
+      FIVE_AXIS_EXPERIMENT_AXES,
+    );
+    const four = module.buildSystemOneAxisExperimentPayload(
+      request,
+      'jev-1.13.0',
+      FOUR_AXIS_EXPERIMENT_AXES,
+    );
+
+    expect(four.state).toEqual(five.state);
+    expect(Object.keys(five.questions)).toHaveLength(5);
+    expect(Object.keys(four.questions)).toEqual([
+      'cand-0001.evidence_sufficient',
+      'cand-0001.still_needed',
+      'cand-0001.full_content_needed',
+      'cand-0001.unresolved_evidence',
+    ]);
+    for (const key of Object.keys(four.questions)) {
+      expect(four.questions[key]).toEqual(five.questions[key]);
+    }
+  });
+
+  it('parses only the requested axes and preserves provider usage', async () => {
+    const module = await import('../src/lab/semantic-abi-experiment.js');
+    const request = experimentMappedRequest() as any;
+    const payload = module.buildSystemOneAxisExperimentPayload(
+      request,
+      'jev-1.13.0',
+      FOUR_AXIS_EXPERIMENT_AXES,
+    );
+    const answers = Object.fromEntries(
+      Object.keys(payload.questions).map((key, index) => [
+        key,
+        { type: 'noul', noul: 0.2 + index * 0.1 },
+      ]),
+    );
+
+    const result = module.parseSystemOneAxisExperimentResponse(
+      request,
+      'jev-1.13.0',
+      FOUR_AXIS_EXPERIMENT_AXES,
+      JSON.stringify({
+        model: 'jev-1.13.0',
+        answers,
+        usage: { input_tokens: 101, output_tokens: 17 },
+      }),
+    );
+
+    expect(result.observations).toEqual([{
+      candidateId: 'cand-0001',
+      values: {
+        evidence_sufficient: 0.2,
+        still_needed: 0.30000000000000004,
+        full_content_needed: 0.4,
+        unresolved_evidence: 0.5,
+      },
+    }]);
+    expect(result.providerMetadata).toEqual({
+      requested_model: 'jev-1.13.0',
+      effective_model: 'jev-1.13.0',
+      input_tokens: 101,
+      output_tokens: 17,
+      cost_usd: null,
+    });
+  });
+
+  it('fails closed on extra answer keys or effective-model drift', async () => {
+    const module = await import('../src/lab/semantic-abi-experiment.js');
+    const request = experimentMappedRequest() as any;
+    const payload = module.buildSystemOneAxisExperimentPayload(
+      request,
+      'jev-1.13.0',
+      FOUR_AXIS_EXPERIMENT_AXES,
+    );
+    const answers = Object.fromEntries(
+      Object.keys(payload.questions).map((key) => [key, { noul: 0.5 }]),
+    );
+
+    expect(() => module.parseSystemOneAxisExperimentResponse(
+      request,
+      'jev-1.13.0',
+      FOUR_AXIS_EXPERIMENT_AXES,
+      JSON.stringify({
+        model: 'jev-1.13.0',
+        answers: { ...answers, extra: { noul: 0.5 } },
+      }),
+    )).toThrow(/key/i);
+
+    expect(() => module.parseSystemOneAxisExperimentResponse(
+      request,
+      'jev-1.13.0',
+      FOUR_AXIS_EXPERIMENT_AXES,
+      JSON.stringify({
+        model: 'jev-1.13.1',
+        answers,
+      }),
+    )).toThrow(/model/i);
+  });
+});
