@@ -1,3 +1,4 @@
+import { carveHardRoots } from './hard-roots.js';
 import {
   validateMappedDecisionRequest,
 } from './mapped-contract.js';
@@ -13,6 +14,7 @@ import { sha256Digest, type InMemoryCAS } from './recovery.js';
 import type {
   MappedDecisionRequest,
   MappedDecisionResponse,
+  HardRootEligible,
   ProfileIdentity,
 } from './types.js';
 
@@ -37,36 +39,33 @@ export type ObservationReplayRun = ReplayRun & {
   receipts: ReplayReceipt[];
 };
 
-function buildRequest(trace: ReplayTrace, profiles: ObservationProfiles): MappedDecisionRequest {
+function buildRequest(
+  trace: ReplayTrace,
+  profiles: ObservationProfiles,
+  carvedByID: ReadonlyMap<string, HardRootEligible>,
+): MappedDecisionRequest {
   const candidate_views = [...trace.candidates]
     .sort((a, b) => a.candidate_id.localeCompare(b.candidate_id))
-    .map((candidate) => ({
-      candidate_id: candidate.candidate_id,
-      source_digest: candidate.recovery.source_digest,
-      source_kind: 'tool_result' as const,
-      recovery_ref: candidate.recovery.recovery_ref,
-      byte_count: candidate.recovery.byte_count,
-      hard_roots: {
-        exit_status: candidate.exit_status,
-        stderr: candidate.stderr.length ? candidate.stderr.split('\n') : [],
-        first_lines: candidate.stdout.split('\n').slice(0, candidate.head_lines),
-        last_lines: candidate.stdout.split('\n').slice(-candidate.tail_lines),
-      },
-      semantic_view: {
-        head: candidate.stdout.split('\n').slice(0, candidate.head_lines).join('\n'),
-        tail: candidate.stdout.split('\n').slice(-candidate.tail_lines).join('\n'),
-        selected_chunks: [],
-        omitted_bytes: Math.max(
-          0,
-          candidate.recovery.byte_count -
-            Buffer.byteLength(
-              candidate.stdout.split('\n').slice(0, candidate.head_lines).join('\n') +
-                candidate.stdout.split('\n').slice(-candidate.tail_lines).join('\n'),
-              'utf8',
-            ),
-        ),
-      },
-    }));
+    .map((candidate) => {
+      const carved = carvedByID.get(candidate.candidate_id);
+      if (!carved) {
+        throw new Error(`missing hard-root preflight for ${candidate.candidate_id}`);
+      }
+      return {
+        candidate_id: candidate.candidate_id,
+        source_digest: candidate.recovery.source_digest,
+        source_kind: 'tool_result' as const,
+        recovery_ref: candidate.recovery.recovery_ref,
+        byte_count: candidate.recovery.byte_count,
+        hard_roots: carved.hardRoots,
+        semantic_view: {
+          head: carved.hardRoots.first_lines.join('\n'),
+          tail: carved.hardRoots.last_lines.join('\n'),
+          selected_chunks: [],
+          omitted_bytes: carved.omitted_stdout_bytes,
+        },
+      };
+    });
 
   return {
     schema: 'anvil.mapped-decision-request.v0',
@@ -143,7 +142,23 @@ export async function runObservationOnlyArm(
   thresholds: ObservationPolicyThresholds,
   provider: MappedObservationProvider,
 ): Promise<ObservationReplayRun> {
-  const request = buildRequest(trace, profiles);
+  const carvedByID = new Map<string, HardRootEligible>();
+  for (const candidate of trace.candidates) {
+    const carved = carveHardRoots({
+      exitStatus: candidate.exit_status,
+      stdout: candidate.stdout,
+      stderr: candidate.stderr,
+      headLines: candidate.head_lines,
+      tailLines: candidate.tail_lines,
+      presentationBudgetBytes: candidate.presentation_budget_bytes,
+    });
+    if (carved.kind === 'PRISTINE') {
+      return fallbackRun(trace, profiles, 'hard_roots_exceed_budget');
+    }
+    carvedByID.set(candidate.candidate_id, carved);
+  }
+
+  const request = buildRequest(trace, profiles, carvedByID);
   const validation = validateMappedDecisionRequest(request);
   if (!validation.ok) {
     return fallbackRun(trace, profiles, `request:${validation.code}`);
