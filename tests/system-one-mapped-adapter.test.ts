@@ -5,7 +5,7 @@ const digest = (c: string) => 'sha256:' + c.repeat(64);
 
 function mappedRequest() {
   return {
-    schema: 'anvil.mapped-decision-request.v0',
+    schema: 'anvil.mapped-decision-request.v1',
     request_id: 'mdr-system-one',
     source_run_id: 'fixture-system-one',
     decision_contract: {
@@ -101,7 +101,7 @@ describe('System One mapped execution adapter', () => {
 
     const result = await provider(request as any);
     expect(body.model).toBe('jev-1.13.0');
-    expect(body.state.schema).toBe('anvil.system-one-mapped-state.v0');
+    expect(body.state.schema).toBe('anvil.system-one-mapped-state.v1');
     expect(body.state.shared_conversation_state).toEqual(request.shared_conversation_state);
     expect(body.state.candidate_views).toEqual(request.candidate_views);
 
@@ -111,7 +111,6 @@ describe('System One mapped execution adapter', () => {
       'cand-0001.still_needed',
       'cand-0001.full_content_needed',
       'cand-0001.unresolved_evidence',
-      'cand-0001.recoverable',
     ]);
     const serializedQuestions = JSON.stringify(body.questions);
     expect(serializedQuestions).not.toContain('preserve evidence');
@@ -119,7 +118,7 @@ describe('System One mapped execution adapter', () => {
     expect(serializedQuestions).not.toContain('tail');
 
     expect(result.mapped_response).toMatchObject({
-      schema: 'anvil.mapped-decision-response.v0',
+      schema: 'anvil.mapped-decision-response.v1',
       request_id: 'mdr-system-one',
       observations: [{ candidate_id: 'cand-0001' }],
     });
@@ -147,7 +146,6 @@ describe('System One mapped execution adapter', () => {
         'cand-0001.still_needed': { noul: 0.9 },
         'cand-0001.full_content_needed': { noul: 0.9 },
         'cand-0001.unresolved_evidence': { noul: 0.9 },
-        'cand-0001.recoverable': { noul: 0.9 },
       },
     ]) {
       const authorize = exportedFunction('authorizeSyntheticFixtureEgress');
