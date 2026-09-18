@@ -50,7 +50,9 @@ function calibrationBuild(profile: ReturnType<typeof providerProfile>) {
           decisionContractDigest: d('a'),
           predicateId,
           labelBindingDigest: d('b'),
-          sourceDigest: target === 0 ? d(String(axisIndex + 5)) : d(String(axisIndex + 9)),
+          sourceDigest: target === 0
+            ? d(['5', '6', '7', '8'][axisIndex])
+            : d(['9', 'a', 'b', 'c'][axisIndex]),
           outcomeDigest: target === 0 ? d('c') : d('d'),
           target,
           verifierIdentity: 'deterministic:calibrated-policy-test',
