@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ProviderShadowReplayCompilerV2,
+  compileProviderShadowCampaignV2,
   verifyProviderShadowReplayArtifactV2,
 } from '../src/lab/provider-shadow-replay-v2.js';
 import {
@@ -179,5 +180,139 @@ describe('ProviderShadowReplayCompilerV2', () => {
       cas,
       thresholds,
     } as any)).rejects.toThrow(/recoverable|predicate/i);
+  });
+});
+
+
+describe('Provider shadow campaign V2', () => {
+  it('isolates provider failure while preserving successful provider artifacts', async () => {
+    const jev = makeProviderProfileV2();
+    const qwen = makeProviderProfileV2('neo/qwen-ane');
+    const t = trace();
+    const cas = new InMemoryCAS();
+    cas.put('shadow-v2-a', encodeToolEvidence(t.candidates[0].stdout, '', 0));
+
+    const program = compileContextRetentionProgramV2({
+      id: 'anvil.context-retention.v2',
+      version: '2.0.0',
+      digest: d2('a'),
+    });
+
+    const observationProfiles = (p: typeof jev) => ({
+      decision_contract: {
+        id: 'anvil.context-retention.v2',
+        version: '2.0.0',
+        digest: d2('a'),
+      },
+      execution_profile: {
+        id: p.providerId,
+        version: '2.0.0',
+        digest: p.providerProfileDigest,
+      },
+      calibration_profile: {
+        id: 'shadow',
+        version: '2.0.0',
+        digest: d2('c'),
+      },
+      policy_profile: {
+        id: 'shadow',
+        version: '2.0.0',
+        digest: d2('d'),
+      },
+    });
+
+    const result = await compileProviderShadowCampaignV2({
+      traces: [t],
+      labels: labels(t),
+      cas,
+      thresholds,
+      arms: [
+        {
+          providerProfile: jev,
+          observationProfiles: observationProfiles(jev),
+          compiledProgramDigest: program.programDigest,
+          provider,
+        },
+        {
+          providerProfile: qwen,
+          observationProfiles: observationProfiles(qwen),
+          compiledProgramDigest: program.programDigest,
+          provider: async () => { throw new Error('offline'); },
+        },
+      ],
+    });
+
+    expect(result.schema).toBe('anvil.provider-shadow-campaign.v2');
+    expect(result.artifacts).toHaveLength(1);
+    expect(result.artifacts[0].providerProfileDigest)
+      .toBe(jev.providerProfileDigest);
+    expect(result.failures).toEqual([{
+      providerId: qwen.providerId,
+      providerProfileDigest: qwen.providerProfileDigest,
+      code: 'shadow_replay_failed',
+    }]);
+  });
+
+  it('rejects duplicate provider identities before any provider executes', async () => {
+    const jev = makeProviderProfileV2();
+    const t = trace();
+    const cas = new InMemoryCAS();
+    cas.put('shadow-v2-a', encodeToolEvidence(t.candidates[0].stdout, '', 0));
+    const program = compileContextRetentionProgramV2({
+      id: 'anvil.context-retention.v2',
+      version: '2.0.0',
+      digest: d2('a'),
+    });
+
+    let calls = 0;
+    const counted = async (request: any) => {
+      calls += 1;
+      return provider(request);
+    };
+    const observationProfiles = {
+      decision_contract: {
+        id: 'anvil.context-retention.v2',
+        version: '2.0.0',
+        digest: d2('a'),
+      },
+      execution_profile: {
+        id: jev.providerId,
+        version: '2.0.0',
+        digest: jev.providerProfileDigest,
+      },
+      calibration_profile: {
+        id: 'shadow',
+        version: '2.0.0',
+        digest: d2('c'),
+      },
+      policy_profile: {
+        id: 'shadow',
+        version: '2.0.0',
+        digest: d2('d'),
+      },
+    };
+
+    await expect(compileProviderShadowCampaignV2({
+      traces: [t],
+      labels: labels(t),
+      cas,
+      thresholds,
+      arms: [
+        {
+          providerProfile: jev,
+          observationProfiles,
+          compiledProgramDigest: program.programDigest,
+          provider: counted,
+        },
+        {
+          providerProfile: jev,
+          observationProfiles,
+          compiledProgramDigest: program.programDigest,
+          provider: counted,
+        },
+      ],
+    })).rejects.toThrow(/duplicate provider/i);
+
+    expect(calls).toBe(0);
   });
 });
