@@ -35,7 +35,7 @@ function candidate(id = 'cand-0001') {
 
 function validRequest() {
   return {
-    schema: 'anvil.mapped-decision-request.v0',
+    schema: 'anvil.mapped-decision-request.v1',
     request_id: 'mdr-0001',
     source_run_id: 'run-0001',
     decision_contract: {
