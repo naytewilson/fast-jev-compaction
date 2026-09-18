@@ -18,6 +18,7 @@ import { sha256Digest, type InMemoryCAS } from './recovery.js';
 import type {
   MappedDecisionRequest,
   MappedDecisionResponse,
+  MappedCandidateObservation,
   HardRootEligible,
   ProfileIdentity,
 } from './types.js';
@@ -119,7 +120,21 @@ function parseProviderEnvelope(value: unknown):
 
 export type ObservationReplayRun = ReplayRun & {
   receipts: ReplayReceipt[];
+  observations: readonly MappedCandidateObservation[] | null;
 };
+
+function freezeObservations(
+  observations: readonly MappedCandidateObservation[],
+): readonly MappedCandidateObservation[] {
+  return Object.freeze(observations.map((observation) => Object.freeze({
+    candidate_id: observation.candidate_id,
+    evidence_sufficient: Object.freeze({ ...observation.evidence_sufficient }),
+    still_needed: Object.freeze({ ...observation.still_needed }),
+    full_content_needed: Object.freeze({ ...observation.full_content_needed }),
+    unresolved_evidence: Object.freeze({ ...observation.unresolved_evidence }),
+    recoverable: Object.freeze({ ...observation.recoverable }),
+  })));
+}
 
 function buildRequest(
   trace: ReplayTrace,
@@ -319,6 +334,7 @@ function fallbackRun(
   return {
     arm: 'D',
     presentations,
+    observations: null,
     receipts: [
       makeReceipt(trace, profiles, {
         request: context.request,
@@ -454,6 +470,7 @@ export async function runObservationOnlyArm(
   return {
     arm: 'D',
     presentations,
+    observations: freezeObservations(reassembled.observations),
     receipts: [
       makeReceipt(trace, profiles, {
         request,
