@@ -6,6 +6,8 @@ import {
   type MappedDecisionResponse,
   type MappedObservationAxis,
 } from './types.js';
+import { validateMappedDecisionRequest } from './mapped-contract.js';
+import { sha256Digest } from './recovery.js';
 
 export const SYSTEM_ONE_MAPPED_ENDPOINT = 'https://api.typesafe.ai/v1/systemone';
 export const SYSTEM_ONE_MAPPED_STATE_SCHEMA = 'anvil.system-one-mapped-state.v0';
@@ -40,9 +42,16 @@ export type SystemOneFetch = (
   },
 ) => Promise<SystemOneHTTPResponse>;
 
+export interface SystemOneEgressGrant {
+  schema: 'anvil.system-one-egress-grant.v0';
+  scope: 'synthetic_fixture';
+  request_digest: string;
+}
+
 export interface SystemOneMappedProviderOptions {
   apiKey: string;
   model: string;
+  egressGrants?: readonly SystemOneEgressGrant[];
   baseUrl?: string;
   fetch?: SystemOneFetch;
 }
@@ -64,6 +73,27 @@ type SystemOneAnswer = {
   type?: string;
   noul?: unknown;
 };
+
+export function systemOneMappedRequestDigest(request: MappedDecisionRequest): string {
+  return sha256Digest(JSON.stringify(request));
+}
+
+export function authorizeSyntheticFixtureEgress(
+  request: MappedDecisionRequest,
+): SystemOneEgressGrant {
+  const validation = validateMappedDecisionRequest(request);
+  if (!validation.ok) {
+    throw new Error(`Cannot authorize invalid mapped request: ${validation.code}`);
+  }
+  if (!request.source_run_id.startsWith('fixture-')) {
+    throw new Error('System One egress grants are restricted to synthetic fixture requests');
+  }
+  return Object.freeze({
+    schema: 'anvil.system-one-egress-grant.v0',
+    scope: 'synthetic_fixture',
+    request_digest: systemOneMappedRequestDigest(request),
+  });
+}
 
 function assertPinnedModel(model: string): void {
   if (!PINNED_JEV_MODEL.test(model)) {
@@ -145,8 +175,20 @@ export function createSystemOneMappedProvider(
 
   const fetcher = options.fetch ?? defaultFetch();
   const endpoint = options.baseUrl ?? SYSTEM_ONE_MAPPED_ENDPOINT;
+  const grantedDigests = new Set(
+    (options.egressGrants ?? [])
+      .filter((grant) =>
+        grant.schema === 'anvil.system-one-egress-grant.v0' &&
+        grant.scope === 'synthetic_fixture')
+      .map((grant) => grant.request_digest),
+  );
 
   return async (request: MappedDecisionRequest): Promise<SystemOneMappedProviderResult> => {
+    const requestDigest = systemOneMappedRequestDigest(request);
+    if (!grantedDigests.has(requestDigest)) {
+      throw new Error('System One egress grant does not authorize this exact mapped request');
+    }
+
     const questions = buildQuestions(request);
     const expectedKeys = Object.keys(questions);
 
