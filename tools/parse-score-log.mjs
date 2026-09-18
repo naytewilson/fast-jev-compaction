@@ -46,7 +46,11 @@ for (const line of lines) {
     // v2: SCORE_BEGIN.probes maps each probe offset to an axis; v1: cur.axis
     const probeAxes = new Map();
     for (const p of cur.probes ?? []) {
-      if (typeof p.offset === 'number' && p.axis) probeAxes.set(p.offset, p.axis);
+      // Manifest probes carry GLOBAL prompt offsets; PROBE_JSON emits the
+      // in-window slot (offset % 16 when prompt length is 16-aligned).
+      if (typeof p.offset === 'number' && p.axis) {
+        probeAxes.set(p.offset % 16, p.axis);
+      }
     }
     const expected = probeAxes.size > 0 ? probeAxes.size : 1;
     if (cur._probes.length !== expected) {
