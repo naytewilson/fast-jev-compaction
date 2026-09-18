@@ -10,6 +10,8 @@ export interface ReplayCosts {
 
 export interface ReplayMetrics {
   criticalEvidenceFalseEvictions: number;
+  criticalEvidenceOpportunities: number;
+  falseEvictionRate: number;
   recoveryNeeds: number;
   grossContextTokensSaved?: number;
   semanticCostTokens: number;
@@ -25,8 +27,10 @@ export function evaluateReplay(
 ): ReplayMetrics {
   let falseEvictions = 0;
   let recoveryNeeds = 0;
+  let opportunities = 0;
 
   for (const candidate of trace.candidates) {
+    opportunities += candidate.critical_evidence.length;
     const presentation = run.presentations.find((item) => item.candidate_id === candidate.candidate_id);
     const visible = presentation?.visible_text ?? '';
     if (presentation?.recovery_required) recoveryNeeds += 1;
@@ -57,6 +61,8 @@ export function evaluateReplay(
 
   return {
     criticalEvidenceFalseEvictions: falseEvictions,
+    criticalEvidenceOpportunities: opportunities,
+    falseEvictionRate: opportunities === 0 ? 0 : falseEvictions / opportunities,
     recoveryNeeds,
     grossContextTokensSaved,
     semanticCostTokens,

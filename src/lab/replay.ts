@@ -20,7 +20,7 @@ export interface ReplayTrace {
   candidates: ReplayCandidate[];
 }
 
-export type ReplayDisposition = 'FULL' | 'REFERENTIAL' | 'EVICTED' | 'PRISTINE_FALLBACK';
+export type ReplayDisposition = 'FULL' | 'REFERENTIAL' | 'EVICTED' | 'PRISTINE_FALLBACK' | 'ABSTAIN';
 
 export interface ReplayPresentation {
   candidate_id: string;

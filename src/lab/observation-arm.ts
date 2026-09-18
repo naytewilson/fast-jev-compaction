@@ -420,7 +420,7 @@ export async function runObservationOnlyArm(
   const presentations = trace.candidates.map((candidate) => {
     const observation = byID.get(candidate.candidate_id)!;
     if (observation.evidence_sufficient.noul < thresholds.evidenceSufficientFloor) {
-      return fullPresentation(candidate);
+      return fullPresentation(candidate, 'ABSTAIN');
     }
     if (observation.unresolved_evidence.noul >= thresholds.keepFull) {
       return fullPresentation(candidate);
