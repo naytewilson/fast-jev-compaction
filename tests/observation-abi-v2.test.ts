@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  validateMechanicalRecoveryAttestation,
   validateSemanticSensorObservationV2,
 } from '../src/lab/observation-abi-v2.js';
 
@@ -29,10 +28,11 @@ const observation = {
 };
 
 describe('Semantic Observation ABI v2', () => {
-  it('contains exactly four modeled semantic axes and no recoverability score', () => {
+  it('contains exactly four modeled semantic axes and no recovery authority', () => {
     expect(validateSemanticSensorObservationV2(identity, observation))
       .toEqual({ ok: true });
     expect('recoverable' in observation.predicates).toBe(false);
+    expect('recoveryRef' in observation).toBe(false);
 
     expect(validateSemanticSensorObservationV2(identity, {
       ...observation,
@@ -43,7 +43,7 @@ describe('Semantic Observation ABI v2', () => {
     })).toMatchObject({ ok: false, code: 'invalid_predicates' });
   });
 
-  it('rejects lane identity drift', () => {
+  it('rejects candidate, ordinal, source, or program identity drift', () => {
     for (const patch of [
       { candidateId: 'cand-other' },
       { originalOrdinal: 3 },
@@ -57,20 +57,15 @@ describe('Semantic Observation ABI v2', () => {
     }
   });
 
-  it('validates recovery only through a mechanical attestation', () => {
-    const attestation = {
-      schema: 'anvil.mechanical-recovery-attestation.v1',
-      candidateId: identity.candidateId,
-      sourceDigest: identity.sourceDigest,
-      recoveryRef: 'cas:object-1',
-      status: 'VERIFIED',
-    };
-    expect(validateMechanicalRecoveryAttestation(identity, attestation))
-      .toEqual({ ok: true });
+  it('rejects invalid probabilities and extra authority fields', () => {
+    expect(validateSemanticSensorObservationV2(identity, {
+      ...observation,
+      evidenceSufficient: Number.NaN,
+    }).ok).toBe(false);
 
-    expect(validateMechanicalRecoveryAttestation(identity, {
-      ...attestation,
-      status: 'MODEL_SAYS_YES',
-    })).toMatchObject({ ok: false, code: 'invalid_recovery_status' });
+    expect(validateSemanticSensorObservationV2(identity, {
+      ...observation,
+      authorized: true,
+    })).toMatchObject({ ok: false, code: 'invalid_observation_schema' });
   });
 });

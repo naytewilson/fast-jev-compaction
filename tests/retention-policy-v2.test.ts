@@ -1,16 +1,41 @@
 import { describe, expect, it } from 'vitest';
-import { evaluateRetentionPolicyV2 } from '../src/lab/retention-policy-v2.js';
+import {
+  evaluateRetentionPolicyV2,
+} from '../src/lab/retention-policy-v2.js';
+import {
+  MechanicalRecoveryAttestor,
+} from '../src/lab/mechanical-recovery-v1.js';
+import {
+  InMemoryCAS,
+  createToolRecoveryManifest,
+  encodeToolEvidence,
+} from '../src/lab/recovery.js';
 
 const d = (c: string) => 'sha256:' + c.repeat(64);
 
-const identity = {
-  candidateId: 'cand-0001',
-  originalOrdinal: 0,
-  sourceDigest: d('a'),
-  programDigest: d('b'),
-};
+function semanticFixture() {
+  const stdout = 'head\ncritical\ntail';
+  const stderr = '';
+  const exitStatus = 0;
+  const manifest = createToolRecoveryManifest(
+    stdout,
+    stderr,
+    exitStatus,
+    'policy-v2-object',
+  );
+  const identity = {
+    candidateId: 'cand-0001',
+    originalOrdinal: 0,
+    sourceDigest: manifest.source_digest,
+    programDigest: d('b'),
+  };
+  return { stdout, stderr, exitStatus, manifest, identity };
+}
 
-function observation(patch: Record<string, number> = {}) {
+function observation(
+  identity: ReturnType<typeof semanticFixture>['identity'],
+  patch: Record<string, number> = {},
+) {
   return {
     schema: 'anvil.semantic-observation-abi.v2' as const,
     ...identity,
@@ -24,13 +49,27 @@ function observation(patch: Record<string, number> = {}) {
   };
 }
 
-function recovery(status: 'VERIFIED' | 'MISSING' | 'DIGEST_MISMATCH' | 'STALE' = 'VERIFIED') {
+function recovery(put = true) {
+  const f = semanticFixture();
+  const cas = new InMemoryCAS();
+  if (put) {
+    cas.put(
+      'policy-v2-object',
+      encodeToolEvidence(f.stdout, f.stderr, f.exitStatus),
+    );
+  }
+  const attestation = new MechanicalRecoveryAttestor().attestTool({
+    candidateId: f.identity.candidateId,
+    manifest: f.manifest,
+    stdout: f.stdout,
+    stderr: f.stderr,
+    exitStatus: f.exitStatus,
+  }, cas);
   return {
-    schema: 'anvil.mechanical-recovery-attestation.v1' as const,
-    candidateId: identity.candidateId,
-    sourceDigest: identity.sourceDigest,
-    recoveryRef: 'cas:object-1',
-    status,
+    ...f,
+    cas,
+    attestation,
+    snapshotDigest: cas.snapshotDigest(),
   };
 }
 
@@ -42,40 +81,64 @@ const thresholds = {
 };
 
 describe('retention policy v2', () => {
-  it('abstains before all semantic policy when evidence is insufficient', () => {
+  it('abstains before semantic retention decisions when evidence is insufficient', () => {
+    const f = recovery(true);
     expect(evaluateRetentionPolicyV2(
-      identity,
-      observation({ evidenceSufficient: 0.2 }),
-      recovery(),
+      f.identity,
+      observation(f.identity, { evidenceSufficient: 0.2 }),
+      f.attestation,
+      f.snapshotDigest,
       thresholds,
-    )).toMatchObject({ disposition: 'ABSTAIN', authorityGranted: false });
+    )).toMatchObject({
+      disposition: 'ABSTAIN',
+      authorityGranted: false,
+      reason: 'insufficient-evidence',
+    });
   });
 
   it('uses still-needed then full-content-needed for retained evidence', () => {
-    expect(evaluateRetentionPolicyV2(
-      identity,
-      observation({ stillNeeded: 0.9, fullContentNeeded: 0.1 }),
-      recovery(),
-      thresholds,
-    )).toMatchObject({ disposition: 'REFERENTIAL', authorityGranted: true });
+    const f = recovery(true);
 
     expect(evaluateRetentionPolicyV2(
-      identity,
-      observation({ stillNeeded: 0.9, fullContentNeeded: 0.95 }),
-      recovery(),
+      f.identity,
+      observation(f.identity, {
+        stillNeeded: 0.9,
+        fullContentNeeded: 0.1,
+      }),
+      f.attestation,
+      f.snapshotDigest,
       thresholds,
-    )).toMatchObject({ disposition: 'FULL', authorityGranted: false });
+    )).toMatchObject({
+      disposition: 'REFERENTIAL',
+      authorityGranted: true,
+    });
+
+    expect(evaluateRetentionPolicyV2(
+      f.identity,
+      observation(f.identity, {
+        stillNeeded: 0.9,
+        fullContentNeeded: 0.95,
+      }),
+      f.attestation,
+      f.snapshotDigest,
+      thresholds,
+    )).toMatchObject({
+      disposition: 'FULL',
+      authorityGranted: false,
+    });
   });
 
-  it('treats unresolved evidence as a conservative advisory override, not proof of contradiction', () => {
+  it('treats unresolved evidence as review advice rather than proof of contradiction', () => {
+    const f = recovery(true);
     expect(evaluateRetentionPolicyV2(
-      identity,
-      observation({
+      f.identity,
+      observation(f.identity, {
         stillNeeded: 0.1,
         fullContentNeeded: 0.1,
         unresolvedEvidence: 0.95,
       }),
-      recovery(),
+      f.attestation,
+      f.snapshotDigest,
       thresholds,
     )).toMatchObject({
       disposition: 'FULL',
@@ -84,46 +147,76 @@ describe('retention policy v2', () => {
     });
   });
 
-  it('evicts low-value resolved evidence only when mechanical recovery is verified', () => {
+  it('evicts low-value resolved evidence only with a current VERIFIED mechanical attestation', () => {
+    const verified = recovery(true);
     expect(evaluateRetentionPolicyV2(
-      identity,
-      observation({
+      verified.identity,
+      observation(verified.identity, {
         stillNeeded: 0.1,
-        fullContentNeeded: 0.1,
         unresolvedEvidence: 0.1,
       }),
-      recovery('VERIFIED'),
+      verified.attestation,
+      verified.snapshotDigest,
       thresholds,
-    )).toMatchObject({ disposition: 'EVICTED', authorityGranted: true });
+    )).toMatchObject({
+      disposition: 'EVICTED',
+      authorityGranted: true,
+    });
 
-    for (const status of ['MISSING', 'DIGEST_MISMATCH', 'STALE'] as const) {
-      expect(evaluateRetentionPolicyV2(
-        identity,
-        observation({
-          stillNeeded: 0.1,
-          fullContentNeeded: 0.1,
-          unresolvedEvidence: 0.1,
-        }),
-        recovery(status),
-        thresholds,
-      )).toMatchObject({ disposition: 'FULL', authorityGranted: false });
-    }
+    const missing = recovery(false);
+    expect(evaluateRetentionPolicyV2(
+      missing.identity,
+      observation(missing.identity, {
+        stillNeeded: 0.1,
+        unresolvedEvidence: 0.1,
+      }),
+      missing.attestation,
+      missing.snapshotDigest,
+      thresholds,
+    )).toMatchObject({
+      disposition: 'FULL',
+      authorityGranted: false,
+      reason: 'mechanical-recovery-unavailable',
+    });
   });
 
-  it('uses profile-supplied sufficiency thresholds instead of a globally baked experiment threshold', () => {
-    const obs = observation({ evidenceSufficient: 0.3 });
+  it('fails closed when a once-valid recovery attestation becomes stale', () => {
+    const f = recovery(true);
+    f.cas.put('later-object', 'changed-store');
 
     expect(evaluateRetentionPolicyV2(
-      identity,
+      f.identity,
+      observation(f.identity, {
+        stillNeeded: 0.1,
+        unresolvedEvidence: 0.1,
+      }),
+      f.attestation,
+      f.cas.snapshotDigest(),
+      thresholds,
+    )).toMatchObject({
+      disposition: 'FULL',
+      authorityGranted: false,
+      reason: 'stale-recovery-attestation',
+    });
+  });
+
+  it('uses profile-supplied sufficiency thresholds instead of weak-experiment constants', () => {
+    const f = recovery(true);
+    const obs = observation(f.identity, { evidenceSufficient: 0.3 });
+
+    expect(evaluateRetentionPolicyV2(
+      f.identity,
       obs,
-      recovery(),
+      f.attestation,
+      f.snapshotDigest,
       { ...thresholds, evidenceSufficientFloor: 0.25 },
     ).disposition).toBe('REFERENTIAL');
 
     expect(evaluateRetentionPolicyV2(
-      identity,
+      f.identity,
       obs,
-      recovery(),
+      f.attestation,
+      f.snapshotDigest,
       { ...thresholds, evidenceSufficientFloor: 0.5 },
     ).disposition).toBe('ABSTAIN');
   });
