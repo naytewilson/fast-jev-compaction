@@ -111,8 +111,11 @@ let allPackages = [
 switch args.mode {
 
 case "load":
+    let onlySet: Set<String>? = args.only.isEmpty ? nil
+        : Set(args.only.split(separator: ",").map { String($0) })
+    let loadPackages = onlySet.map { s in allPackages.filter { s.contains($0) } } ?? allPackages
     var results: [[String: Any]] = []
-    for n in allPackages {
+    for n in loadPackages {
         let p = pkgPath(n)
         let rss0 = processFootprint()
         do {

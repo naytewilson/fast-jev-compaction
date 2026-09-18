@@ -1,0 +1,77 @@
+{
+  "schema": "anvil.measured-report.v2",
+  "evidenceClass": "measured-local-inference",
+  "observationAbi": "anvil.semantic-observation-abi.v2",
+  "retentionContract": "anvil.context-retention.v2",
+  "subset": {
+    "scored": 7,
+    "denominator": 26
+  },
+  "providerId": "neo-lfm2.5-local-v2",
+  "providerProfileDigest": "sha256:b82d2238ecb515e32c6af83f7c09eaf6d9a05b0fe0de18917f48e29c2171c647",
+  "decisionContractDigest": "sha256:eb15f87b1e00cc9f68097317a147d1c39bf605129f62883317533435ef80f978",
+  "compiledProgramDigest": "sha256:83ecca68fe27681b381ad16c942fe9c9edd0707476392289f27a6b3e00801f55",
+  "axisSpecDigest": "sha256:edce037c11caa8017e314e0ffac03f0ea4fcbc5518ed464ad51a5d3657b17a53",
+  "labelBindingDigest": "sha256:c1c45a16fe5bc32c99e5809d94b6f12568c3610b5b957758f2da2b578e6e6932",
+  "replayDigest": "sha256:14aa6a99418ccaf1c42c7a277246e814b04c1cb9ba860ab154ff3af06da8c34e",
+  "predictions": 28,
+  "receiptDigests": [
+    "sha256:e270ab6c2b495c1970c063d1bacfef22c9f4608642ffdc2533ea8ac80e0b55e6",
+    "sha256:5aedf86583d75a0e2f248be5af217afefc7f271ca87315c8d14c8f335637af55",
+    "sha256:f352275707c134a0fccd133ea73ca0648d293f5b67ccb57290a1a9394e8129ed",
+    "sha256:1e229c6d13207251372448ceb5a6fe5c7d9b34a70f53bd276e2774029b7586a0",
+    "sha256:6acdf098c0ec7f58f34fe4fac8d473b349344ee31a05f550ddd73aaca7a6e643",
+    "sha256:b19fde2eb5662d72173cf9db1e05bbd3d86a78c2a713886484d29dc827fb47c3",
+    "sha256:c7c03c6a788ffd38fbfae5c406fa6680094b95239c124e8bbf6fa77450ba9bf6"
+  ],
+  "wallTimeMs": {
+    "samples": 7,
+    "values": [
+      668810,
+      687539,
+      703461,
+      685278,
+      687033,
+      672471,
+      677719
+    ],
+    "note": "per-candidate wall time on Neo under current machine conditions; honest measured latency"
+  },
+  "metrics": {
+    "evidence_sufficient": {
+      "n": 7,
+      "accuracyAt05": 1,
+      "meanProbability": 0.9549,
+      "meanTarget": 1,
+      "brier": 0.004628
+    },
+    "still_needed": {
+      "n": 7,
+      "accuracyAt05": 1,
+      "meanProbability": 0.7577,
+      "meanTarget": 1,
+      "brier": 0.071251
+    },
+    "full_content_needed": {
+      "n": 7,
+      "accuracyAt05": 0,
+      "meanProbability": 0.8724,
+      "meanTarget": 0,
+      "brier": 0.766029
+    },
+    "unresolved_evidence": {
+      "n": 7,
+      "accuracyAt05": 0.5714,
+      "meanProbability": 0.9352,
+      "meanTarget": 0.5714,
+      "brier": 0.353994
+    }
+  },
+  "nonAuthoritative": true,
+  "promotionAuthority": "NONE",
+  "notes": [
+    "Descriptive metrics only — a 7-candidate measured subset is not a production calibration campaign.",
+    "No promotion credential minted; no routing authority granted.",
+    "Records preserve conditional noul values plus absolute probe-token telemetry; telemetry is not semantic authority."
+  ]
+}

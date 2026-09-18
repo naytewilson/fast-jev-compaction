@@ -1,0 +1,14 @@
+{
+  "schema": "anvil.observer-samples.v2",
+  "source": "measured-local-inference",
+  "unit": "ms",
+  "samples": [
+    668810,
+    687539,
+    703461,
+    685278,
+    687033,
+    672471,
+    677719
+  ]
+}
