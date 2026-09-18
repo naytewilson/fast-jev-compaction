@@ -108,7 +108,7 @@ function requireCompletePredicates(
     present.size !== MAPPED_OBSERVATION_AXES.length ||
     MAPPED_OBSERVATION_AXES.some((predicate) => !present.has(predicate))
   ) {
-    throw new Error(`${split} calibration evidence must contain all five registered predicates`);
+    throw new Error(`${split} calibration evidence must contain all four registered semantic predicates`);
   }
 }
 
