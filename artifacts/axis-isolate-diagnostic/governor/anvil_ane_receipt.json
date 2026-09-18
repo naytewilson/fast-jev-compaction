@@ -1,0 +1,48 @@
+{
+  "schema": "anvil.ane.receipt.v1",
+  "law": "ANVIL_ANE_GOVERNOR_v2",
+  "run_id": "jev_v2_axis_isolate_20260918T162930Z",
+  "status": "PASS",
+  "reason_codes": [],
+  "experiment_id": "jev_v2_axis_isolate",
+  "model_id": "lfm25-2p6b-d1p1",
+  "agent": "unknown",
+  "task_id": "unset",
+  "started": "2026-09-18T16:29:30Z",
+  "finished": "2026-09-18T18:03:11Z",
+  "artifacts": {
+    "capsule_id": "cd633bf65e69e1d3dfa16908a6c8baf36a34be6095318b969db364970f120557",
+    "capsule_binds": "execution_manifest: profile+commands+env+criteria+oracle+deadlines+watchdog+seat_class+quiesce+artifacts",
+    "hash_mode": "full",
+    "content_verified": true,
+    "metric_source": "live",
+    "runtime_criteria": "none",
+    "complete": 1,
+    "members": [
+      {"kind": "binary", "path": "/Users/nayte/ane-hot/workspace/lfm-family-neo-validation/tools/causal-stepper/.build/debug/CausalStepperMac", "sha256": "24ed6aacb0e8883ea5f2011b64158e7b92b667bb0b05b15fcd878dd5c0e6d41c"},
+      {"kind": "model", "path": "/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_0_s16_ctx512_kvio_prefill.mlmodelc", "sha256": "bdaec5dc87b3557b929b7006bafc2d6cb88725ec52eb6838afe9c1dd2e9e8bf7"},
+      {"kind": "model", "path": "/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_1_s16_ctx512_kvio_prefill.mlmodelc", "sha256": "2c600410323c2638a3fcfe89576ca32cc4c45be988202fd770d8f3c6f6683114"},
+      {"kind": "model", "path": "/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/segment_2_s16_ctx512_kvio_prefill.mlmodelc", "sha256": "f665327eb057d8b7080354b729624e372b783a1418b8b2f55d996740f83a31fa"},
+      {"kind": "model", "path": "/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/compiled/final_head_s1_2p6b.mlmodelc", "sha256": "fa65e8aeb7473bccd71de6779fcc6db98b39a1f2dd4a920702a7dc72d7002332"},
+      {"kind": "fixture", "path": "/Users/nayte/ane-hot/models/lfm25-2p6b-d1p1/embed_weight.bin", "sha256": "b5365ec220f6518fada497f7fb45631e6d7844114718a7ede1f5c897bf4db93c"},
+      {"kind": "fixture", "path": "/Users/nayte/jev-v2-isolate-20260918/repo/artifacts/axis-isolate-diagnostic/axis-isolate-ids-v2.jsonl", "sha256": "60dc9b253a131acdc33f7686ed64736d228eb6bf38e8033781a648b5851e9814"},
+      {"kind": "fixture", "path": "/Users/nayte/semantic-fabric/noul-ids-v3-smoke.jsonl", "sha256": "39ec3f00d80c30ad3c8709c90e1f0a049a119c866b6311e77c3c557563f8e95a"}
+    ]
+  },
+  "oracle": {"id": "none", "compute_precision": "fp16", "engine_precision": "fp16"},
+  "criteria_audit": [
+
+  ],
+  "seat": {"class": "XL", "launch_bar_swap_max": null, "admit_line": "FABLE_ADMIT klass=XL verdict=ADMIT why=ok P=1 s=93.33% D=67.70GB src=live", "release_evidence": "swap_before=90.97% swap_after=90.97%", "seat_lost": false},
+  "execution": {"baseline_tick_ms": 679728.667, "abort_reason": "", "stages": [
+    {"rung": "L0", "stage": "static", "result": "PASS", "wall_s": 0, "note": "capsule+criteria clean"},
+    {"rung": "L1", "stage": "load", "result": "PASS", "wall_s": 13, "note": "ok"},
+    {"rung": "L2", "stage": "first_op", "result": "PASS", "wall_s": 664, "note": "ok"},
+    {"rung": "L3", "stage": "probe", "result": "PASS", "wall_s": 680, "note": "ok"},
+    {"rung": "L4", "stage": "correctness", "result": "SKIP", "wall_s": 0, "note": "no command in profile"},
+    {"rung": "L5", "stage": "pilot", "result": "SKIP", "wall_s": 0, "note": "no command in profile"},
+    {"rung": "L6", "stage": "full", "result": "PASS", "wall_s": 4240, "note": "ok"}
+  ]},
+  "validity": {"correctness_valid": false, "performance_valid": true, "placement_valid": true, "oracle_valid": true, "seat_valid": true, "thermal_valid": false, "reproducibility_valid": null},
+  "cleanup": {"process_group_terminated": true, "staging_removed": true, "services_restored": true, "seat_released": true, "reclaim_status": "timed_out", "reclaim_note": "killed after 8s; no reclaim child retained"}
+}
