@@ -1,0 +1,36 @@
+name: Semantic Retention Lab CI
+
+on:
+  push:
+    branches:
+      - north/anvil-sieve-semantic-retention-v0
+  pull_request:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig*.json"
+      - ".github/workflows/lab-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node: [20, 22]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
