@@ -1,0 +1,121 @@
+{
+  "schema": "anvil.axis-discrimination-anchor-plan.v2",
+  "axisSpecDigest": "sha256:edce037c11caa8017e314e0ffac03f0ea4fcbc5518ed464ad51a5d3657b17a53",
+  "anchorPlanDigest": "sha256:fe8384bc444636b1066ac992e12020f92ebb1c50e2f058858faac98030000f6e",
+  "anchors": [
+    {
+      "id": "axis-es-pos-01",
+      "primaryAxis": "evidence_sufficient",
+      "primaryTarget": 1,
+      "description": "decisive mission evidence is visible in the bounded head"
+    },
+    {
+      "id": "axis-es-pos-02",
+      "primaryAxis": "evidence_sufficient",
+      "primaryTarget": 1,
+      "description": "second visible decisive marker proves bounded-view sufficiency"
+    },
+    {
+      "id": "axis-es-neg-01",
+      "primaryAxis": "evidence_sufficient",
+      "primaryTarget": 0,
+      "description": "decisive source evidence exists but is omitted from the bounded view"
+    },
+    {
+      "id": "axis-es-neg-02",
+      "primaryAxis": "evidence_sufficient",
+      "primaryTarget": 0,
+      "description": "second omitted decisive marker makes the bounded view insufficient"
+    },
+    {
+      "id": "axis-sn-pos-01",
+      "primaryAxis": "still_needed",
+      "primaryTarget": 1,
+      "description": "candidate contains exact mission-relevant source evidence"
+    },
+    {
+      "id": "axis-sn-pos-02",
+      "primaryAxis": "still_needed",
+      "primaryTarget": 1,
+      "description": "second candidate contains exact mission-relevant source evidence"
+    },
+    {
+      "id": "axis-sn-neg-01",
+      "primaryAxis": "still_needed",
+      "primaryTarget": 0,
+      "description": "candidate contains no mission-relevant critical evidence"
+    },
+    {
+      "id": "axis-sn-neg-02",
+      "primaryAxis": "still_needed",
+      "primaryTarget": 0,
+      "description": "second candidate is orthogonal to the active mission"
+    },
+    {
+      "id": "axis-fcn-pos-01",
+      "primaryAxis": "full_content_needed",
+      "primaryTarget": 1,
+      "description": "important source evidence is omitted, so a reference alone loses immediate usefulness"
+    },
+    {
+      "id": "axis-fcn-pos-02",
+      "primaryAxis": "full_content_needed",
+      "primaryTarget": 1,
+      "description": "second omitted decisive span requires full source content now"
+    },
+    {
+      "id": "axis-fcn-neg-01",
+      "primaryAxis": "full_content_needed",
+      "primaryTarget": 0,
+      "description": "all decisive evidence is already visible; exact reference is sufficient for omitted filler"
+    },
+    {
+      "id": "axis-fcn-neg-02",
+      "primaryAxis": "full_content_needed",
+      "primaryTarget": 0,
+      "description": "second bounded view already exposes the decisive evidence"
+    },
+    {
+      "id": "axis-ue-pos-01",
+      "primaryAxis": "unresolved_evidence",
+      "primaryTarget": 1,
+      "description": "candidate contains a source-bound unresolved warning"
+    },
+    {
+      "id": "axis-ue-pos-02",
+      "primaryAxis": "unresolved_evidence",
+      "primaryTarget": 1,
+      "description": "candidate contains a source-bound verification contradiction"
+    },
+    {
+      "id": "axis-ue-neg-01",
+      "primaryAxis": "unresolved_evidence",
+      "primaryTarget": 0,
+      "description": "candidate contains no failure, warning, dependency, verification gap, or contradiction"
+    },
+    {
+      "id": "axis-ue-neg-02",
+      "primaryAxis": "unresolved_evidence",
+      "primaryTarget": 0,
+      "description": "missing mission evidence alone does not imply unresolved evidence"
+    }
+  ],
+  "mechanicalCoverage": {
+    "evidence_sufficient": {
+      "positive": 11,
+      "negative": 5
+    },
+    "still_needed": {
+      "positive": 11,
+      "negative": 5
+    },
+    "full_content_needed": {
+      "positive": 5,
+      "negative": 11
+    },
+    "unresolved_evidence": {
+      "positive": 2,
+      "negative": 14
+    }
+  }
+}

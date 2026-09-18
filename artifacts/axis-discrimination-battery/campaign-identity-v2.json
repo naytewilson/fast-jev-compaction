@@ -1,0 +1,77 @@
+{
+  "schema": "anvil.axis-discrimination-campaign-identity.v2",
+  "experimentKind": "positive-negative-axis-discrimination",
+  "decisionContract": {
+    "id": "anvil.context-retention.v2",
+    "version": "2.0.0",
+    "digest": "sha256:eb15f87b1e00cc9f68097317a147d1c39bf605129f62883317533435ef80f978"
+  },
+  "corpusDigest": "sha256:a55c836b9fdb053c1408e6bf0de19d3c2fa26b51ca946185f654491104899747",
+  "labelBindingDigest": "sha256:ab1659f2fe2d2511b4ebb9f6eb27c4d0cf6459748c3fb85134dd04b7ebbf2854",
+  "manifestDigest": "sha256:0439968e54d3df0634d03857a20c9c8d5761aea87cc1b7e5c12063ff6a36afdc",
+  "anchorPlanDigest": "sha256:fe8384bc444636b1066ac992e12020f92ebb1c50e2f058858faac98030000f6e",
+  "axisSpecDigest": "sha256:edce037c11caa8017e314e0ffac03f0ea4fcbc5518ed464ad51a5d3657b17a53",
+  "profiles": {
+    "decision_contract": {
+      "id": "anvil.context-retention.v2",
+      "version": "2.0.0",
+      "digest": "sha256:eb15f87b1e00cc9f68097317a147d1c39bf605129f62883317533435ef80f978"
+    },
+    "execution_profile": {
+      "id": "neo-lfm2.5-local-v2",
+      "version": "2.0.0",
+      "digest": "sha256:3cb627c05915b12e548bb4a1080554d21cfae512eb5fa7595933d97fce8b8c94"
+    },
+    "calibration_profile": {
+      "id": "axis-discrimination-shadow-v2",
+      "version": "2.0.0",
+      "digest": "sha256:c29d33e0cdd0a6e71a2b052ea72551db15637aceaa63c8c5b1ae613ffce64135"
+    },
+    "policy_profile": {
+      "id": "axis-discrimination-shadow-policy-v2",
+      "version": "2.0.0",
+      "digest": "sha256:7bc5f1cc2b2d4ac530a65e602459f3db134033d916f61097e7f9776326995855"
+    }
+  },
+  "subsetCandidates": [
+    "cand-axis-es-neg-01",
+    "cand-axis-es-neg-02",
+    "cand-axis-es-pos-01",
+    "cand-axis-es-pos-02",
+    "cand-axis-fcn-neg-01",
+    "cand-axis-fcn-neg-02",
+    "cand-axis-fcn-pos-01",
+    "cand-axis-fcn-pos-02",
+    "cand-axis-sn-neg-01",
+    "cand-axis-sn-neg-02",
+    "cand-axis-sn-pos-01",
+    "cand-axis-sn-pos-02",
+    "cand-axis-ue-neg-01",
+    "cand-axis-ue-neg-02",
+    "cand-axis-ue-pos-01",
+    "cand-axis-ue-pos-02"
+  ],
+  "subsetCoverage": {
+    "scored": 16,
+    "denominator": 16
+  },
+  "mechanicalCoverage": {
+    "evidence_sufficient": {
+      "positive": 11,
+      "negative": 5
+    },
+    "still_needed": {
+      "positive": 11,
+      "negative": 5
+    },
+    "full_content_needed": {
+      "positive": 5,
+      "negative": 11
+    },
+    "unresolved_evidence": {
+      "positive": 2,
+      "negative": 14
+    }
+  },
+  "promotionAuthority": "NONE"
+}
