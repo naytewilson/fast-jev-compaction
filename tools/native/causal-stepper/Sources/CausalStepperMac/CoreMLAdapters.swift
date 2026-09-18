@@ -598,6 +598,9 @@ public final class CoreMLHeadAdapter: HeadAdapter {
     // realSlotOffset and emits one PROBE_JSON per listed row offset of the
     // window's hidden output. Each line carries {"offset": o, "probs", "abs"}.
     public var probeOffsets: [Int] = []
+    // Diagnostic-only full-vocabulary telemetry. Zero preserves the canonical
+    // PROBE_JSON shape and scoring behavior.
+    public var diagnosticTopK: Int = 0
     public var callIndex = 0
     public private(set) var probeLog: [[String: Any]] = []
 
@@ -666,7 +669,20 @@ public final class CoreMLHeadAdapter: HeadAdapter {
             probs[String(id)] = acc > 0 ? exps[j] / acc : 0
             abs[String(id)] = vocabAcc > 0 ? exps[j] / vocabAcc : 0
         }
-        FileHandle.standardOutput.write(("PROBE_JSON " + String(data: try! JSONSerialization.data(withJSONObject: ["offset": rowOffset, "probs": probs, "abs": abs], options: []), encoding: .utf8)! + "\n").data(using: .utf8)!)
+        var payload: [String: Any] = ["offset": rowOffset, "probs": probs, "abs": abs]
+        if diagnosticTopK > 0 {
+            let ranked = topKLogits(lf, k: diagnosticTopK)
+            payload["argmax"] = bestIdx
+            payload["top"] = ranked.map { item -> [String: Any] in
+                let e = exp(Double(item.logit - mx))
+                return [
+                    "id": item.id,
+                    "logit": Double(item.logit),
+                    "abs": vocabAcc > 0 ? e / vocabAcc : 0,
+                ]
+            }
+        }
+        FileHandle.standardOutput.write(("PROBE_JSON " + String(data: try! JSONSerialization.data(withJSONObject: payload, options: []), encoding: .utf8)! + "\n").data(using: .utf8)!)
         return TokenID(bestIdx)
     }
 
