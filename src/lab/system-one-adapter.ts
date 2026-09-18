@@ -10,7 +10,7 @@ import { validateMappedDecisionRequest } from './mapped-contract.js';
 import { sha256Digest } from './recovery.js';
 
 export const SYSTEM_ONE_MAPPED_ENDPOINT = 'https://api.typesafe.ai/v1/systemone';
-export const SYSTEM_ONE_MAPPED_STATE_SCHEMA = 'anvil.system-one-mapped-state.v0';
+export const SYSTEM_ONE_MAPPED_STATE_SCHEMA = 'anvil.system-one-mapped-state.v1';
 
 const PINNED_JEV_MODEL = /^jev-\d+\.\d+\.\d+$/;
 
@@ -22,9 +22,7 @@ const AXIS_INSTRUCTIONS: Record<MappedObservationAxis, string> = {
   full_content_needed:
     'Estimate whether replacing omitted candidate content with a bounded reversible reference would materially reduce usefulness for the ongoing mission.',
   unresolved_evidence:
-    'Estimate whether the candidate identified by this question contains unresolved failure, warning, contradiction, dependency, or verification evidence.',
-  recoverable:
-    'Estimate whether the candidate identified by this question appears recoverable through its declared exact recovery identity. This is semantic observation only and never substitutes for mechanical CAS verification.',
+    'Estimate whether the candidate identified by this question contains evidence whose interpretation, freshness, dependency state, failure status, contradiction status, or verification state still requires review.',
 };
 
 export interface SystemOneHTTPResponse {
